@@ -31,6 +31,10 @@ public class ModMixinConfigPlugin implements IMixinConfigPlugin {
      */
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+        if (mixinClassName.endsWith("MixinIFluidStatePrimer")) {
+            return Loader.isModLoaded("fluidlogged_api");
+        }
+
         return true;
     }
 

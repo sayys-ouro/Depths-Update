@@ -4,7 +4,6 @@ import net.minecraft.client.renderer.ViewFrustum;
 import net.minecraft.client.renderer.chunk.RenderChunk;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -69,7 +68,8 @@ public abstract class MixinViewFrustum {
      * @reason map BlockPos to shifted RenderChunk array indices
      */
     @Overwrite
-    public void markBlocksForUpdate(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, boolean updateImmediately) {
+    public void markBlocksForUpdate(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
+            boolean updateImmediately) {
         int i = MathHelper.intFloorDiv(minX, 16);
         int j = MathHelper.intFloorDiv(minY, 16);
         int k = MathHelper.intFloorDiv(minZ, 16);
@@ -79,7 +79,6 @@ public abstract class MixinViewFrustum {
 
         for (int k1 = i; k1 <= l; k1++) {
             int l1 = k1 % this.countChunksX;
-
             if (l1 < 0) {
                 l1 += this.countChunksX;
             }
@@ -91,7 +90,6 @@ public abstract class MixinViewFrustum {
                 if (j2 >= 0 && j2 < this.countChunksY) {
                     for (int k2 = k; k2 <= j1; k2++) {
                         int l2 = k2 % this.countChunksZ;
-
                         if (l2 < 0) {
                             l2 += this.countChunksZ;
                         }
@@ -110,7 +108,7 @@ public abstract class MixinViewFrustum {
      * @reason map BlockPos to shifted RenderChunk array indices
      */
     @Overwrite
-    protected RenderChunk getRenderChunk(@NonNull BlockPos pos) {
+    protected RenderChunk getRenderChunk(BlockPos pos) {
         int i = MathHelper.intFloorDiv(pos.getX(), 16);
         int j = MathHelper.intFloorDiv(pos.getY(), 16) + 4; // Shifted Y (+4)
         int k = MathHelper.intFloorDiv(pos.getZ(), 16);
@@ -129,7 +127,6 @@ public abstract class MixinViewFrustum {
             }
 
             int l = (k * this.countChunksY + j) * this.countChunksX + i;
-
             return this.renderChunks[l];
         } else {
             return null;
