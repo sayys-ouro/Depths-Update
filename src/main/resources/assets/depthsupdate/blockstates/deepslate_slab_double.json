@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "variant=cobbled": {
+      "model": "depthsupdate:cobbled_deepslate"
+    },
+    "variant=polished": {
+      "model": "depthsupdate:polished_deepslate"
+    },
+    "variant=bricks": {
+      "model": "depthsupdate:deepslate_bricks"
+    },
+    "variant=tiles": {
+      "model": "depthsupdate:deepslate_tiles"
+    }
+  }
+}

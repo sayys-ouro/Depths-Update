@@ -1,0 +1,8 @@
+{
+  "parent": "block/inner_stairs",
+  "textures": {
+    "bottom": "depthsupdate:blocks/polished_deepslate",
+    "top": "depthsupdate:blocks/polished_deepslate",
+    "side": "depthsupdate:blocks/polished_deepslate"
+  }
+}

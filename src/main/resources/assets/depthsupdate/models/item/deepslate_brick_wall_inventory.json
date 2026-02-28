@@ -1,0 +1,1 @@
+{ "parent": "minecraft:block/wall_inventory", "textures": { "particle": "depthsupdate:blocks/deepslate_bricks", "wall": "depthsupdate:blocks/deepslate_bricks" } }

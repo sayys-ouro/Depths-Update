@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "all": "depthsupdate:blocks/calcite"
+  },
+  "parent": "block/cube_all"
+}

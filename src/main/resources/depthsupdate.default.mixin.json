@@ -1,0 +1,33 @@
+{
+  "required": true,
+  "package": "sayys.depthsupdate.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "target": "@env(DEFAULT)",
+  "client": [
+    "MixinViewFrustum",
+    "MixinRenderGlobal",
+    "MixinWorldClient",
+    "MixinNetHandlerPlayClient",
+    "MixinWorldClientImpl",
+    "IMixinViewFrustum"
+  ],
+  "mixins": [
+    "MixinWorldProvider",
+    "MixinWorld",
+    "MixinChunk",
+    "MixinBiome",
+    "MixinChunkPrimer",
+    "MixinWorldGenMinable",
+    "MixinAnvilChunkLoader",
+    "MixinPlayerChunkMapEntry",
+    "MixinSPacketChunkData",
+    "MixinChunkCache",
+    "MixinChunkGeneratorOverworld",
+    "MixinMapGenCaves",
+    "MixinMapGenRavine",
+    "MixinBlockMatcher"
+  ],
+  "server": [],
+  "setSourceFile": true,
+  "minVersion": "0.8.7"
+}

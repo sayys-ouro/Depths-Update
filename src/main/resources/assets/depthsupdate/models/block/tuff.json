@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "all": "depthsupdate:blocks/tuff"
+  },
+  "parent": "block/cube_all"
+}

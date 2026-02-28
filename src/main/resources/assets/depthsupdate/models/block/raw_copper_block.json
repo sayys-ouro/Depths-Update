@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "all": "depthsupdate:blocks/raw_copper_block"
+  },
+  "parent": "block/cube_all"
+}

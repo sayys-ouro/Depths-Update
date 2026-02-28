@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "all": "depthsupdate:blocks/moss_block"
+  },
+  "parent": "block/cube_all"
+}

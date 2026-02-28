@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "all": "depthsupdate:blocks/flowering_azalea_leaves"
+  },
+  "parent": "block/cube_all"
+}

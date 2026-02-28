@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "all": "depthsupdate:blocks/smooth_basalt"
+  },
+  "parent": "block/cube_all"
+}

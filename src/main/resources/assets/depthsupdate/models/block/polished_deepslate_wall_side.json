@@ -1,0 +1,1 @@
+{ "parent": "minecraft:block/wall_side", "textures": { "particle": "depthsupdate:blocks/polished_deepslate", "wall": "depthsupdate:blocks/polished_deepslate" } }

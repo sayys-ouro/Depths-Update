@@ -1,0 +1,56 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "depthsupdate:deepslate_brick_wall_post"
+      },
+      "when": {
+        "up": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "depthsupdate:deepslate_brick_wall_side",
+        "uvlock": true
+      },
+      "when": {
+        "north": "true"
+      }
+    },
+    {
+      "apply": {
+        "y": 90,
+        "uvlock": true,
+        "model": "depthsupdate:deepslate_brick_wall_side"
+      },
+      "when": {
+        "east": "true"
+      }
+    },
+    {
+      "apply": {
+        "y": 180,
+        "uvlock": true,
+        "model": "depthsupdate:deepslate_brick_wall_side"
+      },
+      "when": {
+        "south": "true"
+      }
+    },
+    {
+      "apply": {
+        "y": 270,
+        "uvlock": true,
+        "model": "depthsupdate:deepslate_brick_wall_side"
+      },
+      "when": {
+        "west": "true"
+      }
+    }
+  ],
+  "variants": {
+    "variant=cobblestone": {
+      "model": "depthsupdate:deepslate_brick_wall_inventory"
+    }
+  }
+}

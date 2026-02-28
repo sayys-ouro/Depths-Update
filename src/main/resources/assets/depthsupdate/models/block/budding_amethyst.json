@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "all": "depthsupdate:blocks/budding_amethyst"
+  },
+  "parent": "block/cube_all"
+}

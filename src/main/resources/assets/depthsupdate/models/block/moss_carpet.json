@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "wool": "depthsupdate:blocks/moss_block"
+  },
+  "parent": "block/carpet"
+}

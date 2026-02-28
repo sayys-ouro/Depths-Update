@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "normal": {
+      "model": "depthsupdate:cobbled_deepslate"
+    }
+  }
+}

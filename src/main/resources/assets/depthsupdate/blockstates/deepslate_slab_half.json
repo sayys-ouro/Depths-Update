@@ -1,0 +1,40 @@
+{
+  "variants": {
+    "half=bottom,variant=cobbled": {
+      "model": "depthsupdate:cobbled_deepslate_slab"
+    },
+    "half=top,variant=cobbled": {
+      "model": "depthsupdate:cobbled_deepslate_slab_top"
+    },
+    "variant=cobbled": {
+      "model": "depthsupdate:cobbled_deepslate"
+    },
+    "half=bottom,variant=polished": {
+      "model": "depthsupdate:polished_deepslate_slab"
+    },
+    "half=top,variant=polished": {
+      "model": "depthsupdate:polished_deepslate_slab_top"
+    },
+    "variant=polished": {
+      "model": "depthsupdate:polished_deepslate"
+    },
+    "half=bottom,variant=bricks": {
+      "model": "depthsupdate:deepslate_bricks_slab"
+    },
+    "half=top,variant=bricks": {
+      "model": "depthsupdate:deepslate_bricks_slab_top"
+    },
+    "variant=bricks": {
+      "model": "depthsupdate:deepslate_bricks"
+    },
+    "half=bottom,variant=tiles": {
+      "model": "depthsupdate:deepslate_tiles_slab"
+    },
+    "half=top,variant=tiles": {
+      "model": "depthsupdate:deepslate_tiles_slab_top"
+    },
+    "variant=tiles": {
+      "model": "depthsupdate:deepslate_tiles"
+    }
+  }
+}
