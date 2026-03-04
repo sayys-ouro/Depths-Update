@@ -131,6 +131,26 @@ public class DepthsUpdateMod {
             "assets/minecraft/textures/block/flowering_azalea_leaves.png",
             "assets/" + Reference.MOD_ID + "/textures/blocks/flowering_azalea_leaves.png"
         );
+        assets.put(
+            "assets/minecraft/textures/block/azalea_side.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/azalea_side.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/azalea_top.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/azalea_top.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/azalea_plant.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/azalea_plant.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/flowering_azalea_side.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/flowering_azalea_side.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/flowering_azalea_top.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/flowering_azalea_top.png"
+        );
 
         AssetMoverAPI.fromMinecraft("1.21.11", assets);
     }
@@ -191,6 +211,8 @@ public class DepthsUpdateMod {
             "azalea_leaves");
         public static final Block flowering_azalea_leaves = new sayys.depthsupdate.block.BlockModLeaves(
             "flowering_azalea_leaves");
+        public static final Block azalea = new sayys.depthsupdate.block.BlockAzalea("azalea");
+        public static final Block flowering_azalea = new sayys.depthsupdate.block.BlockAzalea("flowering_azalea");
         public static final Block smooth_basalt = new sayys.depthsupdate.block.BlockDeepslateVariant(
             "smooth_basalt", 1.25F, 4.2F, SoundType.STONE);
         public static final Block raw_iron_block = new sayys.depthsupdate.block.BlockDeepslateVariant(
@@ -218,7 +240,7 @@ public class DepthsUpdateMod {
                 deepslate_tile_wall,
                 calcite, dripstone_block, moss_block, rooted_dirt, tuff,
                 amethyst_block, budding_amethyst,
-                moss_carpet, azalea_leaves, flowering_azalea_leaves,
+                moss_carpet, azalea_leaves, flowering_azalea_leaves, azalea, flowering_azalea,
                 smooth_basalt, raw_iron_block, raw_gold_block, raw_copper_block,
                 deepslate_slab_half, deepslate_slab_double);
         }
@@ -252,6 +274,8 @@ public class DepthsUpdateMod {
             registerItemBlock(event, moss_carpet);
             registerItemBlock(event, azalea_leaves);
             registerItemBlock(event, flowering_azalea_leaves);
+            registerItemBlock(event, azalea);
+            registerItemBlock(event, flowering_azalea);
             registerItemBlock(event, smooth_basalt);
             registerItemBlock(event, raw_iron_block);
             registerItemBlock(event, raw_gold_block);
@@ -299,6 +323,8 @@ public class DepthsUpdateMod {
             registerModel(raw_iron_block);
             registerModel(raw_gold_block);
             registerModel(raw_copper_block);
+            registerModel(azalea);
+            registerModel(flowering_azalea);
 
             for (sayys.depthsupdate.block.BlockModSlab.Variant variant : sayys.depthsupdate.block.BlockModSlab.Variant
                 .values()) {
