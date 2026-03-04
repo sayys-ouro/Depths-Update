@@ -11,11 +11,12 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IStringSerializable;
 
-public abstract class BlockCavesSlab extends BlockSlab {
+public abstract class BlockModSlab extends BlockSlab {
     public static final PropertyEnum<Variant> VARIANT = PropertyEnum.create("variant", Variant.class);
 
-    public BlockCavesSlab(String name, Material material) {
+    public BlockModSlab(String name, Material material) {
         super(material);
+
         this.setRegistryName("depthsupdate", name);
         this.setTranslationKey(name);
         this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
@@ -31,7 +32,7 @@ public abstract class BlockCavesSlab extends BlockSlab {
 
     @Override
     public String getTranslationKey(int meta) {
-        return super.getTranslationKey();
+        return super.getTranslationKey() + "." + Variant.byMetadata(meta & 7).getName();
     }
 
     @Override
@@ -114,7 +115,7 @@ public abstract class BlockCavesSlab extends BlockSlab {
         return this.isDouble() ? new BlockStateContainer(this, VARIANT) : new BlockStateContainer(this, HALF, VARIANT);
     }
 
-    public static class Half extends BlockCavesSlab {
+    public static class Half extends BlockModSlab {
         private final Block doubleSlab;
 
         public Half(String name, Material material, Block doubleSlab) {
@@ -132,7 +133,7 @@ public abstract class BlockCavesSlab extends BlockSlab {
         }
     }
 
-    public static class Double extends BlockCavesSlab {
+    public static class Double extends BlockModSlab {
         public Double(String name, Material material) {
             super(name, material);
         }

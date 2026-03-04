@@ -7,8 +7,7 @@ public final class Noise {
    private static final int SEED_NOISE_GEN = 1013;
    private static final int SHIFT_NOISE_GEN = 8;
 
-   private Noise() {
-   }
+   private Noise() {}
 
    public static double gradientCoherentNoise3D(double x, double y, double z, int seed, NoiseQuality quality) {
       int x0 = x > 0.0D ? (int) x : (int) x - 1;

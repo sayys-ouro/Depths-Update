@@ -1,24 +1,21 @@
 package sayys.depthsupdate.mixin;
 
+import net.minecraft.init.Blocks;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.chunk.ChunkPrimer;
+import net.minecraft.block.state.IBlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Constant;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.Redirect;
-
-import java.util.Random;
 
 @Mixin(Biome.class)
 public abstract class MixinBiome {
-    @ModifyConstant(method = "generateBiomeTerrain", constant = @Constant(intValue = 0))
-    private int depthsupdate$modifyLoopFloor(int original) {
-        return -64;
-    }
-
-    @Redirect(method = "generateBiomeTerrain", at = @At(value = "INVOKE", target = "Ljava/util/Random;nextInt(I)I", ordinal = 0))
-    private int depthsupdate$offsetBedrock(Random random, int bound) {
-        return random.nextInt(bound) - 64;
+    @Redirect(method = "generateBiomeTerrain", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/ChunkPrimer;setBlockState(IIILnet/minecraft/block/state/IBlockState;)V"))
+    private void depthsupdate$filterBedrock(ChunkPrimer primer, int x, int y, int z, IBlockState state) {
+        if (state.getBlock() == Blocks.BEDROCK && y >= 0) {
+            return;
+        }
+        primer.setBlockState(x, y, z, state);
     }
 
 }

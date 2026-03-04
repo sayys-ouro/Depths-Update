@@ -108,7 +108,7 @@ public class Perlin extends Module {
          curPersistence *= this.persistence;
       }
 
-      return value;
+      return value - 0.5D * this.getMaxValue();
    }
 
    static {

@@ -9,9 +9,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
 public class BlockCobbledDeepslate extends Block {
-
     public BlockCobbledDeepslate() {
         super(Material.ROCK);
+
         this.setRegistryName("depthsupdate", "cobbled_deepslate");
         this.setTranslationKey("cobbled_deepslate");
         this.setHardness(3.5F);

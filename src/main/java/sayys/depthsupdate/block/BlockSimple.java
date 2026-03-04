@@ -8,6 +8,7 @@ import net.minecraft.creativetab.CreativeTabs;
 public class BlockSimple extends Block {
     public BlockSimple(String name, Material material, float hardness, float resistance, SoundType soundType) {
         super(material);
+
         this.setRegistryName("depthsupdate", name);
         this.setTranslationKey(name);
         this.setHardness(hardness);

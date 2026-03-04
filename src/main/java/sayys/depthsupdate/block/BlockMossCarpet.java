@@ -19,6 +19,7 @@ public class BlockMossCarpet extends Block {
 
     public BlockMossCarpet() {
         super(Material.PLANTS);
+
         this.setRegistryName("depthsupdate", "moss_carpet");
         this.setTranslationKey("moss_carpet");
         this.setHardness(0.1F);

@@ -20,8 +20,11 @@ public class MixinBlockMatcher {
 
     @Inject(method = "apply(Lnet/minecraft/block/state/IBlockState;)Z", at = @At("HEAD"), cancellable = true)
     private void depthsupdate$matchDeepslate(IBlockState state, CallbackInfoReturnable<Boolean> cir) {
-        if (this.block == Blocks.STONE && state != null && state.getBlock() instanceof BlockDeepslate) {
-            cir.setReturnValue(true);
+        if (this.block == Blocks.STONE && state != null) {
+            IBlockState deepslate = sayys.depthsupdate.util.BlockUtils.getDeepslateBlockState();
+            if (state == deepslate || state.getBlock() == deepslate.getBlock()) {
+                cir.setReturnValue(true);
+            }
         }
     }
 }

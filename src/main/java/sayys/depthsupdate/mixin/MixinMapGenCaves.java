@@ -1,6 +1,7 @@
 package sayys.depthsupdate.mixin;
 
 import com.google.common.base.MoreObjects;
+import java.util.Random;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -8,11 +9,10 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraft.world.gen.MapGenBase;
 import net.minecraft.world.gen.MapGenCaves;
+import sayys.depthsupdate.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-
-import java.util.Random;
 
 @Mixin(MapGenCaves.class)
 public abstract class MixinMapGenCaves extends MapGenBase {
@@ -40,9 +40,10 @@ public abstract class MixinMapGenCaves extends MapGenBase {
         IBlockState top = biome.topBlock;
         IBlockState filler = biome.fillerBlock;
 
+        IBlockState deepslate = BlockUtils.getDeepslateBlockState();
         if (this.canReplaceBlock(state, up) || state.getBlock() == top.getBlock()
                 || state.getBlock() == filler.getBlock()
-                || state.getBlock() instanceof sayys.depthsupdate.block.BlockDeepslate) {
+                || state == deepslate || state.getBlock() == deepslate.getBlock()) {
             if (y - 1 < -54) {
                 data.setBlockState(x, y, z, net.minecraft.init.Blocks.LAVA.getDefaultState());
             } else {

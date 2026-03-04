@@ -1,6 +1,7 @@
 {
   "required": true,
   "package": "sayys.depthsupdate.mixin",
+  "plugin": "sayys.depthsupdate.ModMixinConfigPlugin",
   "compatibilityLevel": "JAVA_8",
   "target": "@env(DEFAULT)",
   "client": [
@@ -25,7 +26,8 @@
     "MixinChunkGeneratorOverworld",
     "MixinMapGenCaves",
     "MixinMapGenRavine",
-    "MixinBlockMatcher"
+    "MixinBlockMatcher",
+    "MixinIFluidStatePrimer"
   ],
   "server": [],
   "setSourceFile": true,

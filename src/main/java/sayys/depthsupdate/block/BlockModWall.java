@@ -8,10 +8,10 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
-public class BlockCavesWall extends BlockWall {
-
-    public BlockCavesWall(String name, Block modelBlock) {
+public class BlockModWall extends BlockWall {
+    public BlockModWall(String name, Block modelBlock) {
         super(modelBlock);
+
         this.setRegistryName("depthsupdate", name);
         this.setTranslationKey(name);
         this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);

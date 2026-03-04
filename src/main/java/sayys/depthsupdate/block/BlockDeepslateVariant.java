@@ -9,9 +9,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
 public class BlockDeepslateVariant extends Block {
-
     public BlockDeepslateVariant(String name, float hardness, float resistance, SoundType soundType) {
         super(Material.ROCK);
+
         this.setRegistryName("depthsupdate", name);
         this.setTranslationKey(name);
         this.setHardness(hardness);

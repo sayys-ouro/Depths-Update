@@ -18,11 +18,10 @@ public abstract class MixinChunkPrimer {
      * @reason Support chunks up to 320 blocks tall including negative Y.
      */
     @Overwrite
-    private static int getBlockIndex(int x, int y, int z) {
+    public static int getBlockIndex(int x, int y, int z) {
         return x << 13 | z << 9 | (y + 64);
     }
 
-    // Also need to fix the loop in findGroundBlockIdx which is hardcoded for 0..255
     @ModifyConstant(method = "findGroundBlockIdx", constant = @Constant(intValue = 255))
     private int depthsupdate$modifyFindGroundMaxY(int original) {
         return 255;
@@ -32,5 +31,4 @@ public abstract class MixinChunkPrimer {
     private int depthsupdate$modifyFindGroundMinY(int original) {
         return -64;
     }
-
 }

@@ -19,8 +19,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockCavesLeaves extends BlockLeaves {
-    public BlockCavesLeaves(String name) {
+public class BlockModLeaves extends BlockLeaves {
+    public BlockModLeaves(String name) {
         super();
 
         this.setRegistryName("depthsupdate", name);

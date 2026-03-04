@@ -5,6 +5,7 @@
 **/build/
 !**/src/**/build/
 
+docs/
 run/
 sources/
 

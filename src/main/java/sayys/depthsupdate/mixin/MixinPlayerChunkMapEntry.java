@@ -1,5 +1,7 @@
 package sayys.depthsupdate.mixin;
 
+import javax.annotation.Nullable;
+import java.util.List;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketBlockChange;
@@ -17,9 +19,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.Constant;
-
-import javax.annotation.Nullable;
-import java.util.List;
 
 @Mixin(PlayerChunkMapEntry.class)
 public abstract class MixinPlayerChunkMapEntry {
@@ -57,17 +56,11 @@ public abstract class MixinPlayerChunkMapEntry {
     @Shadow
     protected abstract void sendBlockEntity(@Nullable TileEntity p_187273_1_);
 
-    /**
-     * Expand the chunk section bitmask from 16 bits (65535) to 20 bits (1048575).
-     */
     @ModifyConstant(method = "sendToPlayers", constant = @Constant(intValue = 65535))
     private int depthsupdate$modifySendToPlayersMask(int original) {
         return 1048575; // 20 chunks mask
     }
 
-    /**
-     * Expand the chunk section bitmask from 16 bits (65535) to 20 bits (1048575).
-     */
     @ModifyConstant(method = "sendToPlayer", constant = @Constant(intValue = 65535))
     private int depthsupdate$modifySendToPlayerMask(int original) {
         return 1048575; // 20 chunks mask

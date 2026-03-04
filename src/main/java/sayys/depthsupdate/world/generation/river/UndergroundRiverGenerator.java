@@ -1,17 +1,18 @@
 package sayys.depthsupdate.world.generation.river;
 
-import sayys.depthsupdate.world.generation.noise.sponge.module.source.Perlin;
-import sayys.depthsupdate.world.generation.noise.sponge.module.source.RidgedMulti;
-
+import java.util.Random;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraft.block.state.IBlockState;
-import java.util.Random;
+
+import sayys.depthsupdate.world.generation.noise.sponge.module.source.Perlin;
+import sayys.depthsupdate.world.generation.noise.sponge.module.source.RidgedMulti;
 
 public class UndergroundRiverGenerator {
-    private final RidgedMulti ridgedMultiNoise = new RidgedMulti();
     private final Perlin perlinNoise;
+    private final RidgedMulti ridgedMultiNoise = new RidgedMulti();
+
     private World world;
     private Random random;
 
@@ -78,12 +79,12 @@ public class UndergroundRiverGenerator {
                     int height = calculateHeightByCenter(vnoise, 0.6, 0.625, 1, 10, 17, 0.63);
                     if (height == 10 || height == 9) {
                         double pnoise = this.perlinNoise.getValue(realX, 1.0, realZ);
-                        if (pnoise >= 0.3) {
+                        if (pnoise >= 0.0) {
                             ++height;
-                            if (pnoise >= 0.38) {
+                            if (pnoise >= 0.08) {
                                 ++height;
                             }
-                        } else if (pnoise < 0.16) {
+                        } else if (pnoise < -0.14) {
                             --height;
                         }
                     }
@@ -94,13 +95,34 @@ public class UndergroundRiverGenerator {
                             continue;
 
                         IBlockState current = primer.getBlockState(x, a, z);
+                        IBlockState deepslate = sayys.depthsupdate.util.BlockUtils.getDeepslateBlockState();
                         if (current.getBlock() == Blocks.STONE
-                                || current.getBlock() instanceof sayys.depthsupdate.block.BlockDeepslate) {
+                                || current == deepslate || current.getBlock() == deepslate.getBlock()) {
                             if (a > waterLevel) {
                                 primer.setBlockState(x, a, z, AIR);
                             } else {
                                 primer.setBlockState(x, a, z, WATER);
                             }
+                        }
+                    }
+
+                    if (sayys.depthsupdate.DepthsUpdateConfig.DEBUG.enableDebugVisualizers) {
+                        IBlockState riverDebug = sayys.depthsupdate.util.BlockUtils.getRiverDebugBlockState();
+                        int topShell = baseY - startPointY + 1;
+                        int bottomShell = baseY - height;
+
+                        if (topShell < 255 && topShell > -64) {
+                            IBlockState shellState = primer.getBlockState(x, topShell, z);
+
+                            if (shellState != AIR && shellState != WATER)
+                                primer.setBlockState(x, topShell, z, riverDebug);
+                        }
+
+                        if (bottomShell < 255 && bottomShell > -64) {
+                            IBlockState shellState = primer.getBlockState(x, bottomShell, z);
+
+                            if (shellState != AIR && shellState != WATER)
+                                primer.setBlockState(x, bottomShell, z, riverDebug);
                         }
                     }
                 }

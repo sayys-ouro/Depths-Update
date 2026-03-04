@@ -13,9 +13,9 @@ import net.minecraft.world.World;
 import sayys.depthsupdate.DepthsUpdateMod;
 
 public class BlockInfestedDeepslate extends BlockRotatedPillar {
-
     public BlockInfestedDeepslate() {
         super(Material.CLAY);
+
         this.setRegistryName("depthsupdate", "infested_deepslate");
         this.setTranslationKey("infested_deepslate");
         this.setHardness(0.75F);

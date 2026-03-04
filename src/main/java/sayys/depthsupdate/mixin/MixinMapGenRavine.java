@@ -1,5 +1,6 @@
 package sayys.depthsupdate.mixin;
 
+import java.util.Random;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -10,8 +11,6 @@ import net.minecraft.world.gen.MapGenRavine;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-
-import java.util.Random;
 
 @Mixin(MapGenRavine.class)
 public abstract class MixinMapGenRavine extends MapGenBase {
@@ -39,9 +38,10 @@ public abstract class MixinMapGenRavine extends MapGenBase {
         IBlockState filler = isExceptionBiome(biome) ? net.minecraft.init.Blocks.DIRT.getDefaultState()
                 : biome.fillerBlock;
 
+        IBlockState deepslate = sayys.depthsupdate.util.BlockUtils.getDeepslateBlockState();
         if (state.getBlock() == net.minecraft.init.Blocks.STONE || state.getBlock() == top.getBlock()
                 || state.getBlock() == filler.getBlock()
-                || state.getBlock() instanceof sayys.depthsupdate.block.BlockDeepslate) {
+                || state == deepslate || state.getBlock() == deepslate.getBlock()) {
             if (y - 1 < -54) {
                 data.setBlockState(x, y, z, net.minecraft.init.Blocks.FLOWING_LAVA.getDefaultState());
             } else {
