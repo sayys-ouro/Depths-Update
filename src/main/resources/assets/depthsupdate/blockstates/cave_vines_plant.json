@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "berries=false": {
+      "model": "depthsupdate:cave_vines_plant"
+    },
+    "berries=true": {
+      "model": "depthsupdate:cave_vines_plant_lit"
+    }
+  }
+}

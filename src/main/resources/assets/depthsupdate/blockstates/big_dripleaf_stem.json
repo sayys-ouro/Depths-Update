@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "depthsupdate:big_dripleaf_stem",
+      "y": 0
+    },
+    "facing=east": {
+      "model": "depthsupdate:big_dripleaf_stem",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "depthsupdate:big_dripleaf_stem",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "depthsupdate:big_dripleaf_stem",
+      "y": 270
+    }
+  }
+}

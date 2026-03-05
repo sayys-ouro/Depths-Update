@@ -155,6 +155,66 @@ public class DepthsUpdateMod {
             "assets/minecraft/textures/block/hanging_roots.png",
             "assets/" + Reference.MOD_ID + "/textures/blocks/hanging_roots.png"
         );
+        assets.put(
+            "assets/minecraft/textures/block/big_dripleaf_side.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/big_dripleaf_side.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/big_dripleaf_stem.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/big_dripleaf_stem.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/big_dripleaf_tip.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/big_dripleaf_tip.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/big_dripleaf_top.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/big_dripleaf_top.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/small_dripleaf_side.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/small_dripleaf_side.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/small_dripleaf_stem_bottom.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/small_dripleaf_stem_bottom.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/small_dripleaf_stem_top.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/small_dripleaf_stem_top.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/small_dripleaf_top.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/small_dripleaf_top.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/spore_blossom.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/spore_blossom.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/spore_blossom_base.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/spore_blossom_base.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/cave_vines.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/cave_vines.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/cave_vines_lit.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/cave_vines_lit.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/cave_vines_plant.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/cave_vines_plant.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/cave_vines_plant_lit.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/cave_vines_plant_lit.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/item/glow_berries.png",
+            "assets/" + Reference.MOD_ID + "/textures/items/glow_berries.png"
+        );
 
         AssetMoverAPI.fromMinecraft("1.21.11", assets);
     }
@@ -218,6 +278,9 @@ public class DepthsUpdateMod {
         public static final Block azalea = new sayys.depthsupdate.block.BlockAzalea("azalea");
         public static final Block flowering_azalea = new sayys.depthsupdate.block.BlockAzalea("flowering_azalea");
         public static final Block hanging_roots = new sayys.depthsupdate.block.BlockHangingRoots();
+        public static final Block small_dripleaf = new sayys.depthsupdate.block.BlockSmallDripleaf();
+        public static final Block big_dripleaf = new sayys.depthsupdate.block.BlockBigDripleaf();
+        public static final Block big_dripleaf_stem = new sayys.depthsupdate.block.BlockBigDripleafStem();
         public static final Block smooth_basalt = new sayys.depthsupdate.block.BlockDeepslateVariant(
             "smooth_basalt", 1.25F, 4.2F, SoundType.STONE);
         public static final Block raw_iron_block = new sayys.depthsupdate.block.BlockDeepslateVariant(
@@ -226,6 +289,12 @@ public class DepthsUpdateMod {
             "raw_gold_block", 5.0F, 6.0F, SoundType.STONE);
         public static final Block raw_copper_block = new sayys.depthsupdate.block.BlockDeepslateVariant(
             "raw_copper_block", 5.0F, 6.0F, SoundType.STONE);
+        public static final Block spore_blossom = new sayys.depthsupdate.block.BlockSporeBlossom();
+
+        public static final Block cave_vines = new sayys.depthsupdate.block.BlockCaveVines();
+        public static final Block cave_vines_plant = new sayys.depthsupdate.block.BlockCaveVinesPlant();
+        public static final Item glow_berries = new sayys.depthsupdate.item.ItemGlowBerries();
+
         public static final BlockModSlab.Double deepslate_slab_double = new BlockModSlab.Double(
             "deepslate_slab_double", Material.ROCK);
         public static final BlockModSlab.Half deepslate_slab_half = new BlockModSlab.Half(
@@ -235,19 +304,20 @@ public class DepthsUpdateMod {
         @SubscribeEvent
         public static void registerBlocks(RegistryEvent.Register<Block> event) {
             event.getRegistry().registerAll(
-                deepslate, cobbled_deepslate, infested_deepslate,
-                polished_deepslate, deepslate_bricks, deepslate_tiles, chiseled_deepslate,
-                cracked_deepslate_bricks,
-                cracked_deepslate_tiles,
+                deepslate, cobbled_deepslate, infested_deepslate, polished_deepslate,
+                deepslate_bricks, deepslate_tiles, chiseled_deepslate, cracked_deepslate_bricks,
+                cracked_deepslate_tiles, calcite, dripstone_block, moss_block, rooted_dirt, tuff,
+                amethyst_block, budding_amethyst, smooth_basalt, raw_iron_block, raw_gold_block, raw_copper_block,
+                azalea_leaves, flowering_azalea_leaves, azalea, flowering_azalea, hanging_roots,
+                small_dripleaf, big_dripleaf, big_dripleaf_stem, spore_blossom,
+                cave_vines, cave_vines_plant,
                 cobbled_deepslate_stairs, polished_deepslate_stairs, deepslate_brick_stairs,
                 deepslate_tile_stairs,
                 cobbled_deepslate_wall, polished_deepslate_wall, deepslate_brick_wall,
                 deepslate_tile_wall,
-                calcite, dripstone_block, moss_block, rooted_dirt, tuff,
-                amethyst_block, budding_amethyst,
-                moss_carpet, azalea_leaves, flowering_azalea_leaves, azalea, flowering_azalea, hanging_roots,
-                smooth_basalt, raw_iron_block, raw_gold_block, raw_copper_block,
-                deepslate_slab_half, deepslate_slab_double);
+                moss_carpet,
+                deepslate_slab_half, deepslate_slab_double
+            );
         }
 
         @SubscribeEvent
@@ -282,10 +352,15 @@ public class DepthsUpdateMod {
             registerItemBlock(event, azalea);
             registerItemBlock(event, flowering_azalea);
             registerItemBlock(event, hanging_roots);
+            registerItemBlock(event, small_dripleaf);
+            registerItemBlock(event, big_dripleaf);
             registerItemBlock(event, smooth_basalt);
             registerItemBlock(event, raw_iron_block);
             registerItemBlock(event, raw_gold_block);
             registerItemBlock(event, raw_copper_block);
+            registerItemBlock(event, spore_blossom);
+
+            event.getRegistry().register(glow_berries);
 
             event.getRegistry().register(new sayys.depthsupdate.block.ItemModSlab(deepslate_slab_half,
                 deepslate_slab_half, deepslate_slab_double)
@@ -332,6 +407,11 @@ public class DepthsUpdateMod {
             registerModel(azalea);
             registerModel(flowering_azalea);
             registerModel(hanging_roots);
+            registerModel(small_dripleaf);
+            registerModel(big_dripleaf);
+        registerModel(spore_blossom);
+
+        ModelLoader.setCustomModelResourceLocation(glow_berries, 0, new net.minecraft.client.renderer.block.model.ModelResourceLocation(glow_berries.getRegistryName(), "inventory"));
 
             for (sayys.depthsupdate.block.BlockModSlab.Variant variant : sayys.depthsupdate.block.BlockModSlab.Variant
                 .values()) {
