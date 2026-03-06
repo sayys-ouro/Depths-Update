@@ -14,6 +14,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import sayys.depthsupdate.DepthsUpdateMod;
+import sayys.depthsupdate.registry.RegistryHandler;
 
 public class BlockDeepslate extends Block {
     public BlockDeepslate() {
@@ -34,7 +35,7 @@ public class BlockDeepslate extends Block {
 
     @Override
     public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-        return Item.getItemFromBlock(DepthsUpdateMod.RegistrationHandler.cobbled_deepslate);
+        return Item.getItemFromBlock(RegistryHandler.cobbled_deepslate);
     }
 
     @Override

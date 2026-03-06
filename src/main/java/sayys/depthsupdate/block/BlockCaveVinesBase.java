@@ -26,6 +26,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import sayys.depthsupdate.DepthsUpdateMod;
+import sayys.depthsupdate.registry.RegistryHandler;
 
 public abstract class BlockCaveVinesBase extends Block {
     public static final PropertyBool BERRIES = PropertyBool.create("berries");
@@ -93,7 +94,7 @@ public abstract class BlockCaveVinesBase extends Block {
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (state.getValue(BERRIES)) {
             worldIn.setBlockState(pos, state.withProperty(BERRIES, false), 2);
-            spawnAsEntity(worldIn, pos, new ItemStack(DepthsUpdateMod.RegistrationHandler.glow_berries, 1));
+            spawnAsEntity(worldIn, pos, new ItemStack(RegistryHandler.glow_berries, 1));
             worldIn.playSound(null, pos, net.minecraft.init.SoundEvents.BLOCK_GRASS_HIT, SoundCategory.BLOCKS, 1.0F, 0.8F + worldIn.rand.nextFloat() * 0.4F);
             return true;
         }
@@ -103,7 +104,7 @@ public abstract class BlockCaveVinesBase extends Block {
 
     @Override
     public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-        return state.getValue(BERRIES) ? DepthsUpdateMod.RegistrationHandler.glow_berries : net.minecraft.init.Items.AIR;
+        return state.getValue(BERRIES) ? RegistryHandler.glow_berries : net.minecraft.init.Items.AIR;
     }
 
     @Override
@@ -113,7 +114,7 @@ public abstract class BlockCaveVinesBase extends Block {
 
     @Override
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state) {
-        return new ItemStack(DepthsUpdateMod.RegistrationHandler.glow_berries);
+        return new ItemStack(RegistryHandler.glow_berries);
     }
 
     @Override

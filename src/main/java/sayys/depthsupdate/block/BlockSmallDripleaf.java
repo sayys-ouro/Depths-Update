@@ -30,6 +30,8 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IShearable;
 
+import sayys.depthsupdate.registry.RegistryHandler;
+
 public class BlockSmallDripleaf extends BlockBush implements IGrowable, IShearable {
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
     public static final PropertyEnum<sayys.depthsupdate.block.BlockSmallDripleaf.EnumBlockHalf> HALF = PropertyEnum.create("half", sayys.depthsupdate.block.BlockSmallDripleaf.EnumBlockHalf.class);
@@ -172,14 +174,14 @@ public class BlockSmallDripleaf extends BlockBush implements IGrowable, IShearab
         int targetHeadY = bottomPos.getY() + currentHeight - 1;
         mpos.setPos(bottomPos.getX(), bottomPos.getY(), bottomPos.getZ());
 
-        if (sayys.depthsupdate.DepthsUpdateMod.RegistrationHandler.big_dripleaf == null || sayys.depthsupdate.DepthsUpdateMod.RegistrationHandler.big_dripleaf_stem == null) return;
+        if (RegistryHandler.big_dripleaf == null || RegistryHandler.big_dripleaf_stem == null) return;
 
         while(mpos.getY() < targetHeadY) {
-            worldIn.setBlockState(mpos, sayys.depthsupdate.DepthsUpdateMod.RegistrationHandler.big_dripleaf_stem.getDefaultState().withProperty(BlockHorizontal.FACING, facing), 3);
+            worldIn.setBlockState(mpos, RegistryHandler.big_dripleaf_stem.getDefaultState().withProperty(BlockHorizontal.FACING, facing), 3);
             mpos.move(EnumFacing.UP);
         }
 
-        worldIn.setBlockState(mpos, sayys.depthsupdate.DepthsUpdateMod.RegistrationHandler.big_dripleaf.getDefaultState().withProperty(BlockHorizontal.FACING, facing), 3);
+        worldIn.setBlockState(mpos, RegistryHandler.big_dripleaf.getDefaultState().withProperty(BlockHorizontal.FACING, facing), 3);
     }
 
     public enum EnumBlockHalf implements net.minecraft.util.IStringSerializable {

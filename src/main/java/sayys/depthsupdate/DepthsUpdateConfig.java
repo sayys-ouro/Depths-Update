@@ -14,6 +14,7 @@ public class DepthsUpdateConfig {
         public static void onConfigChanged(final ConfigChangedEvent.OnConfigChangedEvent event) {
             if (event.getModID().equals(Reference.MOD_ID)) {
                 ConfigManager.sync(Reference.MOD_ID, Config.Type.INSTANCE);
+                sayys.depthsupdate.util.BlockUtils.clearCaches();
             }
         }
     }
@@ -56,4 +57,55 @@ public class DepthsUpdateConfig {
     @Config.Name("Deepslate Block")
     @Config.Comment("The registry name of the block to use as 'Deepslate'.")
     public static String deepslateBlock = "depthsupdate:deepslate";
+
+    public static class Registry {
+        @Config.Name("Enable Deepslate Family")
+        @Config.Comment("Enables Deepslate, Cobbled Deepslate, Bricks, Tiles, Stairs, Walls, Slabs, and Infested Deepslate.")
+        public boolean enableDeepslateFamily = true;
+
+        @Config.Name("Enable Calcite")
+        public boolean enableCalcite = true;
+
+        @Config.Name("Enable Tuff")
+        public boolean enableTuff = true;
+
+        @Config.Name("Enable Smooth Basalt")
+        public boolean enableSmoothBasalt = true;
+
+        @Config.Name("Enable Amethyst Family")
+        @Config.Comment("Enables Amethyst Blocks and Budding Amethyst.")
+        public boolean enableAmethystFamily = true;
+
+        @Config.Name("Enable Moss Family")
+        @Config.Comment("Enables Moss Blocks and Moss Carpets.")
+        public boolean enableMossFamily = true;
+
+        @Config.Name("Enable Azalea Family")
+        @Config.Comment("Enables Azalea, Flowering Azalea, Leaves, and Hanging Roots.")
+        public boolean enableAzaleaFamily = true;
+
+        @Config.Name("Enable Spore Blossom")
+        public boolean enableSporeBlossom = true;
+
+        @Config.Name("Enable Dripstone Block")
+        public boolean enableDripstoneBlock = true;
+
+        @Config.Name("Enable Dripleaf Family")
+        @Config.Comment("Enables Small Dripleaf, Big Dripleaf, and Stems.")
+        public boolean enableDripleafFamily = true;
+
+        @Config.Name("Enable Cave Vines and Glow Berries")
+        public boolean enableCaveVinesAndBerries = true;
+
+        @Config.Name("Enable Rooted Dirt")
+        public boolean enableRootedDirt = true;
+
+        @Config.Name("Enable Raw Ore Blocks")
+        @Config.Comment("Enables Raw Iron, Raw Gold, and Raw Copper blocks.")
+        public boolean enableRawOreBlocks = true;
+    }
+
+    @Config.Name("Registry")
+    @Config.Comment("Registry Toggles for blocks and items. Requires restart.")
+    public static final Registry REGISTRY = new Registry();
 }

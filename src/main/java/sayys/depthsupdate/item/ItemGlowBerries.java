@@ -14,6 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import sayys.depthsupdate.DepthsUpdateMod;
+import sayys.depthsupdate.registry.RegistryHandler;
 
 public class ItemGlowBerries extends ItemFood {
     public ItemGlowBerries() {
@@ -39,11 +40,11 @@ public class ItemGlowBerries extends ItemFood {
 
         IBlockState iblockstate = worldIn.getBlockState(pos);
         Block block = iblockstate.getBlock();
-        IBlockState placeState = DepthsUpdateMod.RegistrationHandler.cave_vines.getDefaultState();
+        IBlockState placeState = RegistryHandler.cave_vines.getDefaultState();
 
-        if (worldIn.isAirBlock(placePos) && DepthsUpdateMod.RegistrationHandler.cave_vines.canPlaceBlockAt(worldIn, placePos)) {
+        if (worldIn.isAirBlock(placePos) && RegistryHandler.cave_vines.canPlaceBlockAt(worldIn, placePos)) {
             worldIn.setBlockState(placePos, placeState, 11);
-            worldIn.playSound(player, placePos, DepthsUpdateMod.RegistrationHandler.cave_vines.getSoundType().getPlaceSound(), SoundCategory.BLOCKS, (DepthsUpdateMod.RegistrationHandler.cave_vines.getSoundType().getVolume() + 1.0F) / 2.0F, DepthsUpdateMod.RegistrationHandler.cave_vines.getSoundType().getPitch() * 0.8F);
+            worldIn.playSound(player, placePos, RegistryHandler.cave_vines.getSoundType().getPlaceSound(), SoundCategory.BLOCKS, (RegistryHandler.cave_vines.getSoundType().getVolume() + 1.0F) / 2.0F, RegistryHandler.cave_vines.getSoundType().getPitch() * 0.8F);
             itemstack.shrink(1);
             return EnumActionResult.SUCCESS;
         }

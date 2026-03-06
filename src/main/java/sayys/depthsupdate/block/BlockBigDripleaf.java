@@ -31,6 +31,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import sayys.depthsupdate.registry.RegistryHandler;
+
 public class BlockBigDripleaf extends Block implements IGrowable {
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
     public static final PropertyEnum<sayys.depthsupdate.block.BlockBigDripleaf.EnumTilt> TILT = PropertyEnum.create("tilt", sayys.depthsupdate.block.BlockBigDripleaf.EnumTilt.class);
@@ -90,7 +92,7 @@ public class BlockBigDripleaf extends Block implements IGrowable {
         IBlockState downState = worldIn.getBlockState(pos.down());
         Block downBlock = downState.getBlock();
 
-        return downBlock == this || (sayys.depthsupdate.DepthsUpdateMod.RegistrationHandler.big_dripleaf_stem != null && downBlock == sayys.depthsupdate.DepthsUpdateMod.RegistrationHandler.big_dripleaf_stem) || downState.isSideSolid(worldIn, pos.down(), EnumFacing.UP) || downBlock == Blocks.DIRT || downBlock == Blocks.GRASS || downBlock == Blocks.CLAY || downBlock == Blocks.FARMLAND;
+        return downBlock == this || (RegistryHandler.big_dripleaf_stem != null && downBlock == RegistryHandler.big_dripleaf_stem) || downState.isSideSolid(worldIn, pos.down(), EnumFacing.UP) || downBlock == Blocks.DIRT || downBlock == Blocks.GRASS || downBlock == Blocks.CLAY || downBlock == Blocks.FARMLAND;
     }
 
     @Override
@@ -184,7 +186,7 @@ public class BlockBigDripleaf extends Block implements IGrowable {
     @Override
     public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
         IBlockState belowState = world.getBlockState(pos.down());
-        boolean belowIsDripleafPart = belowState.getBlock() == this || (sayys.depthsupdate.DepthsUpdateMod.RegistrationHandler.big_dripleaf_stem != null && belowState.getBlock() == sayys.depthsupdate.DepthsUpdateMod.RegistrationHandler.big_dripleaf_stem);
+        boolean belowIsDripleafPart = belowState.getBlock() == this || (RegistryHandler.big_dripleaf_stem != null && belowState.getBlock() == RegistryHandler.big_dripleaf_stem);
 
         return this.getDefaultState().withProperty(FACING, belowIsDripleafPart ? belowState.getValue(FACING) : placer.getHorizontalFacing().getOpposite());
     }
@@ -223,8 +225,8 @@ public class BlockBigDripleaf extends Block implements IGrowable {
     public void grow(World worldIn, Random rand, BlockPos pos, IBlockState state) {
         BlockPos upPos = pos.up();
 
-        if (worldIn.isAirBlock(upPos) && sayys.depthsupdate.DepthsUpdateMod.RegistrationHandler.big_dripleaf_stem != null) {
-            worldIn.setBlockState(pos, sayys.depthsupdate.DepthsUpdateMod.RegistrationHandler.big_dripleaf_stem.getDefaultState().withProperty(FACING, state.getValue(FACING)), 3);
+        if (worldIn.isAirBlock(upPos) && RegistryHandler.big_dripleaf_stem != null) {
+            worldIn.setBlockState(pos, RegistryHandler.big_dripleaf_stem.getDefaultState().withProperty(FACING, state.getValue(FACING)), 3);
             worldIn.setBlockState(upPos, state, 3);
         }
     }

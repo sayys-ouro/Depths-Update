@@ -10,7 +10,9 @@ import net.minecraft.entity.monster.EntitySilverfish;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
 import sayys.depthsupdate.DepthsUpdateMod;
+import sayys.depthsupdate.registry.RegistryHandler;
 
 public class BlockInfestedDeepslate extends BlockRotatedPillar {
     public BlockInfestedDeepslate() {
@@ -42,6 +44,6 @@ public class BlockInfestedDeepslate extends BlockRotatedPillar {
 
     @Override
     protected ItemStack getSilkTouchDrop(IBlockState state) {
-        return new ItemStack(DepthsUpdateMod.RegistrationHandler.deepslate);
+        return new ItemStack(RegistryHandler.deepslate);
     }
 }

@@ -25,6 +25,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import sayys.depthsupdate.registry.RegistryHandler;
+
 public class BlockBigDripleafStem extends Block implements IGrowable {
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
 
@@ -84,7 +86,7 @@ public class BlockBigDripleafStem extends Block implements IGrowable {
         Block downBlock = downState.getBlock();
 
         boolean canStayDown = downBlock == this || downState.isSideSolid(worldIn, pos.down(), EnumFacing.UP) || downBlock == Blocks.DIRT || downBlock == Blocks.GRASS || downBlock == Blocks.CLAY || downBlock == Blocks.FARMLAND;
-        boolean canStayUp = upBlock == this || (sayys.depthsupdate.DepthsUpdateMod.RegistrationHandler.big_dripleaf != null && upBlock == sayys.depthsupdate.DepthsUpdateMod.RegistrationHandler.big_dripleaf);
+        boolean canStayUp = upBlock == this || (RegistryHandler.big_dripleaf != null && upBlock == RegistryHandler.big_dripleaf);
 
         return canStayDown && canStayUp;
     }
@@ -98,12 +100,12 @@ public class BlockBigDripleafStem extends Block implements IGrowable {
 
     @Override
     public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-        return sayys.depthsupdate.DepthsUpdateMod.RegistrationHandler.big_dripleaf == null ? Items.AIR : Item.getItemFromBlock(sayys.depthsupdate.DepthsUpdateMod.RegistrationHandler.big_dripleaf);
+        return RegistryHandler.big_dripleaf == null ? Items.AIR : Item.getItemFromBlock(RegistryHandler.big_dripleaf);
     }
 
     @Override
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state) {
-        return new ItemStack(sayys.depthsupdate.DepthsUpdateMod.RegistrationHandler.big_dripleaf);
+        return new ItemStack(RegistryHandler.big_dripleaf);
     }
 
     @Override
@@ -161,7 +163,7 @@ public class BlockBigDripleafStem extends Block implements IGrowable {
         for (int i = 0; i < 256; i++) {
             mpos.move(EnumFacing.UP);
             Block block = worldIn.getBlockState(mpos).getBlock();
-            if (block == sayys.depthsupdate.DepthsUpdateMod.RegistrationHandler.big_dripleaf) {
+            if (block == RegistryHandler.big_dripleaf) {
                 return mpos.toImmutable();
             }
             if (block != this) {
