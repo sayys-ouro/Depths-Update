@@ -1,9 +1,12 @@
 package sayys.depthsupdate.mixin;
 
 import net.minecraft.world.chunk.ChunkPrimer;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(value = ChunkPrimer.class, priority = 2000)
@@ -13,13 +16,9 @@ public abstract class MixinChunkPrimer {
         return 131072;
     }
 
-    /**
-     * @author __sayys
-     * @reason Support chunks up to 320 blocks tall including negative Y.
-     */
-    @Overwrite
-    public static int getBlockIndex(int x, int y, int z) {
-        return x << 13 | z << 9 | (y + 64);
+    @Inject(method = "getBlockIndex", at = @At("HEAD"), cancellable = true)
+    private static void depthsupdate$getBlockIndex(int x, int y, int z, @NonNull CallbackInfoReturnable<Integer> cir) {
+        cir.setReturnValue(x << 13 | z << 9 | (y + 64));
     }
 
     @ModifyConstant(method = "findGroundBlockIdx", constant = @Constant(intValue = 255))

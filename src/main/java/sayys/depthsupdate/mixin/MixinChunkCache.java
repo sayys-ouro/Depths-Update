@@ -7,6 +7,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.chunk.Chunk;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -28,7 +29,7 @@ public abstract class MixinChunkCache {
     protected abstract boolean withinBounds(int x, int z);
 
     @Inject(method = "getBlockState", at = @At("HEAD"), cancellable = true)
-    private void depthsupdate$getBlockState(BlockPos pos, CallbackInfoReturnable<IBlockState> cir) {
+    private void depthsupdate$getBlockState(@NonNull BlockPos pos, CallbackInfoReturnable<IBlockState> cir) {
         if (pos.getY() >= -64 && pos.getY() < 0) {
             int i = (pos.getX() >> 4) - this.chunkX;
             int j = (pos.getZ() >> 4) - this.chunkZ;
@@ -45,7 +46,7 @@ public abstract class MixinChunkCache {
     }
 
     @Inject(method = "getLightFor", at = @At("HEAD"), cancellable = true)
-    private void depthsupdate$getLightFor(EnumSkyBlock type, BlockPos pos, CallbackInfoReturnable<Integer> cir) {
+    private void depthsupdate$getLightFor(EnumSkyBlock type, @NonNull BlockPos pos, CallbackInfoReturnable<Integer> cir) {
         if (pos.getY() >= -64 && pos.getY() < 0) {
             int i = (pos.getX() >> 4) - this.chunkX;
             int j = (pos.getZ() >> 4) - this.chunkZ;
@@ -58,7 +59,7 @@ public abstract class MixinChunkCache {
     }
 
     @Inject(method = "getLightForExt", at = @At("HEAD"), cancellable = true)
-    private void depthsupdate$getLightForExt(EnumSkyBlock type, BlockPos pos, CallbackInfoReturnable<Integer> cir) {
+    private void depthsupdate$getLightForExt(EnumSkyBlock type, @NonNull BlockPos pos, CallbackInfoReturnable<Integer> cir) {
         if (pos.getY() >= -64 && pos.getY() < 0) {
             int i = (pos.getX() >> 4) - this.chunkX;
             int j = (pos.getZ() >> 4) - this.chunkZ;
@@ -71,8 +72,8 @@ public abstract class MixinChunkCache {
     }
 
     @Inject(method = "isSideSolid", at = @At("HEAD"), cancellable = true)
-    private void depthsupdate$isSideSolid(BlockPos pos, EnumFacing side, boolean _default,
-            CallbackInfoReturnable<Boolean> cir) {
+    private void depthsupdate$isSideSolid(@NonNull BlockPos pos, EnumFacing side, boolean _default,
+                                          CallbackInfoReturnable<Boolean> cir) {
         if (pos.getY() >= -64 && pos.getY() < 0) {
             int x = (pos.getX() >> 4) - this.chunkX;
             int z = (pos.getZ() >> 4) - this.chunkZ;

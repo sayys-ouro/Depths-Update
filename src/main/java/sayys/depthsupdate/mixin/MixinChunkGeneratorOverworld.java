@@ -13,8 +13,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
 import sayys.depthsupdate.DepthsUpdateConfig;
-import sayys.depthsupdate.DepthsUpdateMod;
-import sayys.depthsupdate.Reference;
 import sayys.depthsupdate.util.BlockUtils;
 import sayys.depthsupdate.world.generation.river.UndergroundRiverGenerator;
 
