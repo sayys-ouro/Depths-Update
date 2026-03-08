@@ -1,0 +1,6 @@
+{
+  "parent": "block/cross",
+  "textures": {
+    "cross": "depthsupdate:blocks/pointed_dripstone_down_tip_merge"
+  }
+}

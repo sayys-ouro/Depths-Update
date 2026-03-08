@@ -59,7 +59,7 @@ public class DepthsUpdateConfig {
     public static String deepslateBlock = "depthsupdate:deepslate";
 
     public static class Registry {
-        @Config.Name("Enable Deepslate Family")
+        @Config.Name("Enable Deepslate")
         @Config.Comment("Enables Deepslate, Cobbled Deepslate, Bricks, Tiles, Stairs, Walls, Slabs, and Infested Deepslate.")
         public boolean enableDeepslateFamily = true;
 
@@ -72,15 +72,15 @@ public class DepthsUpdateConfig {
         @Config.Name("Enable Smooth Basalt")
         public boolean enableSmoothBasalt = true;
 
-        @Config.Name("Enable Amethyst Family")
+        @Config.Name("Enable Amethyst")
         @Config.Comment("Enables Amethyst Blocks and Budding Amethyst.")
         public boolean enableAmethystFamily = true;
 
-        @Config.Name("Enable Moss Family")
+        @Config.Name("Enable Moss")
         @Config.Comment("Enables Moss Blocks and Moss Carpets.")
         public boolean enableMossFamily = true;
 
-        @Config.Name("Enable Azalea Family")
+        @Config.Name("Enable Azalea")
         @Config.Comment("Enables Azalea, Flowering Azalea, Leaves, and Hanging Roots.")
         public boolean enableAzaleaFamily = true;
 
@@ -90,7 +90,7 @@ public class DepthsUpdateConfig {
         @Config.Name("Enable Dripstone Block")
         public boolean enableDripstoneBlock = true;
 
-        @Config.Name("Enable Dripleaf Family")
+        @Config.Name("Enable Dripleaf")
         @Config.Comment("Enables Small Dripleaf, Big Dripleaf, and Stems.")
         public boolean enableDripleafFamily = true;
 
@@ -106,6 +106,82 @@ public class DepthsUpdateConfig {
     }
 
     @Config.Name("Registry")
-    @Config.Comment("Registry Toggles for blocks and items. Requires restart.")
+    @Config.Comment("Registry Toggles for blocks and items.")
     public static final Registry REGISTRY = new Registry();
+
+    @Config.Name("Lush Caves")
+    @Config.Comment("Settings related to the Lush Caves biome.")
+    public static final LushCaves lushCaves = new LushCaves();
+
+    public static class LushCaves {
+        @Config.Name("Enable Lush Caves")
+        @Config.Comment("Allow Lush Caves to generate underground.")
+        @Config.RequiresMcRestart
+        public boolean enableLushCaves = true;
+
+        @Config.Name("Lush Caves Rarity")
+        @Config.Comment("The rarity of Lush Caves. Higher numbers mean rarer caves. (1 in X chance per chunk)")
+        @Config.RangeInt(min = 1, max = 1000)
+        public int lushCavesRarity = 12;
+
+        @Config.Name("Minimum Height")
+        public int lushCavesMinY = -64;
+
+        @Config.Name("Maximum Height")
+        public int lushCavesMaxY = 63;
+
+        @Config.Name("Radius Base Size")
+        @Config.RangeInt(min = 1, max = 100)
+        public int lushCavesRadiusBase = 16;
+
+        @Config.Name("Radius Variation")
+        @Config.RangeInt(min = 0, max = 100)
+        public int lushCavesRadiusVariation = 8;
+
+        @Config.Name("Height Base Size")
+        @Config.RangeInt(min = 1, max = 100)
+        public int lushCavesHeightBase = 8;
+
+        @Config.Name("Height Variation")
+        @Config.RangeInt(min = 0, max = 100)
+        public int lushCavesHeightVariation = 6;
+    }
+
+    @Config.Name("Dripstone Caves")
+    @Config.Comment("Settings related to the Dripstone Caves biome.")
+    public static final DripstoneCaves dripstoneCaves = new DripstoneCaves();
+
+    public static class DripstoneCaves {
+        @Config.Name("Enable Dripstone Caves")
+        @Config.Comment("Allow Dripstone Caves to generate underground.")
+        @Config.RequiresMcRestart
+        public boolean enableDripstoneCaves = true;
+
+        @Config.Name("Dripstone Caves Rarity")
+        @Config.Comment("The rarity of Dripstone Caves. Higher numbers mean rarer caves. (1 in X chance per chunk)")
+        @Config.RangeInt(min = 1, max = 1000)
+        public int dripstoneCavesRarity = 15;
+
+        @Config.Name("Minimum Height")
+        public int dripstoneCavesMinY = -64;
+
+        @Config.Name("Maximum Height")
+        public int dripstoneCavesMaxY = 63;
+
+        @Config.Name("Radius Base Size")
+        @Config.RangeInt(min = 1, max = 100)
+        public int dripstoneCavesRadiusBase = 20;
+
+        @Config.Name("Radius Variation")
+        @Config.RangeInt(min = 0, max = 100)
+        public int dripstoneCavesRadiusVariation = 10;
+
+        @Config.Name("Height Base Size")
+        @Config.RangeInt(min = 1, max = 100)
+        public int dripstoneCavesHeightBase = 12;
+
+        @Config.Name("Height Variation")
+        @Config.RangeInt(min = 0, max = 100)
+        public int dripstoneCavesHeightVariation = 8;
+    }
 }

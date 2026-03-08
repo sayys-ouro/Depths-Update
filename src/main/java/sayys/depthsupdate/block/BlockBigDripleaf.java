@@ -126,7 +126,7 @@ public class BlockBigDripleaf extends Block implements IGrowable {
         EnumTilt tilt = state.getValue(TILT);
 
         if (tilt == EnumTilt.UNSTABLE) {
-            this.setTiltAndScheduleTick(state, worldIn, pos, EnumTilt.PARTIAL, SoundEvents.BLOCK_GRASS_BREAK); // No matching sound in 1.12, using grass break as dummy
+            this.setTiltAndScheduleTick(state, worldIn, pos, EnumTilt.PARTIAL, SoundEvents.BLOCK_GRASS_BREAK);
         } else if (tilt == EnumTilt.PARTIAL) {
             this.setTiltAndScheduleTick(state, worldIn, pos, EnumTilt.FULL, SoundEvents.BLOCK_GRASS_BREAK);
         } else if (tilt == EnumTilt.FULL) {
@@ -156,7 +156,7 @@ public class BlockBigDripleaf extends Block implements IGrowable {
         setTilt(state, level, pos, EnumTilt.NONE);
 
         if (state.getValue(TILT) != EnumTilt.NONE) {
-            playTiltSound(level, pos, SoundEvents.BLOCK_GRASS_PLACE); // Dummy
+            playTiltSound(level, pos, SoundEvents.BLOCK_GRASS_PLACE);
         }
     }
 

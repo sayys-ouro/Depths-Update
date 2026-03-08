@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "thickness=tip_merge,tip_direction=up": {
+      "model": "depthsupdate:pointed_dripstone_tip_merge_up"
+    },
+    "thickness=tip_merge,tip_direction=down": {
+      "model": "depthsupdate:pointed_dripstone_tip_merge_down"
+    },
+    "thickness=tip,tip_direction=up": {
+      "model": "depthsupdate:pointed_dripstone_tip_up"
+    },
+    "thickness=tip,tip_direction=down": {
+      "model": "depthsupdate:pointed_dripstone_tip_down"
+    },
+    "thickness=frustum,tip_direction=up": {
+      "model": "depthsupdate:pointed_dripstone_frustum_up"
+    },
+    "thickness=frustum,tip_direction=down": {
+      "model": "depthsupdate:pointed_dripstone_frustum_down"
+    },
+    "thickness=middle,tip_direction=up": {
+      "model": "depthsupdate:pointed_dripstone_middle_up"
+    },
+    "thickness=middle,tip_direction=down": {
+      "model": "depthsupdate:pointed_dripstone_middle_down"
+    },
+    "thickness=base,tip_direction=up": {
+      "model": "depthsupdate:pointed_dripstone_base_up"
+    },
+    "thickness=base,tip_direction=down": {
+      "model": "depthsupdate:pointed_dripstone_base_down"
+    }
+  }
+}

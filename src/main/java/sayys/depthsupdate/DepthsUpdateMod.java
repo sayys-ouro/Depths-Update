@@ -3,26 +3,18 @@ package sayys.depthsupdate;
 import com.cleanroommc.assetmover.AssetMoverAPI;
 import java.util.HashMap;
 import java.util.Map;
-import net.minecraft.block.Block;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NonNull;
 
-import sayys.depthsupdate.block.BlockDeepslate;
-import sayys.depthsupdate.block.BlockModSlab;
+import sayys.depthsupdate.world.generation.DripstoneCavesGenerator;
+import sayys.depthsupdate.world.generation.LushCavesGenerator;
 
 @Mod(
     modid = Reference.MOD_ID,
@@ -31,6 +23,12 @@ import sayys.depthsupdate.block.BlockModSlab;
 )
 public class DepthsUpdateMod {
     public static final Logger LOGGER = LogManager.getLogger(Reference.MOD_NAME);
+
+    @Mod.EventHandler
+    public void init(FMLInitializationEvent event) {
+        GameRegistry.registerWorldGenerator(new LushCavesGenerator(), 100);
+        GameRegistry.registerWorldGenerator(new DripstoneCavesGenerator(), 110);
+    }
 
     /**
      * <a href="https://cleanroommc.com/wiki/forge-mod-development/event#overview">
@@ -214,6 +212,50 @@ public class DepthsUpdateMod {
         assets.put(
             "assets/minecraft/textures/item/glow_berries.png",
             "assets/" + Reference.MOD_ID + "/textures/items/glow_berries.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/pointed_dripstone_down_base.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/pointed_dripstone_down_base.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/pointed_dripstone_up_base.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/pointed_dripstone_up_base.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/pointed_dripstone_down_frustum.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/pointed_dripstone_down_frustum.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/pointed_dripstone_up_frustum.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/pointed_dripstone_up_frustum.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/pointed_dripstone_down_middle.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/pointed_dripstone_down_middle.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/pointed_dripstone_up_middle.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/pointed_dripstone_up_middle.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/pointed_dripstone_down_tip.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/pointed_dripstone_down_tip.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/pointed_dripstone_up_tip.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/pointed_dripstone_up_tip.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/pointed_dripstone_down_tip_merge.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/pointed_dripstone_down_tip_merge.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/pointed_dripstone_up_tip_merge.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/pointed_dripstone_up_tip_merge.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/item/pointed_dripstone.png",
+            "assets/" + Reference.MOD_ID + "/textures/items/pointed_dripstone.png"
         );
 
         AssetMoverAPI.fromMinecraft("1.21.11", assets);

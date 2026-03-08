@@ -57,6 +57,7 @@ public class RegistryHandler {
         "calcite", 0.75F, 0.75F, SoundType.STONE);
     public static final Block dripstone_block = new sayys.depthsupdate.block.BlockDeepslateVariant(
         "dripstone_block", 1.5F, 1.0F, SoundType.STONE);
+    public static final Block pointed_dripstone = new sayys.depthsupdate.block.BlockPointedDripstone();
     public static final Block moss_block = new sayys.depthsupdate.block.BlockSimple(
         "moss_block", Material.GRASS, 0.1F, 0.1F, SoundType.PLANT);
     public static final Block rooted_dirt = new sayys.depthsupdate.block.BlockSimple(
@@ -116,7 +117,7 @@ public class RegistryHandler {
         if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableMossFamily) event.getRegistry().registerAll(moss_block, moss_carpet);
         if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableAzaleaFamily) event.getRegistry().registerAll(azalea_leaves, flowering_azalea_leaves, azalea, flowering_azalea, hanging_roots);
         if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableSporeBlossom) event.getRegistry().register(spore_blossom);
-        if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableDripstoneBlock) event.getRegistry().register(dripstone_block);
+        if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableDripstoneBlock) event.getRegistry().registerAll(dripstone_block, pointed_dripstone);
         if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableDripleafFamily) event.getRegistry().registerAll(small_dripleaf, big_dripleaf, big_dripleaf_stem);
         if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableCaveVinesAndBerries) event.getRegistry().registerAll(cave_vines, cave_vines_plant);
         if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableRootedDirt) event.getRegistry().register(rooted_dirt);
@@ -169,7 +170,10 @@ public class RegistryHandler {
         }
 
         if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableSporeBlossom) registerItemBlock(event, spore_blossom);
-        if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableDripstoneBlock) registerItemBlock(event, dripstone_block);
+        if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableDripstoneBlock) {
+            registerItemBlock(event, dripstone_block);
+            registerItemBlock(event, pointed_dripstone);
+        }
 
         if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableDripleafFamily) {
             registerItemBlock(event, small_dripleaf);
@@ -241,7 +245,11 @@ public class RegistryHandler {
         }
 
         if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableSporeBlossom) registerModel(spore_blossom);
-        if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableDripstoneBlock) registerModel(dripstone_block);
+        if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableDripstoneBlock) {
+            registerModel(dripstone_block);
+            ModelLoader.setCustomStateMapper(pointed_dripstone, (new net.minecraft.client.renderer.block.statemap.StateMap.Builder()).ignore(sayys.depthsupdate.block.BlockPointedDripstone.WATERLOGGED).build());
+            registerModel(pointed_dripstone);
+        }
 
         if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableDripleafFamily) {
             registerModel(small_dripleaf);
