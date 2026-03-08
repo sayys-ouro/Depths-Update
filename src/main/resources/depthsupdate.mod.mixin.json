@@ -4,7 +4,11 @@
   "plugin": "sayys.depthsupdate.ModMixinConfigPlugin",
   "compatibilityLevel": "JAVA_8",
   "target": "@env(MOD)",
-  "client": [],
+  "client": [
+    "optifine.MixinOptiFineRenderChunk",
+    "optifine.MixinOptiFineViewFrustum",
+    "optifine.MixinOptiFineRenderChunkUtils"
+  ],
   "mixins": [],
   "server": [],
   "setSourceFile": true,

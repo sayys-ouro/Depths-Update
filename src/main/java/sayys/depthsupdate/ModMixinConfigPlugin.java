@@ -2,12 +2,23 @@ package sayys.depthsupdate;
 
 import java.util.List;
 import java.util.Set;
-
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
 public class ModMixinConfigPlugin implements IMixinConfigPlugin {
+    private static final boolean OPTIFINE_LOADED = detectOptiFine();
+
+    private static boolean detectOptiFine() {
+        try {
+            Class.forName("optifine.OptiFineForgeTweaker");
+
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
     @Override
     public void onLoad(String s) {}
 
@@ -30,6 +41,10 @@ public class ModMixinConfigPlugin implements IMixinConfigPlugin {
      */
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+        if (mixinClassName.contains(".optifine.")) {
+            return OPTIFINE_LOADED;
+        }
+
         return true;
     }
 
