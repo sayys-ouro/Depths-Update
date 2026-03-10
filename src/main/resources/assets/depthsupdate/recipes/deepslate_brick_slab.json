@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "depthsupdate:deepslate_bricks"
+    }
+  },
+  "result": {
+    "item": "depthsupdate:deepslate_slab_half",
+    "data": 2,
+    "count": 6
+  }
+}

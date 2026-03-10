@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:stonebrick",
+      "data": 0
+    },
+    {
+      "item": "depthsupdate:moss_block"
+    }
+  ],
+  "result": {
+    "item": "minecraft:stonebrick",
+    "data": 1,
+    "count": 1
+  }
+}

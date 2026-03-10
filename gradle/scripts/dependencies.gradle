@@ -26,6 +26,7 @@ dependencies {
     }
 
     modImplementation "curse.maven:fugue-1005815:7663573"
+    modImplementation "curse.maven:had-enough-items-557549:7515497"
     modImplementation "curse.maven:fluidloggedapi-485654:7581579"
     modImplementation "curse.maven:reid-629017:7571353"
     modImplementation "curse.maven:redcore-873867:7455761"

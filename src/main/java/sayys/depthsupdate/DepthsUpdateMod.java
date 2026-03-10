@@ -28,6 +28,8 @@ public class DepthsUpdateMod {
     public void init(FMLInitializationEvent event) {
         GameRegistry.registerWorldGenerator(new LushCavesGenerator(), 100);
         GameRegistry.registerWorldGenerator(new DripstoneCavesGenerator(), 110);
+
+        sayys.depthsupdate.registry.RegistryHandler.init();
     }
 
     /**
@@ -212,6 +214,10 @@ public class DepthsUpdateMod {
         assets.put(
             "assets/minecraft/textures/item/glow_berries.png",
             "assets/" + Reference.MOD_ID + "/textures/items/glow_berries.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/item/amethyst_shard.png",
+            "assets/" + Reference.MOD_ID + "/textures/items/amethyst_shard.png"
         );
         assets.put(
             "assets/minecraft/textures/block/pointed_dripstone_down_base.png",

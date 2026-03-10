@@ -4,13 +4,17 @@ import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.oredict.OreDictionary;
 
 import sayys.depthsupdate.Reference;
 import sayys.depthsupdate.block.BlockDeepslate;
@@ -92,6 +96,7 @@ public class RegistryHandler {
     public static final Block cave_vines = new sayys.depthsupdate.block.BlockCaveVines();
     public static final Block cave_vines_plant = new sayys.depthsupdate.block.BlockCaveVinesPlant();
     public static final Item glow_berries = new sayys.depthsupdate.item.ItemGlowBerries();
+    public static final Item amethyst_shard = new Item().setRegistryName(Reference.MOD_ID, "amethyst_shard").setTranslationKey("amethyst_shard").setCreativeTab(CreativeTabs.MATERIALS);
 
     public static final BlockModSlab.Double deepslate_slab_double = new BlockModSlab.Double(
         "deepslate_slab_double", Material.ROCK);
@@ -156,6 +161,7 @@ public class RegistryHandler {
         if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableAmethystFamily) {
             registerItemBlock(event, amethyst_block);
             registerItemBlock(event, budding_amethyst);
+            event.getRegistry().register(amethyst_shard);
         }
         if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableMossFamily) {
             registerItemBlock(event, moss_block);
@@ -229,6 +235,7 @@ public class RegistryHandler {
         if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableAmethystFamily) {
             registerModel(amethyst_block);
             registerModel(budding_amethyst);
+            ModelLoader.setCustomModelResourceLocation(amethyst_shard, 0, new net.minecraft.client.renderer.block.model.ModelResourceLocation(amethyst_shard.getRegistryName(), "inventory"));
         }
 
         if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableMossFamily) {
@@ -267,6 +274,14 @@ public class RegistryHandler {
             registerModel(raw_gold_block);
             registerModel(raw_copper_block);
         }
+    }
+
+    public static void init() {
+        OreDictionary.registerOre("cobblestone", cobbled_deepslate);
+
+        GameRegistry.addSmelting(cobbled_deepslate, new ItemStack(deepslate), 0.1f);
+        GameRegistry.addSmelting(deepslate_bricks, new ItemStack(cracked_deepslate_bricks), 0.1f);
+        GameRegistry.addSmelting(deepslate_tiles, new ItemStack(cracked_deepslate_tiles), 0.1f);
     }
 
     private static void registerModel(Block block) {

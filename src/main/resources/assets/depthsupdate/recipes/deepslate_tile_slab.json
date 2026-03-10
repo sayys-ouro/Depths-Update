@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "depthsupdate:deepslate_tiles"
+    }
+  },
+  "result": {
+    "item": "depthsupdate:deepslate_slab_half",
+    "data": 3,
+    "count": 6
+  }
+}
