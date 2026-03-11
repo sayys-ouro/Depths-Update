@@ -1,0 +1,30 @@
+{
+    "variants": {
+        "facing=up": {
+            "model": "depthsupdate:amethyst_cluster"
+        },
+        "facing=down": {
+            "model": "depthsupdate:amethyst_cluster",
+            "x": 180
+        },
+        "facing=north": {
+            "model": "depthsupdate:amethyst_cluster",
+            "x": 90
+        },
+        "facing=south": {
+            "model": "depthsupdate:amethyst_cluster",
+            "x": 90,
+            "y": 180
+        },
+        "facing=west": {
+            "model": "depthsupdate:amethyst_cluster",
+            "x": 90,
+            "y": 270
+        },
+        "facing=east": {
+            "model": "depthsupdate:amethyst_cluster",
+            "x": 90,
+            "y": 90
+        }
+    }
+}

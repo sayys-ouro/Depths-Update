@@ -1,0 +1,6 @@
+{
+    "parent": "block/cross",
+    "textures": {
+        "cross": "depthsupdate:blocks/medium_amethyst_bud"
+    }
+}

@@ -70,8 +70,12 @@ public class RegistryHandler {
         "tuff", 1.5F, 6.0F, SoundType.STONE);
     public static final Block amethyst_block = new sayys.depthsupdate.block.BlockDeepslateVariant(
         "amethyst_block", 1.5F, 1.5F, SoundType.GLASS);
-    public static final Block budding_amethyst = new sayys.depthsupdate.block.BlockDeepslateVariant(
-        "budding_amethyst", 1.5F, 1.5F, SoundType.GLASS);
+    public static final Block budding_amethyst = new sayys.depthsupdate.block.BlockBuddingAmethyst();
+    public static final Block small_amethyst_bud = new sayys.depthsupdate.block.BlockAmethystCluster("small_amethyst_bud", 3.0F, 8.0F, 1);
+    public static final Block medium_amethyst_bud = new sayys.depthsupdate.block.BlockAmethystCluster("medium_amethyst_bud", 4.0F, 10.0F, 2);
+    public static final Block large_amethyst_bud = new sayys.depthsupdate.block.BlockAmethystCluster("large_amethyst_bud", 5.0F, 10.0F, 4);
+    public static final Block amethyst_cluster = new sayys.depthsupdate.block.BlockAmethystCluster("amethyst_cluster", 7.0F, 10.0F, 5);
+
     public static final Block moss_carpet = new sayys.depthsupdate.block.BlockMossCarpet();
     public static final Block azalea_leaves = new sayys.depthsupdate.block.BlockModLeaves(
         "azalea_leaves");
@@ -118,7 +122,8 @@ public class RegistryHandler {
         if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableCalcite) event.getRegistry().register(calcite);
         if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableTuff) event.getRegistry().register(tuff);
         if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableSmoothBasalt) event.getRegistry().register(smooth_basalt);
-        if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableAmethystFamily) event.getRegistry().registerAll(amethyst_block, budding_amethyst);
+        if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableAmethystFamily) event.getRegistry().registerAll(
+            amethyst_block, budding_amethyst, small_amethyst_bud, medium_amethyst_bud, large_amethyst_bud, amethyst_cluster);
         if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableMossFamily) event.getRegistry().registerAll(moss_block, moss_carpet);
         if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableAzaleaFamily) event.getRegistry().registerAll(azalea_leaves, flowering_azalea_leaves, azalea, flowering_azalea, hanging_roots);
         if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableSporeBlossom) event.getRegistry().register(spore_blossom);
@@ -161,6 +166,10 @@ public class RegistryHandler {
         if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableAmethystFamily) {
             registerItemBlock(event, amethyst_block);
             registerItemBlock(event, budding_amethyst);
+            registerItemBlock(event, small_amethyst_bud);
+            registerItemBlock(event, medium_amethyst_bud);
+            registerItemBlock(event, large_amethyst_bud);
+            registerItemBlock(event, amethyst_cluster);
             event.getRegistry().register(amethyst_shard);
         }
         if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableMossFamily) {
@@ -235,6 +244,11 @@ public class RegistryHandler {
         if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableAmethystFamily) {
             registerModel(amethyst_block);
             registerModel(budding_amethyst);
+            registerModel(small_amethyst_bud);
+            registerModel(medium_amethyst_bud);
+            registerModel(large_amethyst_bud);
+            registerModel(amethyst_cluster);
+
             ModelLoader.setCustomModelResourceLocation(amethyst_shard, 0, new net.minecraft.client.renderer.block.model.ModelResourceLocation(amethyst_shard.getRegistryName(), "inventory"));
         }
 

@@ -43,3 +43,7 @@ tile.big_dripleaf_stem.name=Big Dripleaf Stem
 item.glow_berries.name=Glow Berries
 tile.pointed_dripstone.name=Pointed Dripstone
 item.amethyst_shard.name=Amethyst Shard
+tile.small_amethyst_bud.name=Small Amethyst Bud
+tile.medium_amethyst_bud.name=Medium Amethyst Bud
+tile.large_amethyst_bud.name=Large Amethyst Bud
+tile.amethyst_cluster.name=Amethyst Cluster

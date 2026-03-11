@@ -108,6 +108,23 @@ public class DepthsUpdateMod {
             "assets/" + Reference.MOD_ID + "/textures/blocks/budding_amethyst.png"
         );
         assets.put(
+            "assets/minecraft/textures/block/amethyst_cluster.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/amethyst_cluster.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/large_amethyst_bud.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/large_amethyst_bud.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/medium_amethyst_bud.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/medium_amethyst_bud.png"
+        );
+        assets.put(
+            "assets/minecraft/textures/block/small_amethyst_bud.png",
+            "assets/" + Reference.MOD_ID + "/textures/blocks/small_amethyst_bud.png"
+        );
+
+        assets.put(
             "assets/minecraft/textures/block/smooth_basalt.png",
             "assets/" + Reference.MOD_ID + "/textures/blocks/smooth_basalt.png"
         );

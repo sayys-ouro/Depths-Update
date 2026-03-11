@@ -1,0 +1,30 @@
+{
+    "variants": {
+        "facing=up": {
+            "model": "depthsupdate:medium_amethyst_bud"
+        },
+        "facing=down": {
+            "model": "depthsupdate:medium_amethyst_bud",
+            "x": 180
+        },
+        "facing=north": {
+            "model": "depthsupdate:medium_amethyst_bud",
+            "x": 90
+        },
+        "facing=south": {
+            "model": "depthsupdate:medium_amethyst_bud",
+            "x": 90,
+            "y": 180
+        },
+        "facing=west": {
+            "model": "depthsupdate:medium_amethyst_bud",
+            "x": 90,
+            "y": 270
+        },
+        "facing=east": {
+            "model": "depthsupdate:medium_amethyst_bud",
+            "x": 90,
+            "y": 90
+        }
+    }
+}
