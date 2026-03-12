@@ -1,12 +1,11 @@
 package sayys.depthsupdate.util;
 
-import sayys.depthsupdate.registry.RegistryHandler;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 
 import sayys.depthsupdate.DepthsUpdateConfig;
+import sayys.depthsupdate.registry.RegistryHandler;
 
 public class BlockUtils {
     private static IBlockState cachedDeepslateBlockState;
@@ -65,5 +64,27 @@ public class BlockUtils {
 
         cachedRiverDebugBlockState = (block == null || block == Blocks.AIR) ? Blocks.GLOWSTONE.getDefaultState() : block.getDefaultState();
         return cachedRiverDebugBlockState;
+    }
+
+    public static IBlockState getDeepslateVariant(IBlockState oreState) {
+        Block ore = oreState.getBlock();
+
+        if (ore == Blocks.COAL_ORE) return RegistryHandler.deepslate_coal_ore.getDefaultState();
+        if (ore == Blocks.IRON_ORE) return RegistryHandler.deepslate_iron_ore.getDefaultState();
+        if (ore == Blocks.GOLD_ORE) return RegistryHandler.deepslate_gold_ore.getDefaultState();
+        if (ore == Blocks.REDSTONE_ORE || ore == Blocks.LIT_REDSTONE_ORE) return RegistryHandler.deepslate_redstone_ore.getDefaultState();
+        if (ore == Blocks.LAPIS_ORE) return RegistryHandler.deepslate_lapis_ore.getDefaultState();
+        if (ore == Blocks.DIAMOND_ORE) return RegistryHandler.deepslate_diamond_ore.getDefaultState();
+        if (ore == Blocks.EMERALD_ORE) return RegistryHandler.deepslate_emerald_ore.getDefaultState();
+        if (ore == RegistryHandler.copper_ore) return RegistryHandler.deepslate_copper_ore.getDefaultState();
+
+        return oreState;
+    }
+
+    public static boolean isDeepslate(IBlockState state) {
+        if (state == null) return false;
+        Block block = state.getBlock();
+
+        return block == RegistryHandler.deepslate || (block.getRegistryName() != null && block.getRegistryName().toString().equals(DepthsUpdateConfig.deepslateBlock));
     }
 }

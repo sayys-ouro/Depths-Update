@@ -1,0 +1,5 @@
+{
+    "variants": {
+        "normal": { "model": "depthsupdate:deepslate_lapis_ore" }
+    }
+}

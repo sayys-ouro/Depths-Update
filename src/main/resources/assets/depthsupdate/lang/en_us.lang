@@ -47,3 +47,17 @@ tile.small_amethyst_bud.name=Small Amethyst Bud
 tile.medium_amethyst_bud.name=Medium Amethyst Bud
 tile.large_amethyst_bud.name=Large Amethyst Bud
 tile.amethyst_cluster.name=Amethyst Cluster
+
+item.raw_iron.name=Raw Iron
+item.raw_gold.name=Raw Gold
+item.raw_copper.name=Raw Copper
+item.copper_ingot.name=Copper Ingot
+tile.copper_ore.name=Copper Ore
+tile.deepslate_coal_ore.name=Deepslate Coal Ore
+tile.deepslate_iron_ore.name=Deepslate Iron Ore
+tile.deepslate_gold_ore.name=Deepslate Gold Ore
+tile.deepslate_redstone_ore.name=Deepslate Redstone Ore
+tile.deepslate_lapis_ore.name=Deepslate Lapis Ore
+tile.deepslate_diamond_ore.name=Deepslate Diamond Ore
+tile.deepslate_emerald_ore.name=Deepslate Emerald Ore
+tile.deepslate_copper_ore.name=Deepslate Copper Ore

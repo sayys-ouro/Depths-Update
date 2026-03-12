@@ -1,0 +1,5 @@
+{
+    "variants": {
+        "normal": { "model": "depthsupdate:copper_ore" }
+    }
+}

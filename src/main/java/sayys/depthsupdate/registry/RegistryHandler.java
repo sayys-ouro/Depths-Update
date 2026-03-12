@@ -8,6 +8,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.init.Items;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
@@ -96,11 +97,23 @@ public class RegistryHandler {
     public static final Block raw_copper_block = new sayys.depthsupdate.block.BlockDeepslateVariant(
         "raw_copper_block", 5.0F, 6.0F, SoundType.STONE);
     public static final Block spore_blossom = new sayys.depthsupdate.block.BlockSporeBlossom();
-
     public static final Block cave_vines = new sayys.depthsupdate.block.BlockCaveVines();
+    public static final Block copper_ore = new sayys.depthsupdate.block.BlockCopperOre();
+    public static final Block deepslate_coal_ore = new sayys.depthsupdate.block.BlockDeepslateOre("deepslate_coal_ore");
+    public static final Block deepslate_iron_ore = new sayys.depthsupdate.block.BlockDeepslateOre("deepslate_iron_ore");
+    public static final Block deepslate_gold_ore = new sayys.depthsupdate.block.BlockDeepslateOre("deepslate_gold_ore");
+    public static final Block deepslate_redstone_ore = new sayys.depthsupdate.block.BlockDeepslateOre("deepslate_redstone_ore");
+    public static final Block deepslate_lapis_ore = new sayys.depthsupdate.block.BlockDeepslateOre("deepslate_lapis_ore");
+    public static final Block deepslate_diamond_ore = new sayys.depthsupdate.block.BlockDeepslateOre("deepslate_diamond_ore");
+    public static final Block deepslate_emerald_ore = new sayys.depthsupdate.block.BlockDeepslateOre("deepslate_emerald_ore");
+    public static final Block deepslate_copper_ore = new sayys.depthsupdate.block.BlockDeepslateOre("deepslate_copper_ore");
     public static final Block cave_vines_plant = new sayys.depthsupdate.block.BlockCaveVinesPlant();
     public static final Item glow_berries = new sayys.depthsupdate.item.ItemGlowBerries();
     public static final Item amethyst_shard = new Item().setRegistryName(Reference.MOD_ID, "amethyst_shard").setTranslationKey("amethyst_shard").setCreativeTab(CreativeTabs.MATERIALS);
+    public static final Item raw_iron = new Item().setRegistryName(Reference.MOD_ID, "raw_iron").setTranslationKey("raw_iron").setCreativeTab(CreativeTabs.MATERIALS);
+    public static final Item raw_gold = new Item().setRegistryName(Reference.MOD_ID, "raw_gold").setTranslationKey("raw_gold").setCreativeTab(CreativeTabs.MATERIALS);
+    public static final Item raw_copper = new Item().setRegistryName(Reference.MOD_ID, "raw_copper").setTranslationKey("raw_copper").setCreativeTab(CreativeTabs.MATERIALS);
+    public static final Item copper_ingot = new Item().setRegistryName(Reference.MOD_ID, "copper_ingot").setTranslationKey("copper_ingot").setCreativeTab(CreativeTabs.MATERIALS);
 
     public static final BlockModSlab.Double deepslate_slab_double = new BlockModSlab.Double(
         "deepslate_slab_double", Material.ROCK);
@@ -132,6 +145,11 @@ public class RegistryHandler {
         if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableCaveVinesAndBerries) event.getRegistry().registerAll(cave_vines, cave_vines_plant);
         if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableRootedDirt) event.getRegistry().register(rooted_dirt);
         if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableRawOreBlocks) event.getRegistry().registerAll(raw_iron_block, raw_gold_block, raw_copper_block);
+
+        if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableDeepslateFamily) {
+            event.getRegistry().registerAll(copper_ore, deepslate_coal_ore, deepslate_iron_ore, deepslate_gold_ore,
+                deepslate_redstone_ore, deepslate_lapis_ore, deepslate_diamond_ore, deepslate_emerald_ore, deepslate_copper_ore);
+        }
     }
 
     @SubscribeEvent
@@ -170,7 +188,7 @@ public class RegistryHandler {
             registerItemBlock(event, medium_amethyst_bud);
             registerItemBlock(event, large_amethyst_bud);
             registerItemBlock(event, amethyst_cluster);
-            event.getRegistry().register(amethyst_shard);
+            event.getRegistry().registerAll(amethyst_shard, raw_iron, raw_gold, raw_copper, copper_ingot);
         }
         if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableMossFamily) {
             registerItemBlock(event, moss_block);
@@ -203,6 +221,18 @@ public class RegistryHandler {
             registerItemBlock(event, raw_iron_block);
             registerItemBlock(event, raw_gold_block);
             registerItemBlock(event, raw_copper_block);
+        }
+
+        if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableDeepslateFamily) {
+            registerItemBlock(event, copper_ore);
+            registerItemBlock(event, deepslate_coal_ore);
+            registerItemBlock(event, deepslate_iron_ore);
+            registerItemBlock(event, deepslate_gold_ore);
+            registerItemBlock(event, deepslate_redstone_ore);
+            registerItemBlock(event, deepslate_lapis_ore);
+            registerItemBlock(event, deepslate_diamond_ore);
+            registerItemBlock(event, deepslate_emerald_ore);
+            registerItemBlock(event, deepslate_copper_ore);
         }
     }
 
@@ -250,6 +280,10 @@ public class RegistryHandler {
             registerModel(amethyst_cluster);
 
             ModelLoader.setCustomModelResourceLocation(amethyst_shard, 0, new net.minecraft.client.renderer.block.model.ModelResourceLocation(amethyst_shard.getRegistryName(), "inventory"));
+            ModelLoader.setCustomModelResourceLocation(raw_iron, 0, new net.minecraft.client.renderer.block.model.ModelResourceLocation(raw_iron.getRegistryName(), "inventory"));
+            ModelLoader.setCustomModelResourceLocation(raw_gold, 0, new net.minecraft.client.renderer.block.model.ModelResourceLocation(raw_gold.getRegistryName(), "inventory"));
+            ModelLoader.setCustomModelResourceLocation(raw_copper, 0, new net.minecraft.client.renderer.block.model.ModelResourceLocation(raw_copper.getRegistryName(), "inventory"));
+            ModelLoader.setCustomModelResourceLocation(copper_ingot, 0, new net.minecraft.client.renderer.block.model.ModelResourceLocation(copper_ingot.getRegistryName(), "inventory"));
         }
 
         if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableMossFamily) {
@@ -288,6 +322,18 @@ public class RegistryHandler {
             registerModel(raw_gold_block);
             registerModel(raw_copper_block);
         }
+
+        if (sayys.depthsupdate.DepthsUpdateConfig.REGISTRY.enableDeepslateFamily) {
+            registerModel(copper_ore);
+            registerModel(deepslate_coal_ore);
+            registerModel(deepslate_iron_ore);
+            registerModel(deepslate_gold_ore);
+            registerModel(deepslate_redstone_ore);
+            registerModel(deepslate_lapis_ore);
+            registerModel(deepslate_diamond_ore);
+            registerModel(deepslate_emerald_ore);
+            registerModel(deepslate_copper_ore);
+        }
     }
 
     public static void init() {
@@ -296,6 +342,31 @@ public class RegistryHandler {
         GameRegistry.addSmelting(cobbled_deepslate, new ItemStack(deepslate), 0.1f);
         GameRegistry.addSmelting(deepslate_bricks, new ItemStack(cracked_deepslate_bricks), 0.1f);
         GameRegistry.addSmelting(deepslate_tiles, new ItemStack(cracked_deepslate_tiles), 0.1f);
+
+        GameRegistry.addSmelting(raw_iron, new ItemStack(Items.IRON_INGOT), 0.7f);
+        GameRegistry.addSmelting(raw_gold, new ItemStack(Items.GOLD_INGOT), 1.0f);
+        GameRegistry.addSmelting(raw_copper, new ItemStack(copper_ingot), 0.7f);
+
+        GameRegistry.addSmelting(copper_ore, new ItemStack(copper_ingot), 0.7f);
+        GameRegistry.addSmelting(deepslate_coal_ore, new ItemStack(Items.COAL), 0.1f);
+        GameRegistry.addSmelting(deepslate_iron_ore, new ItemStack(Items.IRON_INGOT), 0.7f);
+        GameRegistry.addSmelting(deepslate_gold_ore, new ItemStack(Items.GOLD_INGOT), 1.0f);
+        GameRegistry.addSmelting(deepslate_redstone_ore, new ItemStack(Items.REDSTONE), 0.7f);
+        GameRegistry.addSmelting(deepslate_lapis_ore, new ItemStack(Items.DYE, 1, 4), 0.2f);
+        GameRegistry.addSmelting(deepslate_diamond_ore, new ItemStack(Items.DIAMOND), 1.0f);
+        GameRegistry.addSmelting(deepslate_emerald_ore, new ItemStack(Items.EMERALD), 1.0f);
+        GameRegistry.addSmelting(deepslate_emerald_ore, new ItemStack(Items.EMERALD), 1.0f);
+        GameRegistry.addSmelting(deepslate_copper_ore, new ItemStack(copper_ingot), 0.7f);
+
+        copper_ore.setHarvestLevel("pickaxe", 1);
+        deepslate_coal_ore.setHarvestLevel("pickaxe", 0);
+        deepslate_iron_ore.setHarvestLevel("pickaxe", 1);
+        deepslate_gold_ore.setHarvestLevel("pickaxe", 2);
+        deepslate_redstone_ore.setHarvestLevel("pickaxe", 2);
+        deepslate_lapis_ore.setHarvestLevel("pickaxe", 1);
+        deepslate_diamond_ore.setHarvestLevel("pickaxe", 2);
+        deepslate_emerald_ore.setHarvestLevel("pickaxe", 2);
+        deepslate_copper_ore.setHarvestLevel("pickaxe", 1);
     }
 
     private static void registerModel(Block block) {

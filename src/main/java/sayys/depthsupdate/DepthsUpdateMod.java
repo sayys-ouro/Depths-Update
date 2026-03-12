@@ -281,6 +281,21 @@ public class DepthsUpdateMod {
             "assets/" + Reference.MOD_ID + "/textures/items/pointed_dripstone.png"
         );
 
+        assets.put("assets/minecraft/textures/item/raw_iron.png", "assets/" + Reference.MOD_ID + "/textures/items/raw_iron.png");
+        assets.put("assets/minecraft/textures/item/raw_gold.png", "assets/" + Reference.MOD_ID + "/textures/items/raw_gold.png");
+        assets.put("assets/minecraft/textures/item/raw_copper.png", "assets/" + Reference.MOD_ID + "/textures/items/raw_copper.png");
+        assets.put("assets/minecraft/textures/item/copper_ingot.png", "assets/" + Reference.MOD_ID + "/textures/items/copper_ingot.png");
+
+        assets.put("assets/minecraft/textures/block/copper_ore.png", "assets/" + Reference.MOD_ID + "/textures/blocks/copper_ore.png");
+        assets.put("assets/minecraft/textures/block/deepslate_coal_ore.png", "assets/" + Reference.MOD_ID + "/textures/blocks/deepslate_coal_ore.png");
+        assets.put("assets/minecraft/textures/block/deepslate_iron_ore.png", "assets/" + Reference.MOD_ID + "/textures/blocks/deepslate_iron_ore.png");
+        assets.put("assets/minecraft/textures/block/deepslate_gold_ore.png", "assets/" + Reference.MOD_ID + "/textures/blocks/deepslate_gold_ore.png");
+        assets.put("assets/minecraft/textures/block/deepslate_redstone_ore.png", "assets/" + Reference.MOD_ID + "/textures/blocks/deepslate_redstone_ore.png");
+        assets.put("assets/minecraft/textures/block/deepslate_lapis_ore.png", "assets/" + Reference.MOD_ID + "/textures/blocks/deepslate_lapis_ore.png");
+        assets.put("assets/minecraft/textures/block/deepslate_diamond_ore.png", "assets/" + Reference.MOD_ID + "/textures/blocks/deepslate_diamond_ore.png");
+        assets.put("assets/minecraft/textures/block/deepslate_emerald_ore.png", "assets/" + Reference.MOD_ID + "/textures/blocks/deepslate_emerald_ore.png");
+        assets.put("assets/minecraft/textures/block/deepslate_copper_ore.png", "assets/" + Reference.MOD_ID + "/textures/blocks/deepslate_copper_ore.png");
+
         AssetMoverAPI.fromMinecraft("1.21.11", assets);
     }
 }

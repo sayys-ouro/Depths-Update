@@ -251,6 +251,10 @@ public abstract class MixinChunk {
         int i1 = this.heightMap[l];
         IBlockState iblockstate = this.getBlockState(pos.getX(), pos.getY(), pos.getZ());
 
+        if (j < 0 || sayys.depthsupdate.util.BlockUtils.isDeepslate(iblockstate)) {
+            state = sayys.depthsupdate.util.BlockUtils.getDeepslateVariant(state);
+        }
+
         if (iblockstate == state) {
             cir.setReturnValue(null);
         } else {

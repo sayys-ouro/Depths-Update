@@ -1,0 +1,6 @@
+{
+    "parent": "block/cube_all",
+    "textures": {
+        "all": "depthsupdate:blocks/deepslate_copper_ore"
+    }
+}
