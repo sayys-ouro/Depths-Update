@@ -20,14 +20,13 @@ public class MixinWorldEntitySpawner {
     private static void depthsupdate$fixGetRandomChunkPosition(World worldIn, int x, int z, CallbackInfoReturnable<BlockPos> cir) {
         if (DimensionHelper.isExtendedDimension(worldIn)) {
             Chunk chunk = worldIn.getChunk(x, z);
+            int minY = DimensionHelper.getMinY(worldIn);
             int topY = chunk.getTopFilledSegment() + 16;
 
-            // Clamp to at least 1 to prevent negative bound
-            if (topY < 1) {
-                topY = 1;
-            }
+            int range = topY - minY;
+            if (range < 1) range = 1;
 
-            int y = worldIn.rand.nextInt(topY);
+            int y = minY + worldIn.rand.nextInt(range);
             cir.setReturnValue(new BlockPos(x * 16 + worldIn.rand.nextInt(16), y, z * 16 + worldIn.rand.nextInt(16)));
         }
     }
