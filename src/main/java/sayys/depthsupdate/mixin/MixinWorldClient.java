@@ -10,6 +10,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import sayys.depthsupdate.util.DimensionHelper;
+
 @Mixin(World.class)
 public abstract class MixinWorldClient {
     @Shadow
@@ -23,9 +25,12 @@ public abstract class MixinWorldClient {
 
     @Inject(method = "getLightFromNeighborsFor", at = @At("HEAD"), cancellable = true)
     private void depthsupdate$getLightFromNeighborsFor(EnumSkyBlock type, @NonNull BlockPos pos, CallbackInfoReturnable<Integer> cir) {
-        if (pos.getY() >= -64 && pos.getY() < 0) {
-            World world = (World) (Object) this;
+        World world = (World) (Object) this;
+        if (!DimensionHelper.isExtendedDimension(world)) {
+            return;
+        }
 
+        if (pos.getY() >= DimensionHelper.EXTENDED_MIN_Y && pos.getY() < 0) {
             if (!world.provider.hasSkyLight() && type == EnumSkyBlock.SKY) {
                 cir.setReturnValue(0);
             } else {

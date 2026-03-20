@@ -1,7 +1,7 @@
 package sayys.depthsupdate.mixin;
 
-import javax.annotation.Nullable;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketBlockChange;
@@ -19,6 +19,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.Constant;
+
+import sayys.depthsupdate.util.DimensionHelper;
 
 @Mixin(PlayerChunkMapEntry.class)
 public abstract class MixinPlayerChunkMapEntry {
@@ -56,14 +58,19 @@ public abstract class MixinPlayerChunkMapEntry {
     @Shadow
     protected abstract void sendBlockEntity(@Nullable TileEntity p_187273_1_);
 
+    @Unique
+    private boolean depthsupdate$isExtended() {
+        return this.chunk != null && DimensionHelper.isExtendedDimension(this.chunk.getWorld());
+    }
+
     @ModifyConstant(method = "sendToPlayers", constant = @Constant(intValue = 65535))
     private int depthsupdate$modifySendToPlayersMask(int original) {
-        return 1048575; // 20 chunks mask
+        return depthsupdate$isExtended() ? 1048575 : original;
     }
 
     @ModifyConstant(method = "sendToPlayer", constant = @Constant(intValue = 65535))
     private int depthsupdate$modifySendToPlayerMask(int original) {
-        return 1048575; // 20 chunks mask
+        return depthsupdate$isExtended() ? 1048575 : original;
     }
 
     /**
@@ -77,11 +84,20 @@ public abstract class MixinPlayerChunkMapEntry {
                 this.playerChunkMap.entryChanged((PlayerChunkMapEntry) (Object) this);
             }
 
-            int sectionY = (y >> 4) + 4;
-            if (sectionY < 0)
-                sectionY = 0;
-            if (sectionY > 19)
-                sectionY = 19;
+            int sectionY;
+            if (depthsupdate$isExtended()) {
+                sectionY = (y >> 4) + DimensionHelper.SECTION_OFFSET;
+                if (sectionY < 0)
+                    sectionY = 0;
+                if (sectionY > DimensionHelper.EXTENDED_STORAGE_SECTIONS - 1)
+                    sectionY = DimensionHelper.EXTENDED_STORAGE_SECTIONS - 1;
+            } else {
+                sectionY = y >> 4;
+                if (sectionY < 0)
+                    sectionY = 0;
+                if (sectionY > DimensionHelper.VANILLA_STORAGE_SECTIONS - 1)
+                    sectionY = DimensionHelper.VANILLA_STORAGE_SECTIONS - 1;
+            }
             this.changedSectionFilter |= 1 << sectionY;
 
             // Pack X in upper 4 bits, Z in next 4 bits, Y in bottom 16 bits (as short).

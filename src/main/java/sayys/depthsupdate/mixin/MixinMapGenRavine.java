@@ -2,6 +2,7 @@ package sayys.depthsupdate.mixin;
 
 import java.util.Random;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -9,8 +10,12 @@ import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraft.world.gen.MapGenBase;
 import net.minecraft.world.gen.MapGenRavine;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import sayys.depthsupdate.util.BlockUtils;
 
 @Mixin(MapGenRavine.class)
 public abstract class MixinMapGenRavine extends MapGenBase {
@@ -26,26 +31,33 @@ public abstract class MixinMapGenRavine extends MapGenBase {
     @Shadow
     protected abstract boolean isTopBlock(ChunkPrimer data, int x, int y, int z, int chunkX, int chunkZ);
 
+    @Shadow
+    protected abstract void digBlock(ChunkPrimer data, int x, int y, int z, int chunkX, int chunkZ,
+            boolean foundTop);
+
+    @Shadow
+    protected abstract void addTunnel(long p_180707_1_, int p_180707_3_, int p_180707_4_, ChunkPrimer p_180707_5_, double p_180707_6_, double p_180707_8_, double p_180707_10_, float p_180707_12_, float p_180707_13_, float p_180707_14_, int p_180707_15_, int p_180707_16_, double p_180707_17_);
+
     /**
-     * @author __sayys
-     * @reason Expand negative Y depth lava level.
+     * Replaces digBlock to expand negative Y depth lava level.
      */
-    @Overwrite
-    protected void digBlock(ChunkPrimer data, int x, int y, int z, int chunkX, int chunkZ, boolean foundTop) {
+    @Inject(method = "digBlock", at = @At("HEAD"), cancellable = true)
+    protected void depthsupdate$digBlock(ChunkPrimer data, int x, int y, int z, int chunkX, int chunkZ, boolean foundTop, CallbackInfo ci) {
+        ci.cancel();
         net.minecraft.world.biome.Biome biome = this.world.getBiome(new BlockPos(x + chunkX * 16, 0, z + chunkZ * 16));
         IBlockState state = data.getBlockState(x, y, z);
-        IBlockState top = isExceptionBiome(biome) ? net.minecraft.init.Blocks.GRASS.getDefaultState() : biome.topBlock;
-        IBlockState filler = isExceptionBiome(biome) ? net.minecraft.init.Blocks.DIRT.getDefaultState()
+        IBlockState top = isExceptionBiome(biome) ? Blocks.GRASS.getDefaultState() : biome.topBlock;
+        IBlockState filler = isExceptionBiome(biome) ? Blocks.DIRT.getDefaultState()
                 : biome.fillerBlock;
 
-        IBlockState deepslate = sayys.depthsupdate.util.BlockUtils.getDeepslateBlockState();
-        if (state.getBlock() == net.minecraft.init.Blocks.STONE || state.getBlock() == top.getBlock()
+        IBlockState deepslate = BlockUtils.getDeepslateBlockState();
+        if (state.getBlock() == Blocks.STONE || state.getBlock() == top.getBlock()
                 || state.getBlock() == filler.getBlock()
                 || state == deepslate || state.getBlock() == deepslate.getBlock()) {
             if (y - 1 < -54) {
-                data.setBlockState(x, y, z, net.minecraft.init.Blocks.FLOWING_LAVA.getDefaultState());
+                data.setBlockState(x, y, z, Blocks.FLOWING_LAVA.getDefaultState());
             } else {
-                data.setBlockState(x, y, z, net.minecraft.init.Blocks.AIR.getDefaultState());
+                data.setBlockState(x, y, z, Blocks.AIR.getDefaultState());
 
                 if (foundTop && data.getBlockState(x, y - 1, z).getBlock() == filler.getBlock()) {
                     data.setBlockState(x, y - 1, z, top.getBlock().getDefaultState());
@@ -55,13 +67,11 @@ public abstract class MixinMapGenRavine extends MapGenBase {
     }
 
     /**
-     * @author __sayys
-     * @reason Expand Ravine loops down to Y=-63 bounds.
+     * Replaces addTunnel to expand Ravine loops down to Y=-63 bounds.
      */
-    @Overwrite
-    protected void addTunnel(long p_180707_1_, int p_180707_3_, int p_180707_4_, ChunkPrimer p_180707_5_,
-            double p_180707_6_, double p_180707_8_, double p_180707_10_, float p_180707_12_, float p_180707_13_,
-            float p_180707_14_, int p_180707_15_, int p_180707_16_, double p_180707_17_) {
+    @Inject(method = "addTunnel", at = @At("HEAD"), cancellable = true)
+    protected void depthsupdate$addTunnel(long p_180707_1_, int p_180707_3_, int p_180707_4_, ChunkPrimer p_180707_5_, double p_180707_6_, double p_180707_8_, double p_180707_10_, float p_180707_12_, float p_180707_13_, float p_180707_14_, int p_180707_15_, int p_180707_16_, double p_180707_17_, CallbackInfo ci) {
+        ci.cancel();
         Random random = new Random(p_180707_1_);
         double d0 = (double) (p_180707_3_ * 16 + 8);
         double d1 = (double) (p_180707_4_ * 16 + 8);
@@ -91,8 +101,9 @@ public abstract class MixinMapGenRavine extends MapGenBase {
         }
 
         for (; p_180707_15_ < p_180707_16_; ++p_180707_15_) {
-            double d9 = 1.5D + (double) (MathHelper.sin((float) p_180707_15_ * (float) Math.PI / (float) p_180707_16_)
-                    * p_180707_12_);
+            double d9 = 1.5D
+                    + (double) (MathHelper.sin((float) p_180707_15_ * (float) Math.PI / (float) p_180707_16_)
+                            * p_180707_12_);
             double d2 = d9 * p_180707_17_;
             d9 = d9 * ((double) random.nextFloat() * 0.25D + 0.75D);
             d2 = d2 * ((double) random.nextFloat() * 0.25D + 0.75D);
@@ -204,12 +215,13 @@ public abstract class MixinMapGenRavine extends MapGenBase {
     }
 
     /**
-     * @author __sayys
-     * @reason Expand Ravine origin levels into negative Y space!
+     * Replaces recursiveGenerate to expand Ravine origin levels into negative Y space.
      */
-    @Overwrite
-    protected void recursiveGenerate(World p_180701_1_, int p_180701_2_, int p_180701_3_, int p_180701_4_,
-            int p_180701_5_, ChunkPrimer p_180701_6_) {
+    @Inject(method = "recursiveGenerate", at = @At("HEAD"), cancellable = true)
+    protected void depthsupdate$recursiveGenerate(World p_180701_1_, int p_180701_2_, int p_180701_3_,
+            int p_180701_4_,
+            int p_180701_5_, ChunkPrimer p_180701_6_, CallbackInfo ci) {
+        ci.cancel();
         if (this.rand.nextInt(50) == 0) {
             double d0 = (double) (p_180701_2_ * 16 + this.rand.nextInt(16));
 
@@ -217,13 +229,13 @@ public abstract class MixinMapGenRavine extends MapGenBase {
             double d1 = (double) (this.rand.nextInt((int) vanillaLikeY) - 44);
 
             double d2 = (double) (p_180701_3_ * 16 + this.rand.nextInt(16));
-            int i = 1;
 
             for (int j = 0; j < 1; ++j) {
                 float f = this.rand.nextFloat() * ((float) Math.PI * 2F);
                 float f1 = (this.rand.nextFloat() - 0.5F) * 2.0F / 8.0F;
                 float f2 = (this.rand.nextFloat() * 2.0F + this.rand.nextFloat()) * 2.0F;
-                this.addTunnel(this.rand.nextLong(), p_180701_4_, p_180701_5_, p_180701_6_, d0, d1, d2, f2, f, f1, 0, 0,
+                this.addTunnel(this.rand.nextLong(), p_180701_4_, p_180701_5_, p_180701_6_, d0, d1, d2, f2, f, f1, 0,
+                        0,
                         3.0D);
             }
         }

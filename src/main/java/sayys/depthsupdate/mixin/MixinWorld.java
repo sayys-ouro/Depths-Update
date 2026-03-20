@@ -11,6 +11,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import sayys.depthsupdate.util.DimensionHelper;
+
 @Mixin(World.class)
 public abstract class MixinWorld {
     @Shadow
@@ -37,7 +39,13 @@ public abstract class MixinWorld {
     @Inject(method = "isAreaLoaded(IIIIIIZ)Z", at = @At("HEAD"), cancellable = true)
     private void depthsupdate$isAreaLoaded(int startX, int startY, int startZ, int endX, int endY, int endZ,
             boolean allowEmpty, CallbackInfoReturnable<Boolean> cir) {
-        if (endY >= -64 && startY < 256) {
+        World self = (World) (Object) this;
+        if (!DimensionHelper.isExtendedDimension(self)) {
+            return;
+        }
+
+        int minY = DimensionHelper.EXTENDED_MIN_Y;
+        if (endY >= minY && startY < DimensionHelper.EXTENDED_MAX_Y) {
             int chunkStartX = startX >> 4;
             int chunkStartZ = startZ >> 4;
             int chunkEndX = endX >> 4;
@@ -59,20 +67,34 @@ public abstract class MixinWorld {
 
     @Inject(method = "isOutsideBuildHeight", at = @At("HEAD"), cancellable = true)
     private void depthsupdate$isOutsideBuildHeight(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
-        cir.setReturnValue(pos.getY() < -64 || pos.getY() >= 256);
+        World self = (World) (Object) this;
+        if (!DimensionHelper.isExtendedDimension(self)) {
+            return;
+        }
+        cir.setReturnValue(pos.getY() < DimensionHelper.EXTENDED_MIN_Y
+                || pos.getY() >= DimensionHelper.EXTENDED_MAX_Y);
     }
 
     @Inject(method = "getLight(Lnet/minecraft/util/math/BlockPos;)I", at = @At("HEAD"), cancellable = true)
     private void depthsupdate$getLightSimple(BlockPos pos, CallbackInfoReturnable<Integer> cir) {
-        if (pos.getY() >= -64 && pos.getY() < 0) {
+        World self = (World) (Object) this;
+        if (!DimensionHelper.isExtendedDimension(self)) {
+            return;
+        }
+        if (pos.getY() >= DimensionHelper.EXTENDED_MIN_Y && pos.getY() < 0) {
             cir.setReturnValue(this.getChunk(pos).getLightSubtracted(pos, 0));
         }
     }
 
     @Inject(method = "getLight(Lnet/minecraft/util/math/BlockPos;Z)I", at = @At("HEAD"), cancellable = true)
     private void depthsupdate$getLight(BlockPos pos, boolean checkNeighbors, CallbackInfoReturnable<Integer> cir) {
-        if (pos.getY() >= -64 && pos.getY() < 0) {
-            if (pos.getX() >= -30000000 && pos.getZ() >= -30000000 && pos.getX() < 30000000 && pos.getZ() < 30000000) {
+        World self = (World) (Object) this;
+        if (!DimensionHelper.isExtendedDimension(self)) {
+            return;
+        }
+        if (pos.getY() >= DimensionHelper.EXTENDED_MIN_Y && pos.getY() < 0) {
+            if (pos.getX() >= -30000000 && pos.getZ() >= -30000000 && pos.getX() < 30000000
+                    && pos.getZ() < 30000000) {
                 if (checkNeighbors && this.getBlockState(pos).useNeighborBrightness()) {
                     int i1 = this.getLight(pos.up(), false);
                     int i = this.getLight(pos.east(), false);
@@ -102,7 +124,11 @@ public abstract class MixinWorld {
 
     @Inject(method = "getLightFor", at = @At("HEAD"), cancellable = true)
     private void depthsupdate$getLightFor(EnumSkyBlock type, BlockPos pos, CallbackInfoReturnable<Integer> cir) {
-        if (pos.getY() >= -64 && pos.getY() < 0) {
+        World self = (World) (Object) this;
+        if (!DimensionHelper.isExtendedDimension(self)) {
+            return;
+        }
+        if (pos.getY() >= DimensionHelper.EXTENDED_MIN_Y && pos.getY() < 0) {
             if (!this.isValid(pos)) {
                 cir.setReturnValue(type.defaultLightValue);
             } else if (!this.isBlockLoaded(pos)) {

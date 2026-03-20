@@ -6,6 +6,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.EnumSkyBlock;
+import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
@@ -13,6 +14,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import sayys.depthsupdate.util.DimensionHelper;
 
 @Mixin(ChunkCache.class)
 public abstract class MixinChunkCache {
@@ -26,30 +29,45 @@ public abstract class MixinChunkCache {
     protected Chunk[][] chunkArray;
 
     @Shadow
+    protected World world;
+
+    @Shadow
     protected abstract boolean withinBounds(int x, int z);
 
     @Inject(method = "getBlockState", at = @At("HEAD"), cancellable = true)
     private void depthsupdate$getBlockState(@NonNull BlockPos pos, CallbackInfoReturnable<IBlockState> cir) {
-        if (pos.getY() >= -64 && pos.getY() < 0) {
+        if (!DimensionHelper.isExtendedDimension(this.world)) {
+            return;
+        }
+
+        if (pos.getY() >= DimensionHelper.EXTENDED_MIN_Y && pos.getY() < 0) {
             int i = (pos.getX() >> 4) - this.chunkX;
             int j = (pos.getZ() >> 4) - this.chunkZ;
 
             if (i >= 0 && i < this.chunkArray.length && j >= 0 && j < this.chunkArray[i].length) {
                 Chunk chunk = this.chunkArray[i][j];
+
                 if (chunk != null) {
                     cir.setReturnValue(chunk.getBlockState(pos));
+
                     return;
                 }
             }
+
             cir.setReturnValue(Blocks.AIR.getDefaultState());
         }
     }
 
     @Inject(method = "getLightFor", at = @At("HEAD"), cancellable = true)
     private void depthsupdate$getLightFor(EnumSkyBlock type, @NonNull BlockPos pos, CallbackInfoReturnable<Integer> cir) {
-        if (pos.getY() >= -64 && pos.getY() < 0) {
+        if (!DimensionHelper.isExtendedDimension(this.world)) {
+            return;
+        }
+
+        if (pos.getY() >= DimensionHelper.EXTENDED_MIN_Y && pos.getY() < 0) {
             int i = (pos.getX() >> 4) - this.chunkX;
             int j = (pos.getZ() >> 4) - this.chunkZ;
+
             if (!this.withinBounds(i, j)) {
                 cir.setReturnValue(type.defaultLightValue);
             } else {
@@ -60,9 +78,14 @@ public abstract class MixinChunkCache {
 
     @Inject(method = "getLightForExt", at = @At("HEAD"), cancellable = true)
     private void depthsupdate$getLightForExt(EnumSkyBlock type, @NonNull BlockPos pos, CallbackInfoReturnable<Integer> cir) {
-        if (pos.getY() >= -64 && pos.getY() < 0) {
+        if (!DimensionHelper.isExtendedDimension(this.world)) {
+            return;
+        }
+
+        if (pos.getY() >= DimensionHelper.EXTENDED_MIN_Y && pos.getY() < 0) {
             int i = (pos.getX() >> 4) - this.chunkX;
             int j = (pos.getZ() >> 4) - this.chunkZ;
+
             if (!this.withinBounds(i, j)) {
                 cir.setReturnValue(type.defaultLightValue);
             } else {
@@ -72,11 +95,15 @@ public abstract class MixinChunkCache {
     }
 
     @Inject(method = "isSideSolid", at = @At("HEAD"), cancellable = true)
-    private void depthsupdate$isSideSolid(@NonNull BlockPos pos, EnumFacing side, boolean _default,
-                                          CallbackInfoReturnable<Boolean> cir) {
-        if (pos.getY() >= -64 && pos.getY() < 0) {
+    private void depthsupdate$isSideSolid(@NonNull BlockPos pos, EnumFacing side, boolean _default, CallbackInfoReturnable<Boolean> cir) {
+        if (!DimensionHelper.isExtendedDimension(this.world)) {
+            return;
+        }
+
+        if (pos.getY() >= DimensionHelper.EXTENDED_MIN_Y && pos.getY() < 0) {
             int x = (pos.getX() >> 4) - this.chunkX;
             int z = (pos.getZ() >> 4) - this.chunkZ;
+
             if (!withinBounds(x, z)) {
                 cir.setReturnValue(_default);
             } else {
