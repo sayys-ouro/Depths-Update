@@ -14,11 +14,13 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.Chunk;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
+import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import sayys.depthsupdate.util.DimensionHelper;
 
@@ -74,11 +76,13 @@ public abstract class MixinPlayerChunkMapEntry {
     }
 
     /**
-     * @author __sayys
-     * @reason Prevent 8-bit Y truncation which breaks negative coordinates, and shift section filter bits.
+     * Replaces vanilla blockChanged to prevent 8-bit Y truncation which breaks
+     * negative coordinates, and to shift section filter bits for extended dimensions.
      */
-    @Overwrite
-    public void blockChanged(int x, int y, int z) {
+    @Inject(method = "blockChanged", at = @At("HEAD"), cancellable = true)
+    private void depthsupdate$blockChanged(int x, int y, int z, CallbackInfo ci) {
+        ci.cancel();
+
         if (this.sentToPlayers) {
             if (this.changes == 0) {
                 this.playerChunkMap.entryChanged((PlayerChunkMapEntry) (Object) this);
@@ -100,7 +104,7 @@ public abstract class MixinPlayerChunkMapEntry {
             }
             this.changedSectionFilter |= 1 << sectionY;
 
-            // Pack X in upper 4 bits, Z in next 4 bits, Y in bottom 16 bits (as short).
+            // Pack X in upper 4 bits, Z in next 4 bits, Y in bottom 16 bits.
             int packed = (x << 28) | (z << 24) | (y & 65535);
 
             for (int i = 0; i < this.changes; ++i) {
@@ -119,11 +123,12 @@ public abstract class MixinPlayerChunkMapEntry {
     }
 
     /**
-     * @author __sayys
-     * @reason Unpack using 16-bit Y coordinates and use SPacketBlockChange.
+     * Replaces vanilla update to unpack from 16-bit Y coordinates stored in int[].
      */
-    @Overwrite
-    public void update() {
+    @Inject(method = "update", at = @At("HEAD"), cancellable = true)
+    private void depthsupdate$update(CallbackInfo ci) {
+        ci.cancel();
+
         if (this.sentToPlayers && this.chunk != null) {
             if (this.changes != 0) {
                 if (this.changes == 1) {
