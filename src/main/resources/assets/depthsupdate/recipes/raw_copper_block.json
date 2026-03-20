@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "depthsupdate:raw_copper"
+    }
+  },
+  "result": {
+    "item": "depthsupdate:raw_copper_block",
+    "count": 1
+  }
+}
