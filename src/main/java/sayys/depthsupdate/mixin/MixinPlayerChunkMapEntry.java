@@ -90,7 +90,7 @@ public abstract class MixinPlayerChunkMapEntry {
 
             int sectionY;
             if (depthsupdate$isExtended()) {
-                sectionY = (y >> 4) + DimensionHelper.SECTION_OFFSET;
+                sectionY = DimensionHelper.toStorageIndex(this.chunk.getWorld(), y);
                 if (sectionY < 0)
                     sectionY = 0;
                 if (sectionY > DimensionHelper.EXTENDED_STORAGE_SECTIONS - 1)

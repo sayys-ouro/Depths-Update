@@ -164,7 +164,7 @@ public abstract class MixinChunk {
                     IBlockState iblockstate = primer.getBlockState(j, l, k);
 
                     if (iblockstate.getMaterial() != net.minecraft.block.material.Material.AIR) {
-                        int chunkY = (l >> 4) + DimensionHelper.SECTION_OFFSET;
+                        int chunkY = DimensionHelper.toStorageIndex(this.world, l);
 
                         if (this.storageArrays[chunkY] == NULL_BLOCK_STORAGE) {
                             this.storageArrays[chunkY] = new ExtendedBlockStorage(l >> 4 << 4, flag);
@@ -192,7 +192,7 @@ public abstract class MixinChunk {
         }
 
         for (int i = startY; i <= endY; i += 16) {
-            int chunkY = (i >> 4) + DimensionHelper.SECTION_OFFSET;
+            int chunkY = DimensionHelper.toStorageIndex(this.world, i);
 
             if (chunkY >= 0 && chunkY < this.storageArrays.length) {
                 ExtendedBlockStorage extendedblockstorage = this.storageArrays[chunkY];
@@ -270,7 +270,7 @@ public abstract class MixinChunk {
 
             cir.setReturnValue(iblockstate == null ? Blocks.AIR.getDefaultState() : iblockstate);
         } else {
-            int chunkY = (y >> 4) + DimensionHelper.SECTION_OFFSET;
+            int chunkY = DimensionHelper.toStorageIndex(this.world, y);
 
             if (y >= DimensionHelper.EXTENDED_MIN_Y && chunkY < this.storageArrays.length) {
                 ExtendedBlockStorage extendedblockstorage = this.storageArrays[chunkY];
@@ -314,7 +314,7 @@ public abstract class MixinChunk {
             Block block = state.getBlock();
             Block block1 = iblockstate.getBlock();
             int k1 = iblockstate.getLightOpacity(this.world, pos);
-            int chunkY = (j >> 4) + DimensionHelper.SECTION_OFFSET;
+            int chunkY = DimensionHelper.toStorageIndex(this.world, j);
 
             if (chunkY < 0 || chunkY >= this.storageArrays.length) {
                 cir.setReturnValue(null);
@@ -409,7 +409,7 @@ public abstract class MixinChunk {
         int i = pos.getX() & 15;
         int j = pos.getY();
         int k = pos.getZ() & 15;
-        int chunkY = (j >> 4) + DimensionHelper.SECTION_OFFSET;
+        int chunkY = DimensionHelper.toStorageIndex(this.world, j);
 
         if (chunkY < 0 || chunkY >= this.storageArrays.length) {
             cir.setReturnValue(type.defaultLightValue);
@@ -440,7 +440,7 @@ public abstract class MixinChunk {
         int i = pos.getX() & 15;
         int j = pos.getY();
         int k = pos.getZ() & 15;
-        int chunkY = (j >> 4) + DimensionHelper.SECTION_OFFSET;
+        int chunkY = DimensionHelper.toStorageIndex(this.world, j);
 
         if (chunkY < 0 || chunkY >= this.storageArrays.length) {
             ci.cancel();
@@ -478,7 +478,7 @@ public abstract class MixinChunk {
         int i = pos.getX() & 15;
         int j = pos.getY();
         int k = pos.getZ() & 15;
-        int chunkY = (j >> 4) + DimensionHelper.SECTION_OFFSET;
+        int chunkY = DimensionHelper.toStorageIndex(this.world, j);
 
         if (chunkY < 0 || chunkY >= this.storageArrays.length) {
             cir.setReturnValue(this.world.provider.hasSkyLight() && amount < EnumSkyBlock.SKY.defaultLightValue
@@ -508,8 +508,7 @@ public abstract class MixinChunk {
     }
 
     /**
-     * Second inject on primer constructor — for extended dimensions, this completely rebuilds
-     * the chunk from the primer to handle the full -64 to 255 range.
+     * Second inject on primer constructor — for extended dimensions, this completely rebuilds the chunk from the primer to handle the full -64 to 255 range.
      * For non-extended dimensions, vanilla's constructor output is used as-is.
      */
     @Inject(method = "<init>(Lnet/minecraft/world/World;Lnet/minecraft/world/chunk/ChunkPrimer;II)V", at = @At("RETURN"))
@@ -534,7 +533,7 @@ public abstract class MixinChunk {
                     IBlockState iblockstate = primer.getBlockState(j, l, k);
 
                     if (iblockstate.getMaterial() != net.minecraft.block.material.Material.AIR) {
-                        int chunkY = (l >> 4) + DimensionHelper.SECTION_OFFSET;
+                        int chunkY = DimensionHelper.toStorageIndex(this.world, l);
 
                         if (this.storageArrays[chunkY] == null) {
                             this.storageArrays[chunkY] = new ExtendedBlockStorage(l >> 4 << 4, flag);
@@ -553,7 +552,15 @@ public abstract class MixinChunk {
             return;
         }
 
-        for (int i = this.storageArrays.length - 1; i >= 0; --i) {
+        for (int i = 15; i >= 0; --i) {
+            if (this.storageArrays[i] != NULL_BLOCK_STORAGE) {
+                cir.setReturnValue(this.storageArrays[i].getYLocation());
+
+                return;
+            }
+        }
+
+        for (int i = 16; i <= 19; ++i) {
             if (this.storageArrays[i] != NULL_BLOCK_STORAGE) {
                 cir.setReturnValue(this.storageArrays[i].getYLocation());
 
@@ -632,7 +639,7 @@ public abstract class MixinChunk {
                     int k1 = 15;
                     int i1 = i + 16 - 1;
 
-                    while (true) {
+            while (true) {
                         int j1 = this.getBlockLightOpacity(j, i1, k);
 
                         if (j1 == 0 && k1 != 15) {
@@ -642,7 +649,7 @@ public abstract class MixinChunk {
                         k1 -= j1;
 
                         if (k1 > 0) {
-                            int chunkY = (i1 >> 4) + sectionOffset;
+                            int chunkY = DimensionHelper.toStorageIndex(this.world, i1);
 
                             if (chunkY >= 0 && chunkY < this.storageArrays.length) {
                                 ExtendedBlockStorage extendedblockstorage = this.storageArrays[chunkY];
@@ -698,7 +705,7 @@ public abstract class MixinChunk {
             if (this.world.provider.hasSkyLight()) {
                 if (j < i) {
                     for (int j1 = j; j1 < i; ++j1) {
-                        int chunkY = (j1 >> 4) + sectionOffset;
+                        int chunkY = DimensionHelper.toStorageIndex(this.world, j1);
 
                         if (chunkY >= 0 && chunkY < this.storageArrays.length) {
                             ExtendedBlockStorage extendedblockstorage2 = this.storageArrays[chunkY];
@@ -711,7 +718,7 @@ public abstract class MixinChunk {
                     }
                 } else {
                     for (int i1 = i; i1 < j; ++i1) {
-                        int chunkY = (i1 >> 4) + sectionOffset;
+                        int chunkY = DimensionHelper.toStorageIndex(this.world, i1);
 
                         if (chunkY >= 0 && chunkY < this.storageArrays.length) {
                             ExtendedBlockStorage extendedblockstorage = this.storageArrays[chunkY];
@@ -740,7 +747,7 @@ public abstract class MixinChunk {
                         k1 = 0;
                     }
 
-                    int chunkY = (j >> 4) + sectionOffset;
+                    int chunkY = DimensionHelper.toStorageIndex(this.world, j);
 
                     if (chunkY >= 0 && chunkY < this.storageArrays.length) {
                         ExtendedBlockStorage extendedblockstorage1 = this.storageArrays[chunkY];
@@ -793,7 +800,7 @@ public abstract class MixinChunk {
             entityIn.setDead();
         }
 
-        int k = MathHelper.floor(entityIn.posY / 16.0D) + DimensionHelper.SECTION_OFFSET;
+        int k = DimensionHelper.toStorageIndex(this.world, MathHelper.floor(entityIn.posY));
 
         if (k < 0) {
             k = 0;

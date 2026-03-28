@@ -42,14 +42,57 @@ public final class DimensionHelper {
 
     /**
      * Converts a world Y coordinate to a storage array index.
-     * For extended dimensions: (y >> 4) + 4
+     * For extended dimensions:
+     * - Y >= 0: index = y >> 4 (Indices 0-15)
+     * - Y < 0 : index = 15 - (y >> 4) (Indices 16-19)
      * For vanilla dimensions: y >> 4
      */
     public static int toStorageIndex(World world, int y) {
-        if (isExtendedDimension(world)) {
-            return (y >> 4) + SECTION_OFFSET;
+        return toStorageIndex(isExtendedDimension(world), y);
+    }
+
+    public static int toStorageIndex(boolean isExtended, int y) {
+        int sectionY = y >> 4;
+
+        if (isExtended) {
+            // Vanilla range
+            if (sectionY >= 0 && sectionY < 16) {
+                return sectionY;
+            }
+
+            // Negative range
+            if (sectionY < 0 && sectionY >= -4) {
+                return 15 - sectionY;
+            }
+
+            if (sectionY >= 16 && sectionY < 20) {
+                return sectionY;
+            }
         }
 
-        return y >> 4;
+        return sectionY;
+    }
+
+    /**
+     * Converts a storage array index back to a section Y coordinate.
+     */
+    public static int fromStorageIndex(World world, int index) {
+        return fromStorageIndex(isExtendedDimension(world), index);
+    }
+
+    public static int fromStorageIndex(boolean isExtended, int index) {
+        if (isExtended) {
+            // Vanilla range
+            if (index >= 0 && index < 16) {
+                return index;
+            }
+
+            // Negative range
+            if (index >= 16 && index < 20) {
+                return 15 - index;
+            }
+        }
+
+        return index;
     }
 }
