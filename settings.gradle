@@ -9,6 +9,7 @@
 pluginManagement {
     repositories {
         mavenCentral()
+
         maven {
             url = "https://maven.neoforged.net/releases"
         }
@@ -38,7 +39,7 @@ pluginManagement {
 
 plugins {
     // Automatic toolchain provisioning
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
 // Due to an IntelliJ bug, this has to be done

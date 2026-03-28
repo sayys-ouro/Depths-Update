@@ -5,6 +5,10 @@ repositories {
     // CleanroomMC: https://maven.cleanroommc.com
     maven {
         name = "CurseMaven"
+        url = "https://cursemaven.com"
+    }
+    maven {
+        name = "CleanroomCurseMaven"
         url = "https://curse.cleanroommc.com"
     }
     maven {
@@ -14,6 +18,7 @@ repositories {
     maven {
         url = "https://repo.spongepowered.org/repository/maven-public/"
     }
+
     mavenLocal() // Must be last for caching to work
 }
 
@@ -25,11 +30,11 @@ dependencies {
         compileOnly "com.cleanroommc:lwjglx:1.0.0"
     }
 
-    modImplementation "curse.maven:fugue-1005815:7663573"
-    modImplementation "curse.maven:had-enough-items-557549:7515497"
-    modImplementation "curse.maven:fluidloggedapi-485654:7581579"
-    modImplementation "curse.maven:reid-629017:7571353"
-    modImplementation "curse.maven:redcore-873867:7455761"
+    modImplementation("curse.maven:fugue-1005815:7663573")
+    modImplementation("curse.maven:had-enough-items-557549:7515497")
+    modImplementation("curse.maven:fluidloggedapi-485654:7581579")
+    modImplementation("curse.maven:reid-629017:7571353")
+    modImplementation("curse.maven:redcore-873867:7455761")
     // modImplementation "curse.maven:alfheim-910715:6687458"
 
     // Example - Dependency descriptor:
