@@ -2,7 +2,7 @@
   "required": true,
   "package": "sayys.depthsupdate.mixin.mod",
   "plugin": "sayys.depthsupdate.ModMixinConfigPlugin",
-  "compatibilityLevel": "JAVA_25",
+  "compatibilityLevel": "JAVA_21",
   "target": "@env(MOD)",
   "client": [
     "optifine.MixinOptiFineRenderChunk",
@@ -11,7 +11,11 @@
     "nothirium.MixinNothiriumWorldUtil",
     "nothirium.MixinNothiriumRenderChunk",
     "nothirium.MixinNothiriumDirectionDown",
-    "nothirium.MixinNothiriumDirectionUp"
+    "nothirium.MixinNothiriumDirectionUp",
+    "celeritas.MixinCeleritasWorldRenderer",
+    "celeritas.MixinVintageRenderSectionManager",
+    "celeritas.MixinCeleritasWorldSlice",
+    "celeritas.MixinClonedChunkSection"
   ],
   "mixins": [],
   "server": [],

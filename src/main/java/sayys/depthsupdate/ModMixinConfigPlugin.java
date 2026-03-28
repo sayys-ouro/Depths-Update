@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 public class ModMixinConfigPlugin implements IMixinConfigPlugin {
     private static final boolean OPTIFINE_LOADED = detectOptiFine();
     private static final boolean NOTHIRIUM_LOADED = detectNothirium();
+    private static final boolean CELERITAS_LOADED = detectCeleritas();
 
     private static boolean detectOptiFine() {
         try {
@@ -22,6 +23,15 @@ public class ModMixinConfigPlugin implements IMixinConfigPlugin {
     private static boolean detectNothirium() {
         try {
             Class.forName("meldexun.nothirium.mc.Nothirium");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
+    private static boolean detectCeleritas() {
+        try {
+            Class.forName("org.taumc.celeritas.CeleritasVintage");
             return true;
         } catch (ClassNotFoundException e) {
             return false;
@@ -56,6 +66,10 @@ public class ModMixinConfigPlugin implements IMixinConfigPlugin {
 
         if (mixinClassName.contains(".mod.nothirium.")) {
             return NOTHIRIUM_LOADED;
+        }
+
+        if (mixinClassName.contains(".mod.celeritas.")) {
+            return CELERITAS_LOADED;
         }
 
         return true;
