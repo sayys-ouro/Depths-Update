@@ -8,11 +8,20 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
 public class ModMixinConfigPlugin implements IMixinConfigPlugin {
     private static final boolean OPTIFINE_LOADED = detectOptiFine();
+    private static final boolean NOTHIRIUM_LOADED = detectNothirium();
 
     private static boolean detectOptiFine() {
         try {
             Class.forName("optifine.OptiFineForgeTweaker");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
 
+    private static boolean detectNothirium() {
+        try {
+            Class.forName("meldexun.nothirium.mc.Nothirium");
             return true;
         } catch (ClassNotFoundException e) {
             return false;
@@ -43,6 +52,10 @@ public class ModMixinConfigPlugin implements IMixinConfigPlugin {
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         if (mixinClassName.contains(".optifine.")) {
             return OPTIFINE_LOADED;
+        }
+
+        if (mixinClassName.contains(".mod.nothirium.")) {
+            return NOTHIRIUM_LOADED;
         }
 
         return true;

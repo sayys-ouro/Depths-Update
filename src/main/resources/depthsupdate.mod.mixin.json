@@ -2,12 +2,16 @@
   "required": true,
   "package": "sayys.depthsupdate.mixin.mod",
   "plugin": "sayys.depthsupdate.ModMixinConfigPlugin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_25",
   "target": "@env(MOD)",
   "client": [
     "optifine.MixinOptiFineRenderChunk",
     "optifine.MixinOptiFineViewFrustum",
-    "optifine.MixinOptiFineRenderChunkUtils"
+    "optifine.MixinOptiFineRenderChunkUtils",
+    "nothirium.MixinNothiriumWorldUtil",
+    "nothirium.MixinNothiriumRenderChunk",
+    "nothirium.MixinNothiriumDirectionDown",
+    "nothirium.MixinNothiriumDirectionUp"
   ],
   "mixins": [],
   "server": [],

@@ -5,6 +5,7 @@
 **/build/
 !**/src/**/build/
 
+.agents/
 docs/
 run/
 sources/

@@ -35,6 +35,9 @@ dependencies {
     modImplementation("curse.maven:fluidloggedapi-485654:7581579")
     modImplementation("curse.maven:reid-629017:7571353")
     modImplementation("curse.maven:redcore-873867:7455761")
+    modImplementation("curse.maven:renderlib-624967:6461209")
+    modImplementation("curse.maven:nothirium-624960:7441674")
+    modImplementation("curse.maven:naughthirium-1153019:6473489")
     // modImplementation "curse.maven:alfheim-910715:6687458"
 
     // Example - Dependency descriptor:
