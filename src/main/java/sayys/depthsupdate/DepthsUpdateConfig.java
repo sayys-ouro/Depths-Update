@@ -51,11 +51,13 @@ public class DepthsUpdateConfig {
         @Config.Name("Global Minimum Y")
         @Config.Comment("The minimum Y coordinate for extended dimensions. Must be a multiple of 16.")
         @Config.RangeInt(min = -2048, max = 0)
+        @Config.RequiresMcRestart
         public int globalMinY = -64;
 
         @Config.Name("Global Maximum Y")
         @Config.Comment("The maximum Y coordinate for extended dimensions. Must be a multiple of 16.")
         @Config.RangeInt(min = 256, max = 2048)
+        @Config.RequiresMcRestart
         public int globalMaxY = 320;
 
         @Config.Name("Extended Dimensions")
@@ -268,6 +270,45 @@ public class DepthsUpdateConfig {
         @Config.Name("Enable Aquifers")
         @Config.RequiresMcRestart
         public boolean enableAquifers = false;
+    }
+
+    @Config.Name("Modern World Generation")
+    @Config.Comment("Caves & Cliffs style world generation using density functions.")
+    public static final ModernWorldGen modernWorldGen = new ModernWorldGen();
+
+    public static class ModernWorldGen {
+        @Config.Name("Enable Modern World Gen")
+        @Config.Comment("Replaces vanilla terrain generation with C&C density function pipeline. EXPERIMENTAL.")
+        @Config.RequiresMcRestart
+        public boolean enableModernWorldGen = false;
+
+        @Config.Name("Large Biomes")
+        @Config.RequiresMcRestart
+        public boolean largeBiomes = false;
+
+        @Config.Name("Amplified")
+        @Config.RequiresMcRestart
+        public boolean amplified = false;
+
+        @Config.Name("Enable Cheese Caves")
+        @Config.Comment("Generate large open caverns (cheese caves) in the modern pipeline.")
+        @Config.RequiresMcRestart
+        public boolean enableCheeseCaves = true;
+
+        @Config.Name("Enable Spaghetti Caves")
+        @Config.Comment("Generate spaghetti-shaped tunnels in the modern pipeline.")
+        @Config.RequiresMcRestart
+        public boolean enableSpaghettiCaves = true;
+
+        @Config.Name("Enable Noodle Caves")
+        @Config.Comment("Generate narrow noodle-shaped tunnels in the modern pipeline.")
+        @Config.RequiresMcRestart
+        public boolean enableNoodleCaves = true;
+
+        @Config.Name("Enable Aquifers")
+        @Config.Comment("Generate noise-based underground water/lava aquifers in the modern pipeline.")
+        @Config.RequiresMcRestart
+        public boolean enableAquifers = true;
     }
 
     static {

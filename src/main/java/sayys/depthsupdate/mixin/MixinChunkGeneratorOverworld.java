@@ -20,6 +20,7 @@ import sayys.depthsupdate.core.HeightContext;
 import sayys.depthsupdate.core.HeightManager;
 import sayys.depthsupdate.util.BlockUtils;
 import sayys.depthsupdate.world.generation.AquiferGenerator;
+import sayys.depthsupdate.world.generation.NoiseBasedChunkGenerator;
 import sayys.depthsupdate.world.generation.river.UndergroundRiverGenerator;
 
 @Mixin(ChunkGeneratorOverworld.class)
@@ -36,8 +37,29 @@ public abstract class MixinChunkGeneratorOverworld {
     @Unique
     private AquiferGenerator depthsupdate$aquiferGenerator;
 
+    @Unique
+    private NoiseBasedChunkGenerator depthsupdate$modernGenerator;
+
+    /** Stores climate-mapped biomes from generateTerrain for applying to the Chunk later. */
+    @Unique
+    private Biome[] depthsupdate$lastClimateBiomes;
+
     @Inject(method = "setBlocksInChunk", at = @At("RETURN"))
     private void depthsupdate$fillDeepUnderground(int x, int z, ChunkPrimer primer, CallbackInfo ci) {
+        // If modern world gen is enabled, use the new density function pipeline
+        if (DepthsUpdateConfig.modernWorldGen.enableModernWorldGen) {
+            if (this.depthsupdate$modernGenerator == null) {
+                this.depthsupdate$modernGenerator = new NoiseBasedChunkGenerator(this.world);
+            }
+
+            // Get biomes for this chunk — generateTerrain will overwrite with climate biomes
+            Biome[] biomes = this.world.getBiomeProvider().getBiomes(null, x * 16, z * 16, 16, 16);
+            this.depthsupdate$modernGenerator.generateTerrain(x, z, primer, biomes);
+            this.depthsupdate$lastClimateBiomes = biomes;
+            return; // Skip legacy generation
+        }
+
+        // Legacy generation path
         HeightContext ctx = HeightManager.get(this.world);
         int minY = ctx.minY();
         IBlockState stone = Blocks.STONE.getDefaultState();
@@ -88,6 +110,26 @@ public abstract class MixinChunkGeneratorOverworld {
             }
 
             this.depthsupdate$aquiferGenerator.generate(x, z, primer);
+        }
+    }
+
+    /**
+     * After the Chunk is fully constructed, overwrite its biome array with our
+     * climate-mapped biomes so F3 display and mob spawning use correct biomes.
+     */
+    @Inject(method = "generateChunk", at = @At("RETURN"))
+    private void depthsupdate$fixChunkBiomes(int x, int z, CallbackInfoReturnable<Chunk> cir) {
+        if (DepthsUpdateConfig.modernWorldGen.enableModernWorldGen
+                && this.depthsupdate$lastClimateBiomes != null) {
+            Chunk chunk = cir.getReturnValue();
+            byte[] biomeArray = chunk.getBiomeArray();
+            for (int i = 0; i < 256 && i < this.depthsupdate$lastClimateBiomes.length; i++) {
+                Biome biome = this.depthsupdate$lastClimateBiomes[i];
+                if (biome != null) {
+                    biomeArray[i] = (byte) (Biome.getIdForBiome(biome) & 0xFF);
+                }
+            }
+            this.depthsupdate$lastClimateBiomes = null;
         }
     }
 }
