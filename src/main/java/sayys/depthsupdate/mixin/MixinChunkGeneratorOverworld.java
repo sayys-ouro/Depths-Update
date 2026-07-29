@@ -38,6 +38,10 @@ public abstract class MixinChunkGeneratorOverworld {
 
     @Inject(method = "setBlocksInChunk", at = @At("RETURN"))
     private void depthsupdate$fillDeepUnderground(int x, int z, ChunkPrimer primer, CallbackInfo ci) {
+        if (((Object) this).getClass() != ChunkGeneratorOverworld.class) {
+            return;
+        }
+
         HeightContext ctx = HeightManager.get(this.world);
         int minY = ctx.minY();
         IBlockState stone = Blocks.STONE.getDefaultState();

@@ -64,7 +64,7 @@ public class MixinChunkProviderServer {
     private Chunk depthsupdate$onGenerateChunk(IChunkGenerator generator, int x, int z) {
         Chunk chunk = generator.generateChunk(x, z);
 
-        if (generator instanceof ChunkGeneratorOverworld) {
+        if (generator.getClass() == ChunkGeneratorOverworld.class) {
             return chunk;
         }
 

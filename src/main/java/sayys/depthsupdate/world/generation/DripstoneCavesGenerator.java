@@ -9,6 +9,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.gen.ChunkGeneratorDebug;
+import net.minecraft.world.gen.ChunkGeneratorFlat;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.fml.common.IWorldGenerator;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -30,6 +32,10 @@ public class DripstoneCavesGenerator implements IWorldGenerator {
         }
 
         if (world.provider.getDimension() != 0) {
+            return;
+        }
+
+        if (chunkGenerator instanceof ChunkGeneratorFlat || chunkGenerator instanceof ChunkGeneratorDebug) {
             return;
         }
 
