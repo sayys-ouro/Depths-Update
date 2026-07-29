@@ -14,15 +14,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import sayys.depthsupdate.DepthsUpdateConfig;
-import sayys.depthsupdate.DepthsUpdateMod;
 import sayys.depthsupdate.core.HeightManager;
 
 @Mixin(EntityBoat.class)
 public abstract class MixinEntityBoat {
     @Shadow private double waterLevel;
-
-    @Shadow private EntityBoat.Status status;
 
     /** Target distance of the boat's bottom below the water surface while floating. */
     @Unique
