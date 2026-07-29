@@ -34,13 +34,15 @@ public class DripstoneCavesGenerator implements IWorldGenerator {
         }
 
         if (random.nextInt(DepthsUpdateConfig.dripstoneCaves.dripstoneCavesRarity) == 0) {
-            int x = chunkX * 16 + random.nextInt(16);
+            // Match vanilla's chunk-decoration offset so this cannot reach
+            // into a neighbor chunk that has not been populated yet.
+            int x = chunkX * 16 + 8 + random.nextInt(16);
             int minY = DepthsUpdateConfig.dripstoneCaves.dripstoneCavesMinY;
             int maxY = DepthsUpdateConfig.dripstoneCaves.dripstoneCavesMaxY;
             int yRange = Math.max(1, maxY - minY + 1);
 
             int y = minY + random.nextInt(yRange);
-            int z = chunkZ * 16 + random.nextInt(16);
+            int z = chunkZ * 16 + 8 + random.nextInt(16);
 
             BlockPos centerPos = new BlockPos(x, y, z);
 

@@ -34,7 +34,11 @@
     "MixinWorldEntitySpawner",
     "MixinEntity",
     "MixinChunkProviderServer",
-    "MixinMinecraftServer"
+    "MixinMinecraftServer",
+    "MixinBlockSkull",
+    "MixinWalkNodeProcessor",
+    "MixinEntityBoat",
+    "MixinBlockFalling"
   ],
   "server": [],
   "setSourceFile": true,

@@ -483,7 +483,7 @@ public class BlockPointedDripstone extends Block {
                 if (randomValue < transferProbability) {
                     BlockPos tipPos = findTip(state, world, pos, 11, false);
 
-                    if (tipPos != null) {
+                    if (tipPos != null && fluidAbove == Material.WATER) {
                         BlockPos cauldronPos = findFillableCauldronBelowStalactiteTip(world, tipPos);
 
                         if (cauldronPos != null) {

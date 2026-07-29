@@ -1,5 +1,8 @@
 package sayys.depthsupdate.util;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -36,11 +39,15 @@ public class BlockUtils {
         DEEPSLATE_ORE_MAP.put(DeepslateRegistry.copper_ore, DeepslateRegistry.deepslate_copper_ore);
     }
 
+    private static final Map<Block, Boolean> DEEPSLATE_LOOKUP_CACHE = new ConcurrentHashMap<>();
+
     public static void clearCaches() {
         cachedDeepslateBlockState = null;
         cachedCheeseDebugBlockState = null;
         cachedSpaghettiDebugBlockState = null;
         cachedRiverDebugBlockState = null;
+        DEEPSLATE_LOOKUP_CACHE.clear();
+        deepslateOreID = -1;
     }
 
     public static IBlockState getDeepslateBlockState() {
@@ -50,7 +57,11 @@ public class BlockUtils {
         Block block = Block.getBlockFromName(blockName);
 
         if (block == null || block == Blocks.AIR) {
-            cachedDeepslateBlockState = DeepslateRegistry.deepslate.getDefaultState();
+            if (DepthsUpdateConfig.REGISTRY.enableDeepslateFamily) {
+                cachedDeepslateBlockState = DeepslateRegistry.deepslate.getDefaultState();
+            } else {
+                cachedDeepslateBlockState = Blocks.STONE.getDefaultState();
+            }
         } else {
             cachedDeepslateBlockState = block.getDefaultState();
         }
@@ -98,6 +109,19 @@ public class BlockUtils {
 
         Block block = state.getBlock();
 
+        Boolean cached = DEEPSLATE_LOOKUP_CACHE.get(block);
+
+        if (cached != null) {
+            return cached;
+        }
+
+        boolean result = computeIsDeepslate(block);
+        DEEPSLATE_LOOKUP_CACHE.put(block, result);
+
+        return result;
+    }
+
+    private static boolean computeIsDeepslate(Block block) {
         if (block == DeepslateRegistry.deepslate) return true;
 
         if (block.getRegistryName() != null && block.getRegistryName().toString().equals(DepthsUpdateConfig.deepslateBlock)) return true;

@@ -91,7 +91,7 @@ public class DepthsUpdateConfig {
         public boolean convertOldWorlds = true;
 
         @Config.Name("Extend Custom World Types")
-        @Config.Comment("Apply deep terrain fill (bedrock, deepslate, stone) below Y=0 for non-vanilla chunk generators (e.g. Biomes O' Plenty, RTG).")
+        @Config.Comment("Apply deep terrain fill (bedrock, deepslate, stone) below Y=0 for non-vanilla chunk generators.")
         @Config.RequiresMcRestart
         public boolean extendCustomWorldTypes = true;
     }

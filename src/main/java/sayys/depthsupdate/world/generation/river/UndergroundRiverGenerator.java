@@ -1,13 +1,14 @@
 package sayys.depthsupdate.world.generation.river;
 
-import java.util.Random;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraft.block.state.IBlockState;
 
+import sayys.depthsupdate.DepthsUpdateConfig;
 import sayys.depthsupdate.core.HeightContext;
 import sayys.depthsupdate.core.HeightManager;
+import sayys.depthsupdate.util.BlockUtils;
 import sayys.depthsupdate.world.generation.noise.sponge.module.source.Perlin;
 import sayys.depthsupdate.world.generation.noise.sponge.module.source.RidgedMulti;
 
@@ -15,8 +16,7 @@ public class UndergroundRiverGenerator {
     private final Perlin perlinNoise;
     private final RidgedMulti ridgedMultiNoise = new RidgedMulti();
 
-    private World world;
-    private Random random;
+    private final World world;
 
     protected static final IBlockState AIR = Blocks.AIR.getDefaultState();
     protected static final IBlockState WATER = Blocks.WATER.getDefaultState();
@@ -25,7 +25,6 @@ public class UndergroundRiverGenerator {
     public UndergroundRiverGenerator(World worldIn) {
         this.world = worldIn;
         long seed = worldIn.getSeed();
-        this.random = new Random(seed);
 
         this.ridgedMultiNoise.setSeed((int) seed);
         this.ridgedMultiNoise.setFrequency(0.005);
@@ -46,10 +45,10 @@ public class UndergroundRiverGenerator {
         return noiseCalc / maxNoiseCalc;
     }
 
-    public int calculateHeightByCenter(double noise, double minNoise, double maxNoise, int minHeight, int maxHeight,
-            int maxHeightIfCavern, double cavernWhenNoise) {
+    public int calculateHeightByCenter(double noise, double minNoise, double maxNoise, int minHeight, int maxHeight, int maxHeightIfCavern, double cavernWhenNoise) {
         double noiseCenter = (maxNoise - minNoise) / 2.0 + minNoise;
         double noisePercent = 0.0;
+
         if (noiseCenter > noise) {
             noisePercent = this.calculatePercent(noise, minNoise, noiseCenter);
         } else if (noiseCenter < noise) {
@@ -61,8 +60,10 @@ public class UndergroundRiverGenerator {
         } else {
             noisePercent = 1.0;
         }
+
         int maxHeightCalc = maxHeight - minHeight;
         double height = (double) maxHeightCalc * noisePercent;
+
         return (int) Math.round(height) + minHeight;
     }
 
@@ -94,14 +95,15 @@ public class UndergroundRiverGenerator {
                     }
 
                     int startPointY = -height / 2;
+
                     for (int a = baseY - startPointY; a > baseY - height; --a) {
                         if (a < heightCtx.minY() || a >= heightCtx.maxY())
                             continue;
 
                         IBlockState current = primer.getBlockState(x, a, z);
-                        IBlockState deepslate = sayys.depthsupdate.util.BlockUtils.getDeepslateBlockState();
-                        if (current.getBlock() == Blocks.STONE
-                                || current == deepslate || current.getBlock() == deepslate.getBlock()) {
+                        IBlockState deepslate = BlockUtils.getDeepslateBlockState();
+
+                        if (current.getBlock() == Blocks.STONE || current == deepslate || current.getBlock() == deepslate.getBlock()) {
                             if (a > waterLevel) {
                                 primer.setBlockState(x, a, z, AIR);
                             } else {
@@ -110,8 +112,8 @@ public class UndergroundRiverGenerator {
                         }
                     }
 
-                    if (sayys.depthsupdate.DepthsUpdateConfig.DEBUG.enableDebugVisualizers) {
-                        IBlockState riverDebug = sayys.depthsupdate.util.BlockUtils.getRiverDebugBlockState();
+                    if (DepthsUpdateConfig.DEBUG.enableDebugVisualizers) {
+                        IBlockState riverDebug = BlockUtils.getRiverDebugBlockState();
                         int topShell = baseY - startPointY + 1;
                         int bottomShell = baseY - height;
 

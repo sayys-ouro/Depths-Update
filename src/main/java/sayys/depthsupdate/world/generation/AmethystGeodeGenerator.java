@@ -72,12 +72,14 @@ public class AmethystGeodeGenerator implements IWorldGenerator {
             return;
         }
 
-        int x = chunkX * 16 + random.nextInt(16);
+        // Match vanilla's chunk-decoration offset so this cannot reach
+        // into a neighbor chunk that has not been populated yet.
+        int x = chunkX * 16 + 8 + random.nextInt(16);
         int minY = DepthsUpdateConfig.amethystGeodes.geodeMinY;
         int maxY = DepthsUpdateConfig.amethystGeodes.geodeMaxY;
         int yRange = Math.max(1, maxY - minY + 1);
         int y = minY + random.nextInt(yRange);
-        int z = chunkZ * 16 + random.nextInt(16);
+        int z = chunkZ * 16 + 8 + random.nextInt(16);
 
         BlockPos origin = new BlockPos(x, y, z);
         generateGeode(world, random, origin);

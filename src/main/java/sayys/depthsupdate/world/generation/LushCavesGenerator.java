@@ -38,7 +38,9 @@ public class LushCavesGenerator implements IWorldGenerator {
         }
 
         if (random.nextInt(DepthsUpdateConfig.lushCaves.lushCavesRarity) == 0) {
-            int x = chunkX * 16 + random.nextInt(16);
+            // Match vanilla's chunk-decoration offset so cannot reach
+            // into a neighbor chunk that has not been populated yet.
+            int x = chunkX * 16 + 8 + random.nextInt(16);
             int minY = DepthsUpdateConfig.lushCaves.lushCavesMinY;
             int maxY = DepthsUpdateConfig.lushCaves.lushCavesMaxY;
             int yRange = maxY - minY + 1;
@@ -48,7 +50,7 @@ public class LushCavesGenerator implements IWorldGenerator {
             };
 
             int y = minY + random.nextInt(yRange);
-            int z = chunkZ * 16 + random.nextInt(16);
+            int z = chunkZ * 16 + 8 + random.nextInt(16);
 
             BlockPos centerPos = new BlockPos(x, y, z);
 

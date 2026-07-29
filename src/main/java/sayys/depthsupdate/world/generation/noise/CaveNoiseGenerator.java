@@ -28,6 +28,7 @@ public class CaveNoiseGenerator {
 
     private final int caveMinY;
     private final int caveMaxY;
+    private final HeightContext ctx;
 
     public CaveNoiseGenerator(@NonNull World world) {
         long seed = world.getSeed();
@@ -38,6 +39,7 @@ public class CaveNoiseGenerator {
         this.offsetZ = rand.nextDouble() * 100000.0;
 
         HeightContext ctx = HeightManager.get(world);
+        this.ctx = ctx;
         this.caveMinY = ctx.minY() + DEFAULT_MIN_Y_OFFSET;
         this.caveMaxY = Math.min(DEFAULT_CAVE_MAX_Y, ctx.maxY() - 1);
 
@@ -80,7 +82,7 @@ public class CaveNoiseGenerator {
 
                     if (context.shouldCarve) {
                         if (isSafeToCarve(primer, x, y, z)) {
-                            if (y - 1 < HeightManager.getMaxContext().lavaLevel()) {
+                            if (y - 1 < this.ctx.lavaLevel()) {
                                 primer.setBlockState(x, y, z, lava);
                             } else {
                                 primer.setBlockState(x, y, z, air);
@@ -102,8 +104,7 @@ public class CaveNoiseGenerator {
                     int ny = y + dy;
                     int nz = z + dz;
 
-                    HeightContext ctx = HeightManager.getMaxContext();
-                    if (nx >= 0 && nx < 16 && ny >= ctx.minY() && ny < ctx.maxY() && nz >= 0 && nz < 16) {
+                    if (nx >= 0 && nx < 16 && ny >= this.ctx.minY() && ny < this.ctx.maxY() && nz >= 0 && nz < 16) {
                         if (primer.getBlockState(nx, ny, nz).getBlock() == Blocks.WATER) {
                             return false;
                         }

@@ -97,7 +97,9 @@ public abstract class MixinMapGenRavine extends MapGenBase {
         float f2 = 1.0F;
 
         HeightContext heightCtx = HeightManager.get(this.world);
-        int rsSize = heightCtx.maxY() - heightCtx.minY();
+        // rs is vanilla's fixed-size float[1024]; without this cap a total world
+        // height above 1024 would write past the end of the array.
+        int rsSize = Math.min(heightCtx.maxY() - heightCtx.minY(), this.rs.length);
         for (int j = 0; j < rsSize; ++j) {
             if (j == 0 || random.nextInt(3) == 0) {
                 f2 = 1.0F + random.nextFloat() * random.nextFloat();

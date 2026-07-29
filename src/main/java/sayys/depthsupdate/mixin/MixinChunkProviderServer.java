@@ -7,6 +7,8 @@ import net.minecraft.init.Blocks;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
+import net.minecraft.world.gen.ChunkGeneratorDebug;
+import net.minecraft.world.gen.ChunkGeneratorFlat;
 import net.minecraft.world.gen.ChunkGeneratorOverworld;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraft.world.gen.IChunkGenerator;
@@ -63,6 +65,10 @@ public class MixinChunkProviderServer {
         Chunk chunk = generator.generateChunk(x, z);
 
         if (generator instanceof ChunkGeneratorOverworld) {
+            return chunk;
+        }
+
+        if (generator instanceof ChunkGeneratorFlat || generator instanceof ChunkGeneratorDebug) {
             return chunk;
         }
 
