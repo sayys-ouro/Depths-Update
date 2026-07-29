@@ -32,9 +32,11 @@ dependencies {
         compileOnly("com.cleanroommc:lwjglx:1.0.0")
     }
 
-    modImplementation("curse.maven:fugue-1005815:7663573")
-    modImplementation("curse.maven:had-enough-items-557549:7515497")
-    modImplementation("curse.maven:fluidloggedapi-485654:7581579")
+    // modImplementation("curse.maven:had-enough-items-557549:7515497")
+    modImplementation("curse.maven:fugue-1005815:8403977")
+    modImplementation("curse.maven:scalar-1012168:8479788")
+    modImplementation("curse.maven:assetmover-571482:4430763")
+    modImplementation("curse.maven:fluidloggedapi-485654:8445863")
     modImplementation("curse.maven:renderlib-624967:6461209")
     modImplementation("curse.maven:nothirium-624960:7441674")
     // modImplementation("curse.maven:reid-629017:7571353")
