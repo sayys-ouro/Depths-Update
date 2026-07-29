@@ -11,6 +11,7 @@
     "MixinNetHandlerPlayClient",
     "MixinWorldClientImpl",
     "IMixinViewFrustum",
+    "MixinDebugRendererChunkBorder",
     "client.MixinModelPlayer",
     "client.MixinModelBiped",
     "client.MixinLayerHeldItem"
