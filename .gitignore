@@ -1,42 +1,17 @@
-# Ignore Gradle project-specific cache directory
-.gradle/
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# Ignore Gradle build output directory
-**/build/
 !**/src/**/build/
-
-.agents/
-.claude/
-docs/
+**/build/
+.gradle/
+.idea/
+bin/
+references/
 run/
 sources/
-CLAUDE.md
 
-# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
-
-# Avoid ignore Gradle wrapper properties
-
-# Avoid ignore Gradle wrappper properties
 !gradle-wrapper.properties
-
-# Cache of project
-.gradletasknamecache
-
-# Eclipse Gradle plugin generated files
-# Eclipse Core
-.project
-
-# JDT-specific (Eclipse Java Development Tools)
 .classpath
-
-# IDEA config
-.idea/
-
-# VS Code
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-!.vscode/*.code-snippets
+.gradletasknamecache
+.project
+CLAUDE.local.md
