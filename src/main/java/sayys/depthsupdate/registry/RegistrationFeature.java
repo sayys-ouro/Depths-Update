@@ -145,7 +145,4 @@ public class RegistrationFeature {
         }
     }
 
-    public List<IForgeRegistryEntry<?>> getEntries() {
-        return isEnabled() ? Collections.unmodifiableList(entries) : Collections.emptyList();
-    }
 }

@@ -18,6 +18,7 @@ import net.minecraftforge.fml.common.IWorldGenerator;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import sayys.depthsupdate.DepthsUpdateConfig;
+import sayys.depthsupdate.block.BlockAmethystCluster;
 import sayys.depthsupdate.registry.AmethystRegistry;
 import sayys.depthsupdate.registry.DeepslateRegistry;
 
@@ -238,7 +239,7 @@ public class AmethystGeodeGenerator implements IWorldGenerator {
 
                 if (placeState.getBlock().isAir(placeState, world, placePos)) {
                     IBlockState orientedCrystal = chosenCrystal.withProperty(
-                        sayys.depthsupdate.block.BlockAmethystCluster.FACING, facing
+                        BlockAmethystCluster.FACING, facing
                     );
                     world.setBlockState(placePos, orientedCrystal, 2);
                     break; // Only place one crystal per budding position

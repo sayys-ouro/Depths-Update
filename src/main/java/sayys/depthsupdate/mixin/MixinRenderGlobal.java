@@ -20,12 +20,6 @@ import sayys.depthsupdate.core.HeightManager;
 
 @Mixin(RenderGlobal.class)
 public class MixinRenderGlobal {
-    @Shadow
-    private int renderDistanceChunks;
-
-    @Shadow
-    private ViewFrustum viewFrustum;
-
     /**
      * Fixes entity rendering in extended-height worlds.
      *
@@ -42,33 +36,10 @@ public class MixinRenderGlobal {
         if (HeightManager.isExtended(world)) {
             HeightContext ctx = HeightManager.get(world);
             int storageIndex = ctx.toStorageIndex(pos.getY());
+
             return new BlockPos(pos.getX(), storageIndex * 16, pos.getZ());
         }
 
         return pos;
-    }
-
-    @Inject(method = "getRenderChunkOffset", at = @At("HEAD"), cancellable = true)
-    private void depthsupdate$getRenderChunkOffset(BlockPos playerPos, RenderChunk renderChunkBase, EnumFacing facing,
-            CallbackInfoReturnable<RenderChunk> cir) {
-        World world = Minecraft.getMinecraft().world;
-
-        if (!HeightManager.isExtended(world)) {
-            return;
-        }
-
-        HeightContext ctx = HeightManager.get(world);
-        BlockPos blockpos = renderChunkBase.getBlockPosOffset16(facing);
-
-        if (MathHelper.abs(playerPos.getX() - blockpos.getX()) > this.renderDistanceChunks * 16) {
-            cir.setReturnValue(null);
-        } else if (blockpos.getY() < ctx.minY()
-                || blockpos.getY() >= ctx.maxY()) {
-            cir.setReturnValue(null);
-        } else {
-            cir.setReturnValue(MathHelper
-                    .abs(playerPos.getZ() - blockpos.getZ()) > this.renderDistanceChunks * 16 ? null
-                            : ((IMixinViewFrustum) this.viewFrustum).invokeGetRenderChunk(blockpos));
-        }
     }
 }

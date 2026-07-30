@@ -94,7 +94,7 @@ public class DripstoneCavesGenerator implements IWorldGenerator {
         int radiusY = DepthsUpdateConfig.dripstoneCaves.dripstoneCavesHeightBase + random.nextInt(Math.max(1, DepthsUpdateConfig.dripstoneCaves.dripstoneCavesHeightVariation));
         int radiusZ = DepthsUpdateConfig.dripstoneCaves.dripstoneCavesRadiusBase + random.nextInt(Math.max(1, DepthsUpdateConfig.dripstoneCaves.dripstoneCavesRadiusVariation));
 
-        double volume = 4.0 * Math.PI / 3.0 * radiusX * radiusY * radiusZ;
+        double volume = CaveRegion.volume(radiusX, radiusY, radiusZ);
         int clusters = Math.max(6, (int) (volume / 700.0));
         int spires = Math.max(3, (int) (volume / 2600.0));
         int pointedPatches = Math.max(4, (int) (volume / 2600.0));
@@ -102,15 +102,15 @@ public class DripstoneCavesGenerator implements IWorldGenerator {
         List<BlockPos> placedSpikes = new ArrayList<>();
 
         for (int i = 0; i < clusters; i++) {
-            placeCluster(world, random, randomPosInside(random, center, radiusX, radiusY, radiusZ), placedSpikes);
+            placeCluster(world, random, CaveRegion.randomPointInside(random, center, radiusX, radiusY, radiusZ), placedSpikes);
         }
 
         for (int i = 0; i < spires; i++) {
-            placeLargeDripstone(world, random, randomPosInside(random, center, radiusX, radiusY, radiusZ));
+            placeLargeDripstone(world, random, CaveRegion.randomPointInside(random, center, radiusX, radiusY, radiusZ));
         }
 
         for (int i = 0; i < pointedPatches; i++) {
-            BlockPos patchCenter = randomPosInside(random, center, radiusX, radiusY, radiusZ);
+            BlockPos patchCenter = CaveRegion.randomPointInside(random, center, radiusX, radiusY, radiusZ);
             int attempts = 1 + random.nextInt(5);
 
             for (int j = 0; j < attempts; j++) {
@@ -161,17 +161,6 @@ public class DripstoneCavesGenerator implements IWorldGenerator {
         return BlockPointedDripstone.isPointedDripstoneWithDirection(world.getBlockState(pos), tipDirection);
     }
 
-    private static BlockPos randomPosInside(Random random, BlockPos center, int radiusX, int radiusY, int radiusZ) {
-        while (true) {
-            double x = random.nextDouble() * 2.0 - 1.0;
-            double y = random.nextDouble() * 2.0 - 1.0;
-            double z = random.nextDouble() * 2.0 - 1.0;
-
-            if (x * x + y * y + z * z <= 1.0) {
-                return center.add((int) (x * radiusX), (int) (y * radiusY), (int) (z * radiusZ));
-            }
-        }
-    }
 
     private void placeCluster(World world, Random random, BlockPos origin, List<BlockPos> placed) {
         if (!isEmptyOrWater(world.getBlockState(origin))) {
@@ -505,8 +494,9 @@ public class DripstoneCavesGenerator implements IWorldGenerator {
         return state.getMaterial() == Material.AIR || state.getMaterial() == Material.WATER || state.getMaterial() == Material.LAVA;
     }
 
+    /** Vanilla's dripstone_replaceable_blocks tag is exactly base_stone_overworld. */
     private static boolean isReplaceableStone(IBlockState state) {
-        return state.getBlock() == Blocks.STONE || state.getBlock() == DeepslateRegistry.tuff || BlockUtils.isDeepslate(state);
+        return BlockUtils.isBaseStone(state);
     }
 
     private static boolean isBase(IBlockState state) {

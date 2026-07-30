@@ -2,8 +2,13 @@ package sayys.depthsupdate.registry;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockSlab;
+import net.minecraft.block.BlockStairs;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.event.RegistryEvent;
@@ -11,16 +16,38 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.registries.IForgeRegistry;
 
 import sayys.depthsupdate.Reference;
+import sayys.depthsupdate.mixin.IMixinBlock;
 
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public class RegistryHandler {
     private static final List<RegistrationFeature> FEATURES = new ArrayList<>();
 
+    private static void applyNeighborBrightness(IForgeRegistry<Block> registry) {
+        for (Block block : registry) {
+            ResourceLocation name = block.getRegistryName();
+
+            if (name == null || !Reference.MOD_ID.equals(name.getNamespace())) {
+                continue;
+            }
+
+            IBlockState state = block.getDefaultState();
+
+            boolean useNeighborBrightness = block instanceof BlockStairs
+                    || block instanceof BlockSlab
+                    || block.isTranslucent(state)
+                    || block.getLightOpacity(state) == 0;
+
+            ((IMixinBlock) block).depthsupdate$setUseNeighborBrightness(useNeighborBrightness);
+        }
+    }
+
     static {
         FEATURES.add(DeepslateRegistry.DEEPSLATE_FAMILY);
         FEATURES.add(DeepslateRegistry.DRIPSTONE_FEATURE);
+        FEATURES.add(DeepslateRegistry.RAW_ORE_BLOCK_FEATURE);
         FEATURES.add(DeepslateRegistry.CALCITE_FEATURE);
         FEATURES.add(DeepslateRegistry.TUFF_FEATURE);
         FEATURES.add(DeepslateRegistry.SMOOTH_BASALT_FEATURE);
@@ -37,6 +64,7 @@ public class RegistryHandler {
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
         FEATURES.forEach(f -> f.registerBlocks(event));
+        applyNeighborBrightness(event.getRegistry());
     }
 
     @SubscribeEvent

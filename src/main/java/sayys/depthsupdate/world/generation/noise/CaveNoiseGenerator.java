@@ -31,6 +31,7 @@ public class CaveNoiseGenerator {
     private final int caveMaxY;
     private final HeightContext ctx;
     private final PillarGenerator pillarGenerator;
+    private final AquiferSampler aquifer;
 
     public CaveNoiseGenerator(@NonNull World world) {
         long seed = world.getSeed();
@@ -49,6 +50,10 @@ public class CaveNoiseGenerator {
         this.generators.add(new SpaghettiCaveGenerator(seed, caveMaxY));
 
         this.pillarGenerator = new PillarGenerator(seed, this.offsetX, this.offsetY, this.offsetZ, caveMinY, caveMaxY);
+
+        this.aquifer = DepthsUpdateConfig.aquifers.enableAquifers
+                ? new AquiferSampler(seed, ctx.lavaLevel(), ctx.seaLevel(), caveMinY, caveMaxY)
+                : null;
     }
 
     public void generate(int chunkX, int chunkZ, ChunkPrimer primer) {
@@ -57,6 +62,7 @@ public class CaveNoiseGenerator {
 
         IBlockState air = Blocks.AIR.getDefaultState();
         IBlockState stone = Blocks.STONE.getDefaultState();
+        IBlockState water = Blocks.WATER.getDefaultState();
         IBlockState lava = Blocks.LAVA.getDefaultState();
         IBlockState deepslate = BlockUtils.getDeepslateBlockState();
 
@@ -72,6 +78,10 @@ public class CaveNoiseGenerator {
 
         if (generatePillars) {
             this.pillarGenerator.prepare(chunkX, chunkZ);
+        }
+
+        if (this.aquifer != null) {
+            this.aquifer.prepare(chunkX, chunkZ);
         }
 
         for (int x = 0; x < 16; x++) {
@@ -104,8 +114,17 @@ public class CaveNoiseGenerator {
                     }
 
                     if (context.shouldCarve) {
-                        if (isSafeToCarve(primer, x, y, z)) {
-                            if (y - 1 < this.ctx.lavaLevel()) {
+                        if (this.aquifer != null) {
+                            // The aquifer owns fluid placement; the adjacent-water
+                            // guard would refuse to carve beside its own ponds.
+                            switch (this.aquifer.substanceAt(worldX + x, y, worldZ + z, context.density)) {
+                                case SOLID -> { }
+                                case AIR -> primer.setBlockState(x, y, z, air);
+                                case WATER -> primer.setBlockState(x, y, z, water);
+                                case LAVA -> primer.setBlockState(x, y, z, lava);
+                            }
+                        } else if (isSafeToCarve(primer, x, y, z)) {
+                            if (y < this.ctx.lavaLevel()) {
                                 primer.setBlockState(x, y, z, lava);
                             } else {
                                 primer.setBlockState(x, y, z, air);

@@ -42,12 +42,14 @@ public abstract class MixinMapGenRavine extends MapGenBase {
     @Shadow
     protected abstract void addTunnel(long p_180707_1_, int p_180707_3_, int p_180707_4_, ChunkPrimer p_180707_5_, double p_180707_6_, double p_180707_8_, double p_180707_10_, float p_180707_12_, float p_180707_13_, float p_180707_14_, int p_180707_15_, int p_180707_16_, double p_180707_17_);
 
-    /**
-     * Replaces digBlock to expand negative Y depth lava level.
-     */
     @Inject(method = "digBlock", at = @At("HEAD"), cancellable = true)
     protected void depthsupdate$digBlock(ChunkPrimer data, int x, int y, int z, int chunkX, int chunkZ, boolean foundTop, CallbackInfo ci) {
+        if (!HeightManager.isExtended(this.world)) {
+            return;
+        }
+
         ci.cancel();
+
         Biome biome = this.world.getBiome(new BlockPos(x + chunkX * 16, 0, z + chunkZ * 16));
         IBlockState state = data.getBlockState(x, y, z);
         IBlockState top = isExceptionBiome(biome) ? Blocks.GRASS.getDefaultState() : biome.topBlock;
@@ -58,7 +60,7 @@ public abstract class MixinMapGenRavine extends MapGenBase {
         if (state.getBlock() == Blocks.STONE || state.getBlock() == top.getBlock()
                 || state.getBlock() == filler.getBlock()
                 || state == deepslate || state.getBlock() == deepslate.getBlock()) {
-            if (y - 1 < HeightManager.getLavaLevel(this.world)) {
+            if (y < HeightManager.getLavaLevel(this.world)) {
                 data.setBlockState(x, y, z, Blocks.LAVA.getDefaultState());
             } else {
                 data.setBlockState(x, y, z, Blocks.AIR.getDefaultState());
@@ -70,12 +72,14 @@ public abstract class MixinMapGenRavine extends MapGenBase {
         }
     }
 
-    /**
-     * Replaces addTunnel to expand Ravine loops down.
-     */
     @Inject(method = "addTunnel", at = @At("HEAD"), cancellable = true)
     protected void depthsupdate$addTunnel(long p_180707_1_, int p_180707_3_, int p_180707_4_, ChunkPrimer p_180707_5_, double p_180707_6_, double p_180707_8_, double p_180707_10_, float p_180707_12_, float p_180707_13_, float p_180707_14_, int p_180707_15_, int p_180707_16_, double p_180707_17_, CallbackInfo ci) {
+        if (!HeightManager.isExtended(this.world)) {
+            return;
+        }
+
         ci.cancel();
+
         Random random = new Random(p_180707_1_);
         double d0 = (double) (p_180707_3_ * 16 + 8);
         double d1 = (double) (p_180707_4_ * 16 + 8);
@@ -226,14 +230,16 @@ public abstract class MixinMapGenRavine extends MapGenBase {
         }
     }
 
-    /**
-     * Replaces recursiveGenerate to expand Ravine origin levels into negative Y space.
-     */
     @Inject(method = "recursiveGenerate", at = @At("HEAD"), cancellable = true)
     protected void depthsupdate$recursiveGenerate(World p_180701_1_, int p_180701_2_, int p_180701_3_,
             int p_180701_4_,
             int p_180701_5_, ChunkPrimer p_180701_6_, CallbackInfo ci) {
+        if (!HeightManager.isExtended(p_180701_1_)) {
+            return;
+        }
+
         ci.cancel();
+
         HeightContext rHeightCtx = HeightManager.get(p_180701_1_);
         int rMinY = rHeightCtx.minY();
         int rTotalHeight = rHeightCtx.totalHeight();
@@ -241,7 +247,8 @@ public abstract class MixinMapGenRavine extends MapGenBase {
         if (this.rand.nextInt(50) == 0) {
             double d0 = (double) (p_180701_2_ * 16 + this.rand.nextInt(16));
 
-            // Scale Y range proportionally: vanilla uses rand(112)+8 over 256 height
+            // Vanilla starts ravines at nextInt(nextInt(40) + 8) + 20; the same
+            // shape is stretched here over the extended height.
             int yRange = Math.max(8, (rTotalHeight * 112) / 256);
             int yOffset = rMinY + (rTotalHeight * 20) / 256;
             double vanillaLikeY = this.rand.nextInt(yRange) + 8;

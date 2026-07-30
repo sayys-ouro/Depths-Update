@@ -33,7 +33,9 @@ public class MixinOptiFineRenderChunkUtils {
 
             getBlockRefCountMethod = ExtendedBlockStorage.class.getDeclaredMethod("getBlockRefCount");
             getBlockRefCountMethod.setAccessible(true);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            OptiFineCompatLog.once("RenderChunkUtils reflection setup", e);
+        }
     }
 
     /**
@@ -63,7 +65,9 @@ public class MixinOptiFineRenderChunkUtils {
                     return (int) getBlockRefCountMethod.invoke(ebs);
                 }
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            OptiFineCompatLog.once("RenderChunkUtils block count", e);
+        }
 
         return 0;
     }

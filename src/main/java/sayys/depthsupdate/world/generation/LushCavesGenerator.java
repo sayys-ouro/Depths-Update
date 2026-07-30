@@ -27,7 +27,6 @@ import org.jspecify.annotations.NonNull;
 import sayys.depthsupdate.DepthsUpdateConfig;
 import sayys.depthsupdate.block.BlockCaveVines;
 import sayys.depthsupdate.compat.FluidloggedCompat;
-import sayys.depthsupdate.registry.DeepslateRegistry;
 import sayys.depthsupdate.registry.PlantRegistry;
 import sayys.depthsupdate.util.BlockUtils;
 
@@ -49,11 +48,6 @@ public class LushCavesGenerator implements IWorldGenerator {
 
     private static final float BERRY_CHANCE = 0.2F;
     private static final int ROOT_HANGING_ATTEMPTS = 6;
-
-    @FunctionalInterface
-    private interface Vegetation {
-        void place(World world, Random random, BlockPos pos);
-    }
 
     public static void register() {
         GameRegistry.registerWorldGenerator(new LushCavesGenerator(), 100);
@@ -91,7 +85,7 @@ public class LushCavesGenerator implements IWorldGenerator {
         int radiusY = DepthsUpdateConfig.lushCaves.lushCavesHeightBase + random.nextInt(Math.max(1, DepthsUpdateConfig.lushCaves.lushCavesHeightVariation));
         int radiusZ = DepthsUpdateConfig.lushCaves.lushCavesRadiusBase + random.nextInt(Math.max(1, DepthsUpdateConfig.lushCaves.lushCavesRadiusVariation));
 
-        double volume = 4.0 * Math.PI / 3.0 * radiusX * radiusY * radiusZ;
+        double volume = CaveRegion.volume(radiusX, radiusY, radiusZ);
         int mossPatches = Math.max(6, (int) (volume / 400.0));
         int ceilingPatches = Math.max(5, (int) (volume / 450.0));
         int clayPatches = Math.max(2, (int) (volume / 1400.0));
@@ -101,45 +95,34 @@ public class LushCavesGenerator implements IWorldGenerator {
         int vinePatches = Math.max(3, (int) (volume / 800.0));
 
         for (int i = 0; i < mossPatches; i++) {
-            placeMossPatch(world, random, randomPosInside(random, center, radiusX, radiusY, radiusZ));
+            placeMossPatch(world, random, CaveRegion.randomPointInside(random, center, radiusX, radiusY, radiusZ));
         }
 
         for (int i = 0; i < ceilingPatches; i++) {
-            placeCeilingMossPatch(world, random, randomPosInside(random, center, radiusX, radiusY, radiusZ));
+            placeCeilingMossPatch(world, random, CaveRegion.randomPointInside(random, center, radiusX, radiusY, radiusZ));
         }
 
         for (int i = 0; i < clayPatches; i++) {
-            placeClayPatch(world, random, randomPosInside(random, center, radiusX, radiusY, radiusZ), random.nextBoolean());
+            placeClayPatch(world, random, CaveRegion.randomPointInside(random, center, radiusX, radiusY, radiusZ), random.nextBoolean());
         }
 
         for (int i = 0; i < vineColumns; i++) {
-            placeCaveVineColumn(world, random, randomPosInside(random, center, radiusX, radiusY, radiusZ));
+            placeCaveVineColumn(world, random, CaveRegion.randomPointInside(random, center, radiusX, radiusY, radiusZ));
         }
 
         for (int i = 0; i < sporeBlossoms; i++) {
-            placeSporeBlossom(world, random, randomPosInside(random, center, radiusX, radiusY, radiusZ));
+            placeSporeBlossom(world, random, CaveRegion.randomPointInside(random, center, radiusX, radiusY, radiusZ));
         }
 
         for (int i = 0; i < rootPatches; i++) {
-            placeRootedDirt(world, random, randomPosInside(random, center, radiusX, radiusY, radiusZ));
+            placeRootedDirt(world, random, CaveRegion.randomPointInside(random, center, radiusX, radiusY, radiusZ));
         }
 
         for (int i = 0; i < vinePatches; i++) {
-            placeWallVine(world, random, randomPosInside(random, center, radiusX, radiusY, radiusZ));
+            placeWallVine(world, random, CaveRegion.randomPointInside(random, center, radiusX, radiusY, radiusZ));
         }
     }
 
-    private static BlockPos randomPosInside(Random random, BlockPos center, int radiusX, int radiusY, int radiusZ) {
-        while (true) {
-            double x = random.nextDouble() * 2.0 - 1.0;
-            double y = random.nextDouble() * 2.0 - 1.0;
-            double z = random.nextDouble() * 2.0 - 1.0;
-
-            if (x * x + y * y + z * z <= 1.0) {
-                return center.add((int) (x * radiusX), (int) (y * radiusY), (int) (z * radiusZ));
-            }
-        }
-    }
 
     private void placeMossPatch(World world, Random random, BlockPos origin) {
         Set<BlockPos> ground = placeGroundPatch(world, random, origin, EnumFacing.DOWN,
@@ -476,16 +459,15 @@ public class LushCavesGenerator implements IWorldGenerator {
         };
     }
 
+    /** Vanilla's moss_replaceable tag: base stone plus dirt, grass and moss. */
     private static boolean isReplaceable(IBlockState state) {
         Block block = state.getBlock();
 
-        return block == Blocks.STONE
+        return BlockUtils.isBaseStone(state)
                 || block == Blocks.DIRT
                 || block == Blocks.GRASS
                 || block == Blocks.GRAVEL
                 || block == Blocks.CLAY
-                || block == PlantRegistry.moss_block
-                || block == DeepslateRegistry.tuff
-                || BlockUtils.isDeepslate(state);
+                || block == PlantRegistry.moss_block;
     }
 }

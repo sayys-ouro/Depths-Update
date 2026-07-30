@@ -11,6 +11,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import sayys.depthsupdate.util.BlockUtils;
+
 @Mixin(BlockMatcher.class)
 public class MixinBlockMatcher {
     @Shadow
@@ -20,7 +22,7 @@ public class MixinBlockMatcher {
     @Inject(method = "apply(Lnet/minecraft/block/state/IBlockState;)Z", at = @At("HEAD"), cancellable = true)
     private void depthsupdate$matchDeepslate(IBlockState state, CallbackInfoReturnable<Boolean> cir) {
         if (this.block == Blocks.STONE && state != null) {
-            IBlockState deepslate = sayys.depthsupdate.util.BlockUtils.getDeepslateBlockState();
+            IBlockState deepslate = BlockUtils.getDeepslateBlockState();
 
             if (state == deepslate || state.getBlock() == deepslate.getBlock()) {
                 cir.setReturnValue(true);

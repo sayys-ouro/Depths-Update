@@ -36,6 +36,7 @@ public class MixinOptiFineRenderChunk {
             offset16UpdatedField.setAccessible(true);
         } catch (NoSuchFieldException e) {
             reflectionFailed = true;
+            OptiFineCompatLog.once("RenderChunk neighbour fields", e);
         }
     }
 
@@ -50,6 +51,8 @@ public class MixinOptiFineRenderChunk {
         try {
             neighboursUpdatedField.setBoolean(this, false);
             offset16UpdatedField.setBoolean(this, false);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            OptiFineCompatLog.once("RenderChunk neighbour reset", e);
+        }
     }
 }

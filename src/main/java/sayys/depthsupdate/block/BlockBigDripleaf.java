@@ -37,7 +37,7 @@ import sayys.depthsupdate.registry.PlantRegistry;
 
 public class BlockBigDripleaf extends Block implements IGrowable {
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
-    public static final PropertyEnum<sayys.depthsupdate.block.BlockBigDripleaf.EnumTilt> TILT = PropertyEnum.create("tilt", EnumTilt.class);
+    public static final PropertyEnum<EnumTilt> TILT = PropertyEnum.create("tilt", EnumTilt.class);
 
     protected static final AxisAlignedBB SHAPE = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.9375D, 1.0D);
     protected static final AxisAlignedBB LEAF_COLLISION_NONE = new AxisAlignedBB(0.0D, 0.6875D, 0.0D, 1.0D, 0.9375D, 1.0D);

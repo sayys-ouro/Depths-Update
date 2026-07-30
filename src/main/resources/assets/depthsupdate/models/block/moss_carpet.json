@@ -1,5 +1,6 @@
 {
   "textures": {
+    "particle": "depthsupdate:blocks/moss_block",
     "wool": "depthsupdate:blocks/moss_block"
   },
   "parent": "block/carpet"

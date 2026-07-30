@@ -36,6 +36,7 @@ public class CheeseCaveGenerator implements ICaveGenerator {
 
         if (density < 0.0) {
             context.shouldCarve = true;
+            context.density = density;
         } else if (DepthsUpdateConfig.DEBUG.enableDebugVisualizers && density < DEBUG_BAND) {
             context.shouldDebug = true;
             context.debugBlock = this.debugBlockBlockState;

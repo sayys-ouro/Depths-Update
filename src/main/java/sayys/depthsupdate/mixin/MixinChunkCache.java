@@ -34,6 +34,12 @@ public abstract class MixinChunkCache {
     @Shadow
     protected abstract boolean withinBounds(int x, int z);
 
+    @Shadow
+    public abstract IBlockState getBlockState(BlockPos pos);
+
+    @Shadow
+    public abstract int getLightFor(EnumSkyBlock type, BlockPos pos);
+
     @Inject(method = "getBlockState", at = @At("HEAD"), cancellable = true)
     private void depthsupdate$getBlockState(@NonNull BlockPos pos, CallbackInfoReturnable<IBlockState> cir) {
         if (!HeightManager.isExtended(this.world)) {
@@ -65,7 +71,9 @@ public abstract class MixinChunkCache {
     }
 
     @Inject(method = "getLightFor", at = @At("HEAD"), cancellable = true)
-    private void depthsupdate$getLightFor(EnumSkyBlock type, @NonNull BlockPos pos, CallbackInfoReturnable<Integer> cir) {
+    private void depthsupdate$getLightFor(
+        EnumSkyBlock type, @NonNull BlockPos pos, CallbackInfoReturnable<Integer> cir
+    ) {
         if (!HeightManager.isExtended(this.world)) {
             return;
         }
@@ -100,15 +108,41 @@ public abstract class MixinChunkCache {
 
         if (y < minY || y >= maxY) {
             cir.setReturnValue(type.defaultLightValue);
-        } else if (y < 0 || y >= 256) {
-            int i = (pos.getX() >> 4) - this.chunkX;
-            int j = (pos.getZ() >> 4) - this.chunkZ;
 
-            if (!this.withinBounds(i, j)) {
-                cir.setReturnValue(type.defaultLightValue);
-            } else {
-                cir.setReturnValue(this.chunkArray[i][j].getLightFor(type, pos));
+            return;
+        }
+
+        if (y >= 0 && y < 256) {
+            return;
+        }
+
+        if (this.getBlockState(pos).useNeighborBrightness()) {
+            int brightest = 0;
+
+            for (EnumFacing facing : EnumFacing.values()) {
+                int light = this.getLightFor(type, pos.offset(facing));
+
+                if (light > brightest) {
+                    brightest = light;
+                }
+
+                if (brightest >= 15) {
+                    break;
+                }
             }
+
+            cir.setReturnValue(brightest);
+
+            return;
+        }
+
+        int i = (pos.getX() >> 4) - this.chunkX;
+        int j = (pos.getZ() >> 4) - this.chunkZ;
+
+        if (!this.withinBounds(i, j)) {
+            cir.setReturnValue(type.defaultLightValue);
+        } else {
+            cir.setReturnValue(this.chunkArray[i][j].getLightFor(type, pos));
         }
     }
 

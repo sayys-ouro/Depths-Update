@@ -83,8 +83,7 @@ public class DeepslateRegistry {
              cobbled_deepslate_wall, polished_deepslate_wall, deepslate_brick_wall, deepslate_tile_wall,
              deepslate_slab_half, deepslate_slab_double,
              copper_ore, deepslate_coal_ore, deepslate_iron_ore, deepslate_gold_ore, deepslate_redstone_ore, deepslate_lapis_ore, deepslate_diamond_ore, deepslate_emerald_ore, deepslate_copper_ore,
-             raw_iron, raw_gold, raw_copper, copper_ingot,
-             raw_iron_block, raw_gold_block, raw_copper_block)
+             raw_iron, raw_gold, raw_copper, copper_ingot)
         .skipDefaultModel(cobbled_deepslate_wall, polished_deepslate_wall, deepslate_brick_wall, deepslate_tile_wall, deepslate_slab_half, deepslate_slab_double)
         .withItemBlockProvider((block, event) -> {
             if (block == deepslate_slab_half) {
@@ -94,10 +93,10 @@ public class DeepslateRegistry {
             }
         })
         .withModelOverrides(event -> {
-            registerCustomBlockModel(cobbled_deepslate_wall, "variant=cobblestone");
-            registerCustomBlockModel(polished_deepslate_wall, "variant=cobblestone");
-            registerCustomBlockModel(deepslate_brick_wall, "variant=cobblestone");
-            registerCustomBlockModel(deepslate_tile_wall, "variant=cobblestone");
+            registerCustomBlockModel(cobbled_deepslate_wall, "inventory");
+            registerCustomBlockModel(polished_deepslate_wall, "inventory");
+            registerCustomBlockModel(deepslate_brick_wall, "inventory");
+            registerCustomBlockModel(deepslate_tile_wall, "inventory");
 
             for (BlockModSlab.Variant variant : BlockModSlab.Variant.values()) {
                 ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(deepslate_slab_half), variant.getMetadata(), new ModelResourceLocation(Reference.MOD_ID + ":deepslate_slab_" + variant.getName(), "inventory"));
@@ -141,6 +140,9 @@ public class DeepslateRegistry {
 
     public static final RegistrationFeature DRIPSTONE_FEATURE = new RegistrationFeature(() -> DepthsUpdateConfig.REGISTRY.enableDripstoneBlock)
             .add(dripstone_block, pointed_dripstone);
+
+    public static final RegistrationFeature RAW_ORE_BLOCK_FEATURE = new RegistrationFeature(() -> DepthsUpdateConfig.REGISTRY.enableRawOreBlocks)
+        .add(raw_iron_block, raw_gold_block, raw_copper_block);
 
     public static final RegistrationFeature CALCITE_FEATURE = new RegistrationFeature(() -> DepthsUpdateConfig.REGISTRY.enableCalcite).add(calcite);
     public static final RegistrationFeature TUFF_FEATURE = new RegistrationFeature(() -> DepthsUpdateConfig.REGISTRY.enableTuff).add(tuff);

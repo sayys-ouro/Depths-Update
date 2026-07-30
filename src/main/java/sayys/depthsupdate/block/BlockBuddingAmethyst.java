@@ -29,7 +29,7 @@ public class BlockBuddingAmethyst extends Block implements IHasModel {
     @Override
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
         if (rand.nextInt(5) == 0) {
-            EnumFacing growDirection = EnumFacing.values()[rand.nextInt(EnumFacing.values().length)];
+            EnumFacing growDirection = EnumFacing.VALUES[rand.nextInt(EnumFacing.VALUES.length)];
             BlockPos growPos = pos.offset(growDirection);
             IBlockState relativeState = worldIn.getBlockState(growPos);
             Block nextStage = null;
@@ -52,6 +52,6 @@ public class BlockBuddingAmethyst extends Block implements IHasModel {
     }
 
     public static boolean canClusterGrowAtState(IBlockState state) {
-        return state.getBlock().isAir(state, null, null) || (state.getMaterial() == Material.WATER);
+        return state.getMaterial() == Material.AIR || state.getMaterial() == Material.WATER;
     }
 }

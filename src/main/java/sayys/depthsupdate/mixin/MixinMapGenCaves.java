@@ -7,6 +7,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraft.world.gen.MapGenBase;
 import net.minecraft.world.gen.MapGenCaves;
@@ -35,13 +36,15 @@ public abstract class MixinMapGenCaves extends MapGenBase {
     protected abstract void addRoom(long p_180703_1_, int p_180703_3_, int p_180703_4_, ChunkPrimer p_180703_5_,
             double p_180703_6_, double p_180703_8_, double p_180703_10_);
 
-    /**
-     * Replaces digBlock to expand negative Y depth lava level.
-     */
     @Inject(method = "digBlock", at = @At("HEAD"), cancellable = true)
     protected void depthsupdate$digBlock(ChunkPrimer data, int x, int y, int z, int chunkX, int chunkZ, boolean foundTop, IBlockState state, IBlockState up, CallbackInfo ci) {
+        if (!HeightManager.isExtended(this.world)) {
+            return;
+        }
+
         ci.cancel();
-        net.minecraft.world.biome.Biome biome = world.getBiome(new BlockPos(x + chunkX * 16, 0, z + chunkZ * 16));
+
+        Biome biome = world.getBiome(new BlockPos(x + chunkX * 16, 0, z + chunkZ * 16));
         IBlockState top = biome.topBlock;
         IBlockState filler = biome.fillerBlock;
 
@@ -50,7 +53,7 @@ public abstract class MixinMapGenCaves extends MapGenBase {
         if (this.canReplaceBlock(state, up) || state.getBlock() == top.getBlock()
                 || state.getBlock() == filler.getBlock()
                 || state == deepslate || state.getBlock() == deepslate.getBlock()) {
-            if (y - 1 < HeightManager.getLavaLevel(world)) {
+            if (y < HeightManager.getLavaLevel(world)) {
                 data.setBlockState(x, y, z, Blocks.LAVA.getDefaultState());
             } else {
                 data.setBlockState(x, y, z, Blocks.AIR.getDefaultState());
@@ -62,12 +65,14 @@ public abstract class MixinMapGenCaves extends MapGenBase {
         }
     }
 
-    /**
-     * Replaces addTunnel to expand cave generation bounds.
-     */
     @Inject(method = "addTunnel", at = @At("HEAD"), cancellable = true)
     protected void depthsupdate$addTunnel(long p_180702_1_, int p_180702_3_, int p_180702_4_, ChunkPrimer p_180702_5_, double p_180702_6_, double p_180702_8_, double p_180702_10_, float p_180702_12_, float p_180702_13_, float p_180702_14_, int p_180702_15_, int p_180702_16_, double p_180702_17_, CallbackInfo ci) {
+        if (!HeightManager.isExtended(this.world)) {
+            return;
+        }
+
         ci.cancel();
+
         double d0 = (double) (p_180702_3_ * 16 + 8);
         double d1 = (double) (p_180702_4_ * 16 + 8);
         float f = 0.0F;
@@ -234,11 +239,12 @@ public abstract class MixinMapGenCaves extends MapGenBase {
     @Shadow
     protected abstract void digBlock(ChunkPrimer data, int x, int y, int z, int chunkX, int chunkZ, boolean foundTop, IBlockState state, IBlockState up);
 
-    /**
-     * Replaces recursiveGenerate to extend tunnel length and Y range.
-     */
     @Inject(method = "recursiveGenerate", at = @At("HEAD"), cancellable = true)
     protected void depthsupdate$recursiveGenerate(World p_180701_1_, int p_180701_2_, int p_180701_3_, int p_180701_4_, int p_180701_5_, ChunkPrimer p_180701_6_, CallbackInfo ci) {
+        if (!HeightManager.isExtended(p_180701_1_)) {
+            return;
+        }
+
         ci.cancel();
         HeightContext heightCtx = HeightManager.get(p_180701_1_);
         int minY = heightCtx.minY();
@@ -253,7 +259,6 @@ public abstract class MixinMapGenCaves extends MapGenBase {
         for (int j = 0; j < i; ++j) {
             double d0 = (double) (p_180701_2_ * 16 + this.rand.nextInt(16));
 
-            // Scale Y range proportionally: vanilla uses rand(192)+8 over 256 height
             int yRange = Math.max(8, (totalHeight * 192) / 256);
             double vanillaLikeY = this.rand.nextInt(yRange) + 8;
             double d1 = (double) (this.rand.nextInt((int) vanillaLikeY) + minY);

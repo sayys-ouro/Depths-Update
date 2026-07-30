@@ -1,5 +1,6 @@
 package sayys.depthsupdate.util;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,9 +23,7 @@ public class BlockUtils {
 
     private BlockUtils() {}
 
-    private static final java.util.Map<Block, Block> DEEPSLATE_ORE_MAP = new java.util.HashMap<>();
-
-    static {}
+    private static final Map<Block, Block> DEEPSLATE_ORE_MAP = new HashMap<>();
 
     public static void initializeOreMap() {
         DEEPSLATE_ORE_MAP.clear();
@@ -103,6 +102,15 @@ public class BlockUtils {
     }
 
     private static int deepslateOreID = -1;
+
+    /** Equivalent of Vanilla's base_stone_overworld tag, which worldgen features replace into. */
+    public static boolean isBaseStone(IBlockState state) {
+        if (state == null) return false;
+
+        Block block = state.getBlock();
+
+        return block == Blocks.STONE || block == DeepslateRegistry.tuff || isDeepslate(state);
+    }
 
     public static boolean isDeepslate(IBlockState state) {
         if (state == null) return false;

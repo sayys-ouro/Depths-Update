@@ -3,6 +3,7 @@ package sayys.depthsupdate.block;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
@@ -35,14 +36,14 @@ import sayys.depthsupdate.registry.PlantRegistry;
 
 public class BlockSmallDripleaf extends BlockBush implements IGrowable, IShearable {
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
-    public static final PropertyEnum<sayys.depthsupdate.block.BlockSmallDripleaf.EnumBlockHalf> HALF = PropertyEnum.create("half", sayys.depthsupdate.block.BlockSmallDripleaf.EnumBlockHalf.class);
+    public static final PropertyEnum<EnumBlockHalf> HALF = PropertyEnum.create("half", EnumBlockHalf.class);
 
     protected static final AxisAlignedBB SHAPE = new AxisAlignedBB(0.125D, 0.0D, 0.09375D, 0.875D, 0.8125D, 0.90625D);
 
     public BlockSmallDripleaf() {
         super(Material.PLANTS, MapColor.FOLIAGE);
 
-        this.setDefaultState(this.blockState.getBaseState().withProperty(HALF, sayys.depthsupdate.block.BlockSmallDripleaf.EnumBlockHalf.LOWER).withProperty(FACING, EnumFacing.NORTH));
+        this.setDefaultState(this.blockState.getBaseState().withProperty(HALF, EnumBlockHalf.LOWER).withProperty(FACING, EnumFacing.NORTH));
         this.setHardness(0.0F);
         this.setSoundType(SoundType.PLANT);
         this.setRegistryName("depthsupdate", "small_dripleaf");
@@ -58,8 +59,7 @@ public class BlockSmallDripleaf extends BlockBush implements IGrowable, IShearab
     @Override
     protected boolean canSustainBush(IBlockState state) {
         Block block = state.getBlock();
-        return block == Blocks.DIRT || block == Blocks.GRASS || block == Blocks.FARMLAND ||
-               block == Blocks.CLAY || block == Blocks.MYCELIUM;
+        return block == Blocks.DIRT || block == Blocks.GRASS || block == Blocks.FARMLAND || block == Blocks.CLAY || block == Blocks.MYCELIUM;
     }
 
     @Override
@@ -100,6 +100,7 @@ public class BlockSmallDripleaf extends BlockBush implements IGrowable, IShearab
             return worldIn.getBlockState(pos.down()).getBlock() == this;
         } else {
             IBlockState iblockstate = worldIn.getBlockState(pos.up());
+
             return iblockstate.getBlock() == this && super.canBlockStay(worldIn, pos, state);
         }
     }
@@ -123,9 +124,11 @@ public class BlockSmallDripleaf extends BlockBush implements IGrowable, IShearab
     public int getMetaFromState(IBlockState state) {
         int i = 0;
         i = i | state.getValue(FACING).getHorizontalIndex();
+
         if (state.getValue(HALF) == EnumBlockHalf.UPPER) {
             i |= 8;
         }
+
         return i;
     }
 

@@ -1,5 +1,8 @@
 {
   "required": true,
+  "injectors": {
+    "defaultRequire": 1
+  },
   "package": "sayys.depthsupdate.mixin",
   "plugin": "sayys.depthsupdate.ModMixinConfigPlugin",
   "compatibilityLevel": "JAVA_21",
@@ -7,7 +10,7 @@
   "client": [
     "MixinViewFrustum",
     "MixinRenderGlobal",
-    "MixinWorldClient",
+    "MixinRenderGlobalChunkOffset",
     "MixinNetHandlerPlayClient",
     "MixinWorldClientImpl",
     "IMixinViewFrustum",
@@ -17,10 +20,11 @@
     "client.MixinLayerHeldItem"
   ],
   "mixins": [
+    "IMixinBlock",
     "MixinWorldProvider",
     "MixinWorld",
+    "MixinWorldLighting",
     "MixinChunk",
-    "MixinBiome",
     "MixinChunkPrimer",
     "MixinWorldGenMinable",
     "MixinAnvilChunkLoader",

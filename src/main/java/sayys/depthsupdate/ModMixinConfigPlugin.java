@@ -2,38 +2,22 @@ package sayys.depthsupdate;
 
 import java.util.List;
 import java.util.Set;
+
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
 public class ModMixinConfigPlugin implements IMixinConfigPlugin {
-    private static final boolean OPTIFINE_LOADED = detectOptiFine();
-    private static final boolean NOTHIRIUM_LOADED = detectNothirium();
-    private static final boolean CELERITAS_LOADED = detectCeleritas();
-
-    private static boolean detectOptiFine() {
+    private static boolean isClassPresent(String className) {
         try {
-            Class.forName("optifine.OptiFineForgeTweaker");
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
-    }
+            Class.forName(
+                className,
+                false,
+                ModMixinConfigPlugin.class.getClassLoader()
+            );
 
-    private static boolean detectNothirium() {
-        try {
-            Class.forName("meldexun.nothirium.mc.Nothirium");
             return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
-    }
-
-    private static boolean detectCeleritas() {
-        try {
-            Class.forName("org.taumc.celeritas.CeleritasVintage");
-            return true;
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException | LinkageError e) {
             return false;
         }
     }
@@ -59,16 +43,20 @@ public class ModMixinConfigPlugin implements IMixinConfigPlugin {
      */
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+        if (mixinClassName.endsWith(".MixinRenderGlobalChunkOffset")) {
+            return !isClassPresent("optifine.OptiFineForgeTweaker");
+        }
+
         if (mixinClassName.contains(".optifine.")) {
-            return OPTIFINE_LOADED;
+            return isClassPresent("optifine.OptiFineForgeTweaker");
         }
 
         if (mixinClassName.contains(".mod.nothirium.")) {
-            return NOTHIRIUM_LOADED;
+            return isClassPresent("meldexun.nothirium.mc.Nothirium");
         }
 
         if (mixinClassName.contains(".mod.celeritas.")) {
-            return CELERITAS_LOADED;
+            return isClassPresent("org.taumc.celeritas.CeleritasVintage");
         }
 
         return true;

@@ -66,6 +66,7 @@ public class SpaghettiCaveGenerator implements ICaveGenerator {
 
         if (value < THICKNESS) {
             context.shouldCarve = true;
+            context.density = value - THICKNESS;
         } else if (!context.shouldDebug && DepthsUpdateConfig.DEBUG.enableDebugVisualizers && value < THICKNESS + 0.03) {
             context.shouldDebug = true;
             context.debugBlock = debugBlockBlockState;

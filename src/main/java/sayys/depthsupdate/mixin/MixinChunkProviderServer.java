@@ -23,7 +23,6 @@ import sayys.depthsupdate.DepthsUpdateConfig;
 import sayys.depthsupdate.core.HeightContext;
 import sayys.depthsupdate.core.HeightManager;
 import sayys.depthsupdate.util.BlockUtils;
-import sayys.depthsupdate.world.generation.AquiferGenerator;
 import sayys.depthsupdate.world.generation.ChunkPrimerAdapter;
 import sayys.depthsupdate.world.generation.noise.CaveNoiseGenerator;
 import sayys.depthsupdate.world.generation.river.UndergroundRiverGenerator;
@@ -50,9 +49,6 @@ public class MixinChunkProviderServer {
 
     @Unique
     private CaveNoiseGenerator depthsupdate$noiseCaveGenerator;
-
-    @Unique
-    private AquiferGenerator depthsupdate$aquiferGenerator;
 
     @Redirect(
         method = "provideChunk(II)Lnet/minecraft/world/chunk/Chunk;",
@@ -179,14 +175,6 @@ public class MixinChunkProviderServer {
         }
 
         this.depthsupdate$noiseCaveGenerator.generate(x, z, adapter);
-
-        if (DepthsUpdateConfig.aquifers.enableAquifers) {
-            if (this.depthsupdate$aquiferGenerator == null) {
-                this.depthsupdate$aquiferGenerator = new AquiferGenerator(this.world);
-            }
-
-            this.depthsupdate$aquiferGenerator.generate(x, z, adapter);
-        }
 
         chunk.generateSkylightMap();
 

@@ -62,6 +62,7 @@ public abstract class MixinOptiFineViewFrustum {
 
         } catch (NoSuchFieldException e) {
             reflectionFailed = true;
+            OptiFineCompatLog.once("ViewFrustum neighbour fields", e);
         }
     }
 
@@ -101,7 +102,9 @@ public abstract class MixinOptiFineViewFrustum {
 
                 neighboursUpdatedField.setBoolean(renderChunk, true);
                 offset16UpdatedField.setBoolean(renderChunk, true);
-            } catch (Exception e) {}
+            } catch (Exception e) {
+                OptiFineCompatLog.once("ViewFrustum neighbour linking", e);
+            }
         }
     }
 }

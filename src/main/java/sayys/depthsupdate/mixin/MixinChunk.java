@@ -31,8 +31,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
+import sayys.depthsupdate.DepthsUpdateConfig;
 import sayys.depthsupdate.core.HeightContext;
 import sayys.depthsupdate.core.HeightManager;
+import sayys.depthsupdate.util.BlockUtils;
 
 @Mixin(Chunk.class)
 public abstract class MixinChunk {
@@ -106,7 +108,6 @@ public abstract class MixinChunk {
 
     /**
      * ThreadLocal to pass HeightContext into @ModifyConstant during construction.
-     * Required because @Inject at HEAD of &lt;init&gt; must be static (pre-super).
      */
     @Unique
     private static final ThreadLocal<HeightContext> depthsupdate$initContext = ThreadLocal.withInitial(() -> HeightContext.VANILLA);
@@ -286,8 +287,10 @@ public abstract class MixinChunk {
         int i1 = this.heightMap[l];
         IBlockState iblockstate = this.getBlockState(pos.getX(), pos.getY(), pos.getZ());
 
-        if (j < 0 || sayys.depthsupdate.util.BlockUtils.isDeepslate(iblockstate)) {
-            state = sayys.depthsupdate.util.BlockUtils.getDeepslateVariant(state);
+        // Only inside the configured deepslate band. Keying this off the replaced
+        // block instead converted player-placed ore against deepslate at any height.
+        if (j < DepthsUpdateConfig.deepslateMaxY) {
+            state = BlockUtils.getDeepslateVariant(state);
         }
 
         if (iblockstate == state) {

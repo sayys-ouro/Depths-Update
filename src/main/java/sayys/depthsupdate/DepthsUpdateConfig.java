@@ -18,6 +18,7 @@ public class DepthsUpdateConfig {
         public static void onConfigChanged(final ConfigChangedEvent.OnConfigChangedEvent event) {
             if (event.getModID().equals(Reference.MOD_ID)) {
                 ConfigManager.sync(Reference.MOD_ID, Config.Type.INSTANCE);
+
                 BlockUtils.clearCaches();
                 HeightManager.initialize();
             }
@@ -30,13 +31,13 @@ public class DepthsUpdateConfig {
         public boolean enableDebugVisualizers = false;
 
         @Config.Name("Cheese Cave Debug Block")
-        public String cheeseDebugBlock = "minecraft:sponge";
+        public String cheeseDebugBlock = "minecraft:gold_block";
 
         @Config.Name("Spaghetti Cave Debug Block")
-        public String spaghettiDebugBlock = "minecraft:glass";
+        public String spaghettiDebugBlock = "minecraft:red_mushroom_block";
 
         @Config.Name("River Debug Block")
-        public String riverDebugBlock = "minecraft:glowstone";
+        public String riverDebugBlock = "minecraft:diamond_block";
     }
 
     @Config.Name("Debug")
@@ -49,33 +50,33 @@ public class DepthsUpdateConfig {
 
     public static class HeightExtension {
         @Config.Name("Global Minimum Y")
-        @Config.Comment("The minimum Y coordinate for extended dimensions. Must be a multiple of 16.")
-        @Config.RangeInt(min = -2048, max = 0)
+        @Config.Comment("The minimum Y coordinate.")
+        @Config.RangeInt(min = -256, max = 0)
         public int globalMinY = -64;
 
         @Config.Name("Global Maximum Y")
-        @Config.Comment("The maximum Y coordinate for extended dimensions. Must be a multiple of 16.")
-        @Config.RangeInt(min = 256, max = 2048)
+        @Config.Comment("The maximum Y coordinate.")
+        @Config.RangeInt(min = 256, max = 512)
         public int globalMaxY = 320;
 
         @Config.Name("Extended Dimensions")
-        @Config.Comment("Dimension IDs to apply height extension to. Default: [0] (Overworld only).")
+        @Config.Comment("Dimension IDs to apply height extension to. Default: [0].")
         @Config.RequiresMcRestart
         public int[] extendedDimensions = {0};
 
         @Config.Name("Dimension Overrides")
         @Config.Comment({
-                "Per-dimension height overrides.",
-                "Format: \"dimId:minY:maxY\" or \"dimId:minY:maxY:lavaLevel:voidDamageLevel\"",
-                "Example: \"-1:-64:256\" extends the Nether to -64..256.",
-                "Example: \"0:-64:320:-54:-128\" sets custom lava/void levels for the Overworld.",
-                "Overrides globalMinY/globalMaxY (and optionally lava/void levels) for the specified dimension."
+            "Per-dimension height overrides.",
+            "Format: \"dimId:minY:maxY\" or \"dimId:minY:maxY:lavaLevel:voidDamageLevel\"",
+            "Example: \"-1:-64:256\" extends the Nether to -64..256.",
+            "Example: \"0:-64:320:-54:-128\" sets custom lava/void levels for the Overworld.",
+            "Overrides globalMinY/globalMaxY (and optionally lava/void levels) for the specified dimension."
         })
         @Config.RequiresMcRestart
         public String[] dimensionOverrides = {};
 
         @Config.Name("Sea Level")
-        @Config.Comment("The sea level Y coordinate. Used by terrain generation and API queries.")
+        @Config.Comment("The sea level Y coordinate.")
         public int seaLevel = 63;
 
         @Config.Name("Lava Level")
@@ -86,12 +87,7 @@ public class DepthsUpdateConfig {
         @Config.Comment("The Y level at which players start taking void damage.")
         public int voidDamageLevel = -128;
 
-        @Config.Name("Convert Old Worlds")
-        @Config.Comment("When loading chunks from a non-extended world, fill below Y=0 with stone.")
-        public boolean convertOldWorlds = true;
-
         @Config.Name("Extend Custom World Types")
-        @Config.Comment("Apply deep terrain fill (bedrock, deepslate, stone) below Y=0 for non-vanilla chunk generators.")
         @Config.RequiresMcRestart
         public boolean extendCustomWorldTypes = true;
     }
@@ -100,7 +96,7 @@ public class DepthsUpdateConfig {
     public static boolean generateUndergroundRivers = false;
 
     @Config.Name("Generate Cheese Caves")
-    public static boolean generateCheeseCaves = false;
+    public static boolean generateCheeseCaves = true;
 
     @Config.Name("Cheese Caves Size")
     @Config.RangeDouble(min = 0.25, max = 2.0)
@@ -125,7 +121,6 @@ public class DepthsUpdateConfig {
 
     public static class Registry {
         @Config.Name("Enable Deepslate")
-        @Config.Comment("Enables Deepslate, Cobbled Deepslate, Bricks, Tiles, Stairs, Walls, Slabs, and Infested Deepslate.")
         public boolean enableDeepslateFamily = true;
 
         @Config.Name("Enable Calcite")
@@ -138,15 +133,12 @@ public class DepthsUpdateConfig {
         public boolean enableSmoothBasalt = true;
 
         @Config.Name("Enable Amethyst")
-        @Config.Comment("Enables Amethyst Blocks and Budding Amethyst.")
         public boolean enableAmethystFamily = true;
 
         @Config.Name("Enable Moss")
-        @Config.Comment("Enables Moss Blocks and Moss Carpets.")
         public boolean enableMossFamily = true;
 
         @Config.Name("Enable Azalea")
-        @Config.Comment("Enables Azalea, Flowering Azalea, Leaves, and Hanging Roots.")
         public boolean enableAzaleaFamily = true;
 
         @Config.Name("Enable Spore Blossom")
@@ -156,7 +148,6 @@ public class DepthsUpdateConfig {
         public boolean enableDripstoneBlock = true;
 
         @Config.Name("Enable Dripleaf")
-        @Config.Comment("Enables Small Dripleaf, Big Dripleaf, and Stems.")
         public boolean enableDripleafFamily = true;
 
         @Config.Name("Enable Cave Vines and Glow Berries")
@@ -166,7 +157,6 @@ public class DepthsUpdateConfig {
         public boolean enableRootedDirt = true;
 
         @Config.Name("Enable Raw Ore Blocks")
-        @Config.Comment("Enables Raw Iron, Raw Gold, and Raw Copper blocks.")
         public boolean enableRawOreBlocks = true;
 
         @Config.Name("Enable Spyglass")
@@ -184,7 +174,6 @@ public class DepthsUpdateConfig {
     public static class LushCaves {
         @Config.Name("Enable Lush Caves")
         @Config.Comment("Allow Lush Caves to generate underground.")
-        @Config.RequiresMcRestart
         public boolean enableLushCaves = true;
 
         @Config.Name("Lush Caves Rarity")
@@ -222,7 +211,6 @@ public class DepthsUpdateConfig {
     public static class DripstoneCaves {
         @Config.Name("Enable Dripstone Caves")
         @Config.Comment("Allow Dripstone Caves to generate underground.")
-        @Config.RequiresMcRestart
         public boolean enableDripstoneCaves = true;
 
         @Config.Name("Dripstone Caves Rarity")
@@ -258,7 +246,6 @@ public class DepthsUpdateConfig {
 
     public static class AmethystGeodes {
         @Config.Name("Enable Amethyst Geodes")
-        @Config.RequiresMcRestart
         public boolean enableAmethystGeodes = true;
 
         @Config.Name("Geode Rarity")
@@ -278,7 +265,6 @@ public class DepthsUpdateConfig {
 
     public static class Aquifers {
         @Config.Name("Enable Aquifers")
-        @Config.RequiresMcRestart
         public boolean enableAquifers = false;
     }
 

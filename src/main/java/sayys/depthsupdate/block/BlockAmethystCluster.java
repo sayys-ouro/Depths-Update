@@ -25,6 +25,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import sayys.depthsupdate.registry.AmethystRegistry;
 import sayys.depthsupdate.registry.IHasModel;
 
 public class BlockAmethystCluster extends Block implements IHasModel {
@@ -134,7 +135,7 @@ public class BlockAmethystCluster extends Block implements IHasModel {
 
     @Override
     public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
-        if (this == sayys.depthsupdate.registry.AmethystRegistry.amethyst_cluster) {
+        if (this == AmethystRegistry.amethyst_cluster) {
             Random rand = world instanceof World ? ((World) world).rand : new Random();
             EntityPlayer player = harvesters.get();
             boolean isPickaxe = false;
@@ -175,7 +176,7 @@ public class BlockAmethystCluster extends Block implements IHasModel {
                 }
             }
 
-            drops.add(new ItemStack(sayys.depthsupdate.registry.AmethystRegistry.amethyst_shard, count));
+            drops.add(new ItemStack(AmethystRegistry.amethyst_shard, count));
         }
     }
 }
