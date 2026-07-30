@@ -1,12 +1,12 @@
 package sayys.depthsupdate.block;
 
+import git.jbredwards.fluidlogged_api.api.block.IFluidloggable;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCauldron;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockFaceShape;
@@ -24,21 +24,25 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jspecify.annotations.NonNull;
 
+import sayys.depthsupdate.compat.FluidloggedCompat;
 import sayys.depthsupdate.registry.DeepslateRegistry;
 
-public class BlockPointedDripstone extends Block {
+@Optional.Interface(
+    iface = "git.jbredwards.fluidlogged_api.api.block.IFluidloggable",
+    modid = FluidloggedCompat.MOD_ID
+)
+public class BlockPointedDripstone extends Block implements IFluidloggable {
     public static final PropertyEnum<DripstoneThickness> THICKNESS = PropertyEnum.create(
         "thickness", DripstoneThickness.class
     );
     public static final PropertyDirection TIP_DIRECTION = PropertyDirection.create(
         "tip_direction", EnumFacing.Plane.VERTICAL
     );
-    public static final PropertyBool WATERLOGGED = PropertyBool.create("waterlogged");
-
     private static final AxisAlignedBB SHAPE_TIP_MERGE = new AxisAlignedBB(
         0.2D, 0.0D, 0.2D, 0.8D, 1.0D, 0.8D
     );
@@ -61,10 +65,11 @@ public class BlockPointedDripstone extends Block {
     public BlockPointedDripstone() {
         super(Material.ROCK);
 
-        this.setDefaultState(this.blockState.getBaseState()
-                .withProperty(TIP_DIRECTION, EnumFacing.UP)
-                .withProperty(THICKNESS, DripstoneThickness.TIP)
-                .withProperty(WATERLOGGED, false));
+        this.setDefaultState(
+            this.blockState.getBaseState().withProperty(
+                TIP_DIRECTION, EnumFacing.UP
+            ).withProperty(THICKNESS, DripstoneThickness.TIP)
+        );
         this.setHardness(1.5F);
         this.setResistance(3.0F);
         this.setSoundType(SoundType.STONE);
@@ -77,7 +82,7 @@ public class BlockPointedDripstone extends Block {
 
     @Override
     protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, TIP_DIRECTION, THICKNESS, WATERLOGGED);
+        return new BlockStateContainer(this, TIP_DIRECTION, THICKNESS);
     }
 
     @Override
@@ -96,12 +101,15 @@ public class BlockPointedDripstone extends Block {
     @Override
     public IBlockState getStateFromMeta(int meta) {
         EnumFacing direction = (meta & 8) != 0 ? EnumFacing.UP : EnumFacing.DOWN;
-        int thicknessOrd = meta & 7;
-        DripstoneThickness thickness = DripstoneThickness.values()[Math.min(thicknessOrd, DripstoneThickness.values().length - 1)];
 
-        return this.getDefaultState()
-                .withProperty(TIP_DIRECTION, direction)
-                .withProperty(THICKNESS, thickness);
+        int thicknessOrd = meta & 7;
+        DripstoneThickness thickness = DripstoneThickness.values()[
+            Math.min(thicknessOrd, DripstoneThickness.values().length - 1)
+        ];
+
+        return this.getDefaultState().withProperty(
+            TIP_DIRECTION, direction
+        ).withProperty(THICKNESS, thickness);
     }
 
     @Override
@@ -142,7 +150,9 @@ public class BlockPointedDripstone extends Block {
 
     @Override
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
-        return isValidPointedDripstonePlacement(worldIn, pos, EnumFacing.DOWN) || isValidPointedDripstonePlacement(worldIn, pos, EnumFacing.UP);
+        return isValidPointedDripstonePlacement(
+            worldIn, pos, EnumFacing.DOWN) || isValidPointedDripstonePlacement(worldIn, pos, EnumFacing.UP
+        );
     }
 
     @Override
@@ -162,12 +172,9 @@ public class BlockPointedDripstone extends Block {
         boolean mergeOpposingTips = !placer.isSneaking();
         DripstoneThickness thickness = calculateDripstoneThickness(world, pos, tipDirection, mergeOpposingTips);
 
-        boolean isWaterlogged = world.getBlockState(pos).getMaterial() == Material.WATER;
-
         return this.getDefaultState()
                 .withProperty(TIP_DIRECTION, tipDirection)
-                .withProperty(THICKNESS, thickness)
-                .withProperty(WATERLOGGED, isWaterlogged);
+                .withProperty(THICKNESS, thickness);
     }
 
     @Override
@@ -207,6 +214,7 @@ public class BlockPointedDripstone extends Block {
             }
         } else {
             maybeTransferFluid(state, worldIn, pos, rand.nextFloat());
+
             if (rand.nextFloat() < 0.011377778F && isStalactiteStartPos(state, worldIn, pos)) {
                 growStalactiteOrStalagmiteIfPossible(state, worldIn, pos, rand);
             }
@@ -249,7 +257,7 @@ public class BlockPointedDripstone extends Block {
             if (stalactiteTipPos != null) {
                 IBlockState stalactiteTipState = world.getBlockState(stalactiteTipPos);
 
-                if (canDrip(stalactiteTipState) && canTipGrow(stalactiteTipState, world, stalactiteTipPos)) {
+                if (canDrip(world, stalactiteTipPos, stalactiteTipState) && canTipGrow(stalactiteTipState, world, stalactiteTipPos)) {
                     if (random.nextBoolean()) {
                         grow(world, stalactiteTipPos, EnumFacing.DOWN);
                     } else {
@@ -315,11 +323,15 @@ public class BlockPointedDripstone extends Block {
     }
 
     private static void createDripstone(@NonNull World world, BlockPos pos, EnumFacing direction, DripstoneThickness thickness) {
+        boolean inWater = world.getBlockState(pos).getMaterial() == Material.WATER;
         IBlockState state = DeepslateRegistry.pointed_dripstone.getDefaultState()
             .withProperty(TIP_DIRECTION, direction)
-            .withProperty(THICKNESS, thickness)
-            .withProperty(WATERLOGGED, world.getBlockState(pos).getMaterial() == Material.WATER);
+            .withProperty(THICKNESS, thickness);
         world.setBlockState(pos, state, 3);
+
+        if (inWater) {
+            FluidloggedCompat.logWater(world, pos, state);
+        }
     }
 
     private static void createMergedTips(@NonNull IBlockState tipState, World world, BlockPos tipPos) {
@@ -401,7 +413,7 @@ public class BlockPointedDripstone extends Block {
     @Override
     @SideOnly(Side.CLIENT)
     public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, java.util.Random rand) {
-        if (canDrip(stateIn)) {
+        if (canDrip(worldIn, pos, stateIn)) {
             float f = rand.nextFloat();
 
             if (f <= 0.12F) {
@@ -415,8 +427,9 @@ public class BlockPointedDripstone extends Block {
     }
 
 
-    public static boolean canDrip(IBlockState state) {
-        return isStalactite(state) && state.getValue(THICKNESS) == DripstoneThickness.TIP && !state.getValue(WATERLOGGED);
+    public static boolean canDrip(IBlockAccess world, BlockPos pos, IBlockState state) {
+        return isStalactite(state) && state.getValue(THICKNESS) == DripstoneThickness.TIP
+                && !FluidloggedCompat.hasFluid(world, pos);
     }
 
     private static boolean isStalactite(IBlockState state) {

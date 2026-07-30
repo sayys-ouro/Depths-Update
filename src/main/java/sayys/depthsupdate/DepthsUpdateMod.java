@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NonNull;
 
 import sayys.depthsupdate.client.AssetHandler;
+import sayys.depthsupdate.compat.FluidloggedCompat;
 import sayys.depthsupdate.proxy.IProxy;
 import sayys.depthsupdate.registry.RegistryHandler;
 import sayys.depthsupdate.world.generation.AmethystGeodeGenerator;
@@ -23,7 +24,8 @@ import sayys.depthsupdate.world.generation.LushCavesGenerator;
 @Mod(
     modid = Reference.MOD_ID,
     name = Reference.MOD_NAME,
-    version = Reference.VERSION
+    version = Reference.VERSION,
+    dependencies = "after:" + FluidloggedCompat.MOD_ID
 )
 public class DepthsUpdateMod {
     public static final Logger LOGGER = LogManager.getLogger(Reference.MOD_NAME);

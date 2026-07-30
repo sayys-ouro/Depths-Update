@@ -26,6 +26,7 @@ import org.jspecify.annotations.NonNull;
 import sayys.depthsupdate.DepthsUpdateConfig;
 import sayys.depthsupdate.block.BlockPointedDripstone;
 import sayys.depthsupdate.block.BlockPointedDripstone.DripstoneThickness;
+import sayys.depthsupdate.compat.FluidloggedCompat;
 import sayys.depthsupdate.registry.DeepslateRegistry;
 import sayys.depthsupdate.util.BlockUtils;
 
@@ -438,13 +439,16 @@ public class DripstoneCavesGenerator implements IWorldGenerator {
     }
 
     private BlockPos placePointed(World world, BlockPos pos, EnumFacing tipDirection, DripstoneThickness thickness, List<BlockPos> placed) {
-        boolean waterlogged = world.getBlockState(pos).getMaterial() == Material.WATER;
+        boolean inWater = world.getBlockState(pos).getMaterial() == Material.WATER;
         IBlockState state = DeepslateRegistry.pointed_dripstone.getDefaultState()
                 .withProperty(BlockPointedDripstone.TIP_DIRECTION, tipDirection)
-                .withProperty(BlockPointedDripstone.THICKNESS, thickness)
-                .withProperty(BlockPointedDripstone.WATERLOGGED, waterlogged);
+                .withProperty(BlockPointedDripstone.THICKNESS, thickness);
         world.setBlockState(pos, state, 2);
         placed.add(pos);
+
+        if (inWater) {
+            FluidloggedCompat.logWater(world, pos, state);
+        }
 
         return pos.offset(tipDirection);
     }
