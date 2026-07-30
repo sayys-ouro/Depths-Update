@@ -36,7 +36,7 @@ public class AmethystGeodeGenerator implements IWorldGenerator {
     private static final double BASE_CRACK_SIZE = 2.0;
     private static final int CRACK_POINT_OFFSET = 2;
 
-    // Generation parametersprivate static final double USE_POTENTIAL_PLACEMENTS_CHANCE = 0.35;
+    private static final double USE_POTENTIAL_PLACEMENTS_CHANCE = 0.35;
     private static final double USE_ALTERNATE_LAYER0_CHANCE = 0.083;
     private static final boolean PLACEMENTS_REQUIRE_LAYER0_ALTERNATE = true;
     private static final int OUTER_WALL_DIST_MIN = 4;

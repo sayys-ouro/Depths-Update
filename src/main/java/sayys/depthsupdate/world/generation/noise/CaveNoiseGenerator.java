@@ -10,6 +10,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkPrimer;
 import org.jspecify.annotations.NonNull;
 
+import sayys.depthsupdate.DepthsUpdateConfig;
 import sayys.depthsupdate.core.HeightContext;
 import sayys.depthsupdate.core.HeightManager;
 import sayys.depthsupdate.util.BlockUtils;
@@ -29,6 +30,7 @@ public class CaveNoiseGenerator {
     private final int caveMinY;
     private final int caveMaxY;
     private final HeightContext ctx;
+    private final PillarGenerator pillarGenerator;
 
     public CaveNoiseGenerator(@NonNull World world) {
         long seed = world.getSeed();
@@ -43,8 +45,10 @@ public class CaveNoiseGenerator {
         this.caveMinY = ctx.minY() + DEFAULT_MIN_Y_OFFSET;
         this.caveMaxY = Math.min(DEFAULT_CAVE_MAX_Y, ctx.maxY() - 1);
 
-        this.generators.add(new CheeseCaveGenerator(seed, caveMinY, caveMaxY));
+        this.generators.add(new CheeseCaveGenerator(seed, this.offsetX, this.offsetY, this.offsetZ, caveMinY, caveMaxY));
         this.generators.add(new SpaghettiCaveGenerator(seed, caveMaxY));
+
+        this.pillarGenerator = new PillarGenerator(seed, this.offsetX, this.offsetY, this.offsetZ, caveMinY, caveMaxY);
     }
 
     public void generate(int chunkX, int chunkZ, ChunkPrimer primer) {
@@ -58,6 +62,18 @@ public class CaveNoiseGenerator {
 
         CaveSampleContext context = new CaveSampleContext();
 
+        boolean generatePillars = DepthsUpdateConfig.generateCavePillars;
+
+        for (ICaveGenerator gen : this.generators) {
+            if (gen.canGenerate()) {
+                gen.prepare(chunkX, chunkZ);
+            }
+        }
+
+        if (generatePillars) {
+            this.pillarGenerator.prepare(chunkX, chunkZ);
+        }
+
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 double realX = worldX + x + this.offsetX;
@@ -70,7 +86,7 @@ public class CaveNoiseGenerator {
                     if (!isCarvable) continue;
 
                     double realY = y + this.offsetY;
-                    context.reset(realX, realY, realZ, y);
+                    context.reset(realX, realY, realZ, x, y, z);
 
                     for (ICaveGenerator gen : generators) {
                         if (gen.canGenerate()) {
@@ -78,6 +94,13 @@ public class CaveNoiseGenerator {
 
                             if (context.shouldCarve) break;
                         }
+                    }
+
+                    // Vanilla applies pillars as max(caves, pillars): a block a cave
+                    // would carve stays solid where the pillar density is high,
+                    // which is what forms the rock columns inside caverns.
+                    if (context.shouldCarve && generatePillars && pillarGenerator.isPillar(x, y, z)) {
+                        continue;
                     }
 
                     if (context.shouldCarve) {

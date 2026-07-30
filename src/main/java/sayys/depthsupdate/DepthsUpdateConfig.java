@@ -102,8 +102,15 @@ public class DepthsUpdateConfig {
     @Config.Name("Generate Cheese Caves")
     public static boolean generateCheeseCaves = false;
 
+    @Config.Name("Cheese Caves Size")
+    @Config.RangeDouble(min = 0.25, max = 2.0)
+    public static double cheeseCavesAbundance = 1.0;
+
     @Config.Name("Generate Spaghetti Caves")
     public static boolean generateSpaghettiCaves = true;
+
+    @Config.Name("Generate Cave Pillars")
+    public static boolean generateCavePillars = true;
 
     @Config.Name("Deepslate Max Y")
     public static int deepslateMaxY = 0;
