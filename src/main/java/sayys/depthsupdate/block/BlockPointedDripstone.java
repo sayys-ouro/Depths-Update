@@ -353,7 +353,21 @@ public class BlockPointedDripstone extends Block {
         return null;
     }
 
-    private DripstoneThickness calculateDripstoneThickness(@NonNull World world, @NonNull BlockPos pos, @NonNull EnumFacing tipDirection, boolean mergeOpposingTips) {
+    public static void refreshThickness(@NonNull World world, @NonNull BlockPos pos) {
+        IBlockState state = world.getBlockState(pos);
+
+        if (!(state.getBlock() instanceof BlockPointedDripstone)) {
+            return;
+        }
+
+        DripstoneThickness thickness = calculateDripstoneThickness(world, pos, state.getValue(TIP_DIRECTION), true);
+
+        if (thickness != state.getValue(THICKNESS)) {
+            world.setBlockState(pos, state.withProperty(THICKNESS, thickness), 2);
+        }
+    }
+
+    private static DripstoneThickness calculateDripstoneThickness(@NonNull World world, @NonNull BlockPos pos, @NonNull EnumFacing tipDirection, boolean mergeOpposingTips) {
         EnumFacing baseDirection = tipDirection.getOpposite();
         IBlockState inFrontState = world.getBlockState(pos.offset(tipDirection));
 
