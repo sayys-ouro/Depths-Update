@@ -20,6 +20,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 import sayys.depthsupdate.DepthsUpdateConfig;
+import sayys.depthsupdate.core.BedrockFilter;
 import sayys.depthsupdate.core.HeightContext;
 import sayys.depthsupdate.core.HeightManager;
 import sayys.depthsupdate.util.BlockUtils;
@@ -58,34 +59,36 @@ public class MixinChunkProviderServer {
         )
     )
     private Chunk depthsupdate$onGenerateChunk(IChunkGenerator generator, int x, int z) {
-        Chunk chunk = generator.generateChunk(x, z);
+        boolean vanillaOverworld = generator.getClass() == ChunkGeneratorOverworld.class;
+        boolean flatOrDebug = generator instanceof ChunkGeneratorFlat || generator instanceof ChunkGeneratorDebug;
+        boolean deepWorld = !flatOrDebug
+                && HeightManager.isExtended(this.world)
+                && HeightManager.get(this.world).minY() < 0;
+        boolean fillCustom = deepWorld && !vanillaOverworld
+                && DepthsUpdateConfig.heightExtension.extendCustomWorldTypes;
 
-        if (generator.getClass() == ChunkGeneratorOverworld.class) {
-            return chunk;
+        boolean filterBedrock = deepWorld && (vanillaOverworld || fillCustom);
+
+        Chunk chunk;
+
+        if (filterBedrock) {
+            BedrockFilter.begin();
         }
 
-        if (generator instanceof ChunkGeneratorFlat || generator instanceof ChunkGeneratorDebug) {
-            return chunk;
+        try {
+            chunk = generator.generateChunk(x, z);
+        } finally {
+            if (filterBedrock) {
+                BedrockFilter.end();
+            }
         }
 
-        if (!DepthsUpdateConfig.heightExtension.extendCustomWorldTypes) {
-            return chunk;
-        }
-
-        if (!HeightManager.isExtended(this.world)) {
-            return chunk;
-        }
-
-        if (chunk == null) {
+        if (!fillCustom || chunk == null) {
             return chunk;
         }
 
         HeightContext ctx = HeightManager.get(this.world);
         int minY = ctx.minY();
-
-        if (minY >= 0) {
-            return chunk;
-        }
 
         if (this.depthsupdate$fillRandom == null) {
             this.depthsupdate$fillRandom = new Random();
@@ -108,6 +111,22 @@ public class MixinChunkProviderServer {
         for (int bx = 0; bx < 16; bx++) {
             for (int bz = 0; bz < 16; bz++) {
                 for (int by = minY; by <= fillMaxY; by++) {
+                    // Backstop for generators that write bedrock without going
+                    // through ChunkPrimer. Runs before the carve so caves cut
+                    // through the converted stone.
+                    if (by >= 0 && by <= 4) {
+                        int storageIdx = ctx.toStorageIndex(by);
+
+                        if (storageIdx >= 0 && storageIdx < storageArrays.length) {
+                            ExtendedBlockStorage section = storageArrays[storageIdx];
+
+                            if (section != Chunk.NULL_BLOCK_STORAGE
+                                    && section.get(bx, by & 15, bz).getBlock() == Blocks.BEDROCK) {
+                                section.set(bx, by & 15, bz, stone);
+                            }
+                        }
+                    }
+
                     IBlockState state;
 
                     if (by <= minY + this.depthsupdate$fillRandom.nextInt(5)) {
@@ -126,19 +145,6 @@ public class MixinChunkProviderServer {
                     } else if (by < 0) {
                         state = stone;
                     } else {
-                        // check for vanilla bedrock replacement
-                        if (by <= 4) {
-                            int storageIdx = ctx.toStorageIndex(by);
-
-                            if (storageIdx >= 0 && storageIdx < storageArrays.length) {
-                                ExtendedBlockStorage section = storageArrays[storageIdx];
-                                if (section != Chunk.NULL_BLOCK_STORAGE
-                                        && section.get(bx, by & 15, bz).getBlock() == Blocks.BEDROCK) {
-                                    section.set(bx, by & 15, bz, stone);
-                                }
-                            }
-                        }
-
                         continue;
                     }
 

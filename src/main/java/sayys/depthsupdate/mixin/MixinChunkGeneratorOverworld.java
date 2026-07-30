@@ -5,7 +5,6 @@ import java.util.Random;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraft.world.gen.ChunkGeneratorOverworld;
 import org.spongepowered.asm.mixin.Final;
@@ -17,7 +16,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import sayys.depthsupdate.DepthsUpdateConfig;
-import sayys.depthsupdate.core.BedrockFilter;
 import sayys.depthsupdate.core.HeightContext;
 import sayys.depthsupdate.core.HeightManager;
 import sayys.depthsupdate.util.BlockUtils;
@@ -91,21 +89,4 @@ public abstract class MixinChunkGeneratorOverworld {
         this.depthsupdate$noiseCaveGenerator.generate(x, z, primer);
     }
 
-    @Inject(method = "replaceBiomeBlocks", at = @At("HEAD"))
-    private void depthsupdate$beginBedrockFilter(int x, int z, ChunkPrimer primer, Biome[] biomesIn, CallbackInfo ci) {
-        if (((Object) this).getClass() != ChunkGeneratorOverworld.class) {
-            return;
-        }
-
-        if (!HeightManager.isExtended(this.world) || HeightManager.get(this.world).minY() >= 0) {
-            return;
-        }
-
-        BedrockFilter.begin();
-    }
-
-    @Inject(method = "replaceBiomeBlocks", at = @At("RETURN"))
-    private void depthsupdate$endBedrockFilter(int x, int z, ChunkPrimer primer, Biome[] biomesIn, CallbackInfo ci) {
-        BedrockFilter.end();
-    }
 }
