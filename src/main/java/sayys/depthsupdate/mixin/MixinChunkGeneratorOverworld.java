@@ -17,6 +17,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import sayys.depthsupdate.DepthsUpdateConfig;
+import sayys.depthsupdate.core.BedrockFilter;
 import sayys.depthsupdate.core.HeightContext;
 import sayys.depthsupdate.core.HeightManager;
 import sayys.depthsupdate.util.BlockUtils;
@@ -90,14 +91,8 @@ public abstract class MixinChunkGeneratorOverworld {
         this.depthsupdate$noiseCaveGenerator.generate(x, z, primer);
     }
 
-    /**
-     * Removes the vanilla bedrock floor at Y 0..4 once every biome has placed
-     * its terrain. Runs after the biome pass because biomes place that bedrock
-     * themselves, and some (BiomeMesa) do it in their own genTerrainBlocks
-     * without ever calling the shared generateBiomeTerrain.
-     */
-    @Inject(method = "replaceBiomeBlocks", at = @At("RETURN"))
-    private void depthsupdate$scrubVanillaBedrockFloor(int x, int z, ChunkPrimer primer, Biome[] biomesIn, CallbackInfo ci) {
+    @Inject(method = "replaceBiomeBlocks", at = @At("HEAD"))
+    private void depthsupdate$beginBedrockFilter(int x, int z, ChunkPrimer primer, Biome[] biomesIn, CallbackInfo ci) {
         if (((Object) this).getClass() != ChunkGeneratorOverworld.class) {
             return;
         }
@@ -106,16 +101,11 @@ public abstract class MixinChunkGeneratorOverworld {
             return;
         }
 
-        IBlockState stone = Blocks.STONE.getDefaultState();
+        BedrockFilter.begin();
+    }
 
-        for (int bx = 0; bx < 16; bx++) {
-            for (int bz = 0; bz < 16; bz++) {
-                for (int by = 0; by <= 4; by++) {
-                    if (primer.getBlockState(bx, by, bz).getBlock() == Blocks.BEDROCK) {
-                        primer.setBlockState(bx, by, bz, stone);
-                    }
-                }
-            }
-        }
+    @Inject(method = "replaceBiomeBlocks", at = @At("RETURN"))
+    private void depthsupdate$endBedrockFilter(int x, int z, ChunkPrimer primer, Biome[] biomesIn, CallbackInfo ci) {
+        BedrockFilter.end();
     }
 }
