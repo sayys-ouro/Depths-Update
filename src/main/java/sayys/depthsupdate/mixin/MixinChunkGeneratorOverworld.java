@@ -43,6 +43,10 @@ public abstract class MixinChunkGeneratorOverworld {
             return;
         }
 
+        if (!HeightManager.isExtended(this.world) || HeightManager.get(this.world).minY() >= 0) {
+            return;
+        }
+
         HeightContext ctx = HeightManager.get(this.world);
         int minY = ctx.minY();
         IBlockState stone = Blocks.STONE.getDefaultState();
