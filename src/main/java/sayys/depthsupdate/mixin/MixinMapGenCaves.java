@@ -13,16 +13,47 @@ import net.minecraft.world.gen.MapGenBase;
 import net.minecraft.world.gen.MapGenCaves;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import sayys.depthsupdate.DepthsUpdateConfig;
 import sayys.depthsupdate.core.HeightContext;
 import sayys.depthsupdate.core.HeightManager;
 import sayys.depthsupdate.util.BlockUtils;
+import sayys.depthsupdate.world.generation.river.UndergroundRiverGenerator;
 
 @Mixin(MapGenCaves.class)
 public abstract class MixinMapGenCaves extends MapGenBase {
+    @Unique
+    private UndergroundRiverGenerator depthsupdate$river;
+
+    /**
+     * The primer scan above only sees this chunk, and only the dig box
+     * itself. The river is pure noise, so it can be asked about the one-block
+     * margin and about columns across the chunk border.
+     */
+    @Unique
+    private boolean depthsupdate$riverTouches(int chunkX, int chunkZ, int xMin, int xMax, int zMin, int zMax, int yLow, int yHigh) {
+        if (!DepthsUpdateConfig.generateUndergroundRivers) {
+            return false;
+        }
+
+        if (this.depthsupdate$river == null) {
+            this.depthsupdate$river = new UndergroundRiverGenerator(this.world);
+        }
+
+        for (int bx = xMin - 1; bx <= xMax; ++bx) {
+            for (int bz = zMin - 1; bz <= zMax; ++bz) {
+                if (this.depthsupdate$river.waterWithin(chunkX * 16 + bx, chunkZ * 16 + bz, yLow, yHigh)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
     @Shadow
     protected abstract boolean isOceanBlock(ChunkPrimer data, int x, int y, int z, int chunkX, int chunkZ);
 
@@ -174,22 +205,27 @@ public abstract class MixinMapGenCaves extends MapGenBase {
                         i1 = 16;
                     }
 
+                    // Vanilla scans only the shell of this box: interior columns
+                    // skip from the top straight to the bottom. That is enough
+                    // when water only sits at the surface, but underground
+                    // rivers are a mid-depth slab the skip jumps clean over, so
+                    // the tunnel cuts an open face into the water. Scan in full.
                     boolean flag3 = false;
 
                     for (int j1 = k2; !flag3 && j1 < k; ++j1) {
                         for (int k1 = i3; !flag3 && k1 < i1; ++k1) {
                             for (int l1 = l + 1; !flag3 && l1 >= l2 - 1; --l1) {
-                                if (l1 >= worldMinY && l1 < worldMaxY) {
-                                    if (isOceanBlock(p_180702_5_, j1, l1, k1, p_180702_3_, p_180702_4_)) {
-                                        flag3 = true;
-                                    }
-
-                                    if (l1 != l2 - 1 && j1 != k2 && j1 != k - 1 && k1 != i3 && k1 != i1 - 1) {
-                                        l1 = l2;
-                                    }
+                                if (l1 >= worldMinY && l1 < worldMaxY
+                                        && isOceanBlock(p_180702_5_, j1, l1, k1, p_180702_3_, p_180702_4_)) {
+                                    flag3 = true;
                                 }
                             }
                         }
+                    }
+
+                    if (!flag3) {
+                        flag3 = depthsupdate$riverTouches(p_180702_3_, p_180702_4_, k2, k, i3, i1,
+                                Math.max(l2 - 1, worldMinY), Math.min(l + 1, worldMaxY - 1));
                     }
 
                     if (!flag3) {

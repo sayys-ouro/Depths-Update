@@ -13,18 +13,45 @@ import net.minecraft.world.gen.MapGenBase;
 import net.minecraft.world.gen.MapGenRavine;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import sayys.depthsupdate.DepthsUpdateConfig;
 import sayys.depthsupdate.core.HeightContext;
 import sayys.depthsupdate.core.HeightManager;
 import sayys.depthsupdate.util.BlockUtils;
+import sayys.depthsupdate.world.generation.river.UndergroundRiverGenerator;
 
 @Mixin(MapGenRavine.class)
 public abstract class MixinMapGenRavine extends MapGenBase {
     @Shadow
     private float[] rs;
+
+    @Unique
+    private UndergroundRiverGenerator depthsupdate$river;
+
+    @Unique
+    private boolean depthsupdate$riverTouches(int chunkX, int chunkZ, int xMin, int xMax, int zMin, int zMax, int yLow, int yHigh) {
+        if (!DepthsUpdateConfig.generateUndergroundRivers) {
+            return false;
+        }
+
+        if (this.depthsupdate$river == null) {
+            this.depthsupdate$river = new UndergroundRiverGenerator(this.world);
+        }
+
+        for (int bx = xMin - 1; bx <= xMax; ++bx) {
+            for (int bz = zMin - 1; bz <= zMax; ++bz) {
+                if (this.depthsupdate$river.waterWithin(chunkX * 16 + bx, chunkZ * 16 + bz, yLow, yHigh)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 
     @Shadow
     protected abstract boolean isOceanBlock(ChunkPrimer data, int x, int y, int z, int chunkX, int chunkZ);
@@ -178,22 +205,25 @@ public abstract class MixinMapGenRavine extends MapGenBase {
                         i1 = 16;
                     }
 
+                    // Full scan rather than vanilla's shell-only one, for the
+                    // same reason as MixinMapGenCaves: an underground river is a
+                    // mid-depth water slab that the interior-column skip misses.
                     boolean flag2 = false;
 
                     for (int j1 = k2; !flag2 && j1 < k; ++j1) {
                         for (int k1 = i3; !flag2 && k1 < i1; ++k1) {
                             for (int l1 = l + 1; !flag2 && l1 >= l2 - 1; --l1) {
-                                if (l1 >= worldMinY && l1 < worldMaxY) {
-                                    if (isOceanBlock(p_180707_5_, j1, l1, k1, p_180707_3_, p_180707_4_)) {
-                                        flag2 = true;
-                                    }
-
-                                    if (l1 != l2 - 1 && j1 != k2 && j1 != k - 1 && k1 != i3 && k1 != i1 - 1) {
-                                        l1 = l2;
-                                    }
+                                if (l1 >= worldMinY && l1 < worldMaxY
+                                        && isOceanBlock(p_180707_5_, j1, l1, k1, p_180707_3_, p_180707_4_)) {
+                                    flag2 = true;
                                 }
                             }
                         }
+                    }
+
+                    if (!flag2) {
+                        flag2 = depthsupdate$riverTouches(p_180707_3_, p_180707_4_, k2, k, i3, i1,
+                                Math.max(l2 - 1, worldMinY), Math.min(l + 1, worldMaxY - 1));
                     }
 
                     if (!flag2) {
