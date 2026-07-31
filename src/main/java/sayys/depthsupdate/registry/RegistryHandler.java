@@ -7,7 +7,9 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.BlockStairs;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -44,6 +46,32 @@ public class RegistryHandler {
         }
     }
 
+    private static void applyCreativeTab(Iterable<? extends net.minecraftforge.registries.IForgeRegistryEntry<?>> entries) {
+        CreativeTabs tab = ModCreativeTab.get();
+
+        if (tab == null) {
+            return;
+        }
+
+        for (net.minecraftforge.registries.IForgeRegistryEntry<?> entry : entries) {
+            ResourceLocation name = entry.getRegistryName();
+
+            if (name == null || !Reference.MOD_ID.equals(name.getNamespace())) {
+                continue;
+            }
+
+            if (entry instanceof Block block) {
+                if (block.getCreativeTab() != null) {
+                    block.setCreativeTab(tab);
+                }
+            } else if (entry instanceof ItemBlock) {
+                continue;
+            } else if (entry instanceof Item item && item.getCreativeTab() != null) {
+                item.setCreativeTab(tab);
+            }
+        }
+    }
+
     static {
         FEATURES.add(DeepslateRegistry.DEEPSLATE_FAMILY);
         FEATURES.add(DeepslateRegistry.DRIPSTONE_FEATURE);
@@ -63,13 +91,17 @@ public class RegistryHandler {
 
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
+        ModCreativeTab.init();
+
         FEATURES.forEach(f -> f.registerBlocks(event));
         applyNeighborBrightness(event.getRegistry());
+        applyCreativeTab(event.getRegistry());
     }
 
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event) {
         FEATURES.forEach(f -> f.registerItems(event));
+        applyCreativeTab(event.getRegistry());
     }
 
     @SubscribeEvent

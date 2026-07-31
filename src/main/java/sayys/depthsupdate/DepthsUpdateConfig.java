@@ -161,6 +161,10 @@ public class DepthsUpdateConfig {
 
         @Config.Name("Enable Spyglass")
         public boolean enableSpyglass = true;
+
+        @Config.Name("Use Custom Creative Tab")
+        @Config.RequiresMcRestart
+        public boolean useCustomCreativeTab = true;
     }
 
     @Config.Name("Registry")
