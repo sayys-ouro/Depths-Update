@@ -112,6 +112,10 @@ public class DepthsUpdateConfig {
     @Config.Name("Generate Spaghetti Caves")
     public static boolean generateSpaghettiCaves = true;
 
+    @Config.Name("Generate Cave Entrances")
+    @Config.Comment("Vertical shafts connecting the cave systems to the surface.")
+    public static boolean generateCaveEntrances = true;
+
     @Config.Name("Generate Cave Pillars")
     public static boolean generateCavePillars = true;
 

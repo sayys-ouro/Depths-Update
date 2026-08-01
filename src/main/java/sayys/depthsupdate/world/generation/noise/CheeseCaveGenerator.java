@@ -9,11 +9,15 @@ import sayys.depthsupdate.util.BlockUtils;
 public class CheeseCaveGenerator implements ICaveGenerator {
     private static final double DEBUG_BAND = 0.25;
 
+    private final int maxY;
+
     private final IBlockState debugBlockBlockState;
     private final DensityField field;
 
     public CheeseCaveGenerator(long seed, double offsetX, double offsetY, double offsetZ, int caveMinY, int caveMaxY) {
         this.debugBlockBlockState = BlockUtils.getCheeseDebugBlockState();
+        this.maxY = caveMaxY;
+
 
         CheeseCaveNoise noise = new CheeseCaveNoise(seed, offsetX, offsetY, offsetZ, caveMaxY,
                 DepthsUpdateConfig.cheeseCavesAbundance);
@@ -32,6 +36,11 @@ public class CheeseCaveGenerator implements ICaveGenerator {
 
     @Override
     public void sample(@NonNull CaveSampleContext context) {
+        // Above its own ceiling the density grid has no data for this Y.
+        if (context.y > this.maxY) {
+            return;
+        }
+
         double density = this.field.get(context.localX, context.y, context.localZ);
 
         if (density < 0.0) {

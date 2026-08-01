@@ -20,6 +20,7 @@ public class SpaghettiCaveGenerator implements ICaveGenerator {
     // spaghetti caves fade out near the top of the cave range
     private final int fadeTopStart;
     private final int fadeTopRange;
+    private final int caveMaxY;
 
     public SpaghettiCaveGenerator(long seed, int caveMaxY) {
         this.debugBlockBlockState = BlockUtils.getSpaghettiDebugBlockState();
@@ -33,9 +34,9 @@ public class SpaghettiCaveGenerator implements ICaveGenerator {
         this.noiseB.setSeed((int) seed + 7331);
         this.noiseB.setOctaveCount(2);
 
-        // Fade out over the top ~1/3 of the cave range (from caveMaxY-10 to caveMaxY for default range)
-        this.fadeTopStart = caveMaxY - 10;
-        this.fadeTopRange = Math.max(1, 10);
+        this.caveMaxY = caveMaxY;
+        this.fadeTopStart = caveMaxY - FADE_BAND;
+        this.fadeTopRange = FADE_BAND;
     }
 
     @Override
@@ -45,6 +46,10 @@ public class SpaghettiCaveGenerator implements ICaveGenerator {
 
     @Override
     public void sample(CaveSampleContext context) {
+        if (context.y > this.caveMaxY) {
+            return;
+        }
+
         double spagA = noiseA.getValue(
             context.realX * SCALE,
             context.realY * SCALE,

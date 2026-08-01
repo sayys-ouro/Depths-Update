@@ -7,10 +7,12 @@ package sayys.depthsupdate.world.generation.noise;
  */
 public class PillarGenerator {
     private final DensityField field;
+    private final int maxY;
 
     public PillarGenerator(long seed, double offsetX, double offsetY, double offsetZ, int caveMinY, int caveMaxY) {
         PillarNoise noise = new PillarNoise(seed, offsetX, offsetY, offsetZ);
         this.field = new DensityField(noise::density, caveMinY, caveMaxY);
+        this.maxY = caveMaxY;
     }
 
     public void prepare(int chunkX, int chunkZ) {
@@ -18,6 +20,12 @@ public class PillarGenerator {
     }
 
     public boolean isPillar(int localX, int y, int localZ) {
+        // The carve loop runs past this generator's ceiling for cave entrances,
+        // and the density grid holds no data up there.
+        if (y > this.maxY) {
+            return false;
+        }
+
         return PillarNoise.isSolid(this.field.get(localX, y, localZ));
     }
 }

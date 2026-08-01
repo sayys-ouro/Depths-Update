@@ -17,8 +17,14 @@ import sayys.depthsupdate.util.BlockUtils;
 import sayys.depthsupdate.world.generation.river.UndergroundRiverGenerator;
 
 public class CaveNoiseGenerator {
-    /** Default upper Y bound for cave generation (relative to sea level). */
+    /** Absolute upper Y for the underground cave types (cheese, spaghetti, pillars). */
     private static final int DEFAULT_CAVE_MAX_Y = 30;
+    /**
+     * Entrances run far higher so they can break the surface. Only stone is
+     * carvable, so terrain, not this number, is what actually stops them; the
+     * ceiling just bounds the sampling grid.
+     */
+    private static final int ENTRANCE_MAX_Y = 96;
     /** Default lower Y bound - offset from minY. Vanilla: minY(-64) + 4 = -60. */
     private static final int DEFAULT_MIN_Y_OFFSET = 4;
     /** Rock kept beneath standing water so river and pool beds read as solid ground. */
@@ -49,15 +55,22 @@ public class CaveNoiseGenerator {
         HeightContext ctx = HeightManager.get(world);
         this.ctx = ctx;
         this.caveMinY = ctx.minY() + DEFAULT_MIN_Y_OFFSET;
-        this.caveMaxY = Math.min(DEFAULT_CAVE_MAX_Y, ctx.maxY() - 1);
 
-        this.generators.add(new CheeseCaveGenerator(seed, this.offsetX, this.offsetY, this.offsetZ, caveMinY, caveMaxY));
-        this.generators.add(new SpaghettiCaveGenerator(seed, caveMaxY));
+        // Underground cave types keep their own ceiling so raising the loop for
+        // entrances cannot shift where their top slides begin.
+        int undergroundMaxY = Math.min(DEFAULT_CAVE_MAX_Y, ctx.maxY() - 1);
+        int entranceMaxY = Math.min(ENTRANCE_MAX_Y, ctx.maxY() - 1);
 
-        this.pillarGenerator = new PillarGenerator(seed, this.offsetX, this.offsetY, this.offsetZ, caveMinY, caveMaxY);
+        this.caveMaxY = Math.max(undergroundMaxY, entranceMaxY);
+
+        this.generators.add(new CheeseCaveGenerator(seed, this.offsetX, this.offsetY, this.offsetZ, caveMinY, undergroundMaxY));
+        this.generators.add(new SpaghettiCaveGenerator(seed, undergroundMaxY));
+        this.generators.add(new CaveEntranceGenerator(seed, this.offsetX, this.offsetY, this.offsetZ, caveMinY, entranceMaxY));
+
+        this.pillarGenerator = new PillarGenerator(seed, this.offsetX, this.offsetY, this.offsetZ, caveMinY, undergroundMaxY);
 
         this.aquifer = DepthsUpdateConfig.aquifers.enableAquifers
-                ? new AquiferSampler(seed, ctx.lavaLevel(), ctx.seaLevel(), caveMinY, caveMaxY)
+                ? new AquiferSampler(seed, ctx.lavaLevel(), ctx.seaLevel(), caveMinY, undergroundMaxY)
                 : null;
 
         this.riverGen = DepthsUpdateConfig.generateUndergroundRivers
