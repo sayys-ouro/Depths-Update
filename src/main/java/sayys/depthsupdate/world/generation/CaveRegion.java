@@ -4,9 +4,21 @@ import java.util.Random;
 
 import net.minecraft.util.math.BlockPos;
 
+import sayys.depthsupdate.core.HeightContext;
+
 /** Shared ellipsoid maths for the biome-pocket generators. */
 public final class CaveRegion {
+    /** Returned by {@link #randomYInWindow} when the window misses the world entirely. */
+    public static final int NO_Y = Integer.MIN_VALUE;
+
     private CaveRegion() {
+    }
+
+    public static int randomYInWindow(Random random, HeightContext ctx, int windowMin, int windowMax) {
+        int low = Math.max(Math.min(windowMin, windowMax), ctx.minY());
+        int high = Math.min(Math.max(windowMin, windowMax), ctx.maxY() - 1);
+
+        return low > high ? NO_Y : low + random.nextInt(high - low + 1);
     }
 
     public static double volume(int radiusX, int radiusY, int radiusZ) {

@@ -18,6 +18,7 @@ import net.minecraftforge.fml.common.IWorldGenerator;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import sayys.depthsupdate.DepthsUpdateConfig;
+import sayys.depthsupdate.core.HeightManager;
 import sayys.depthsupdate.block.BlockAmethystCluster;
 import sayys.depthsupdate.registry.AmethystRegistry;
 import sayys.depthsupdate.registry.DeepslateRegistry;
@@ -77,11 +78,15 @@ public class AmethystGeodeGenerator implements IWorldGenerator {
             return;
         }
 
+        int y = CaveRegion.randomYInWindow(random, HeightManager.get(world),
+                DepthsUpdateConfig.amethystGeodes.geodeMinY,
+                DepthsUpdateConfig.amethystGeodes.geodeMaxY);
+
+        if (y == CaveRegion.NO_Y) {
+            return;
+        }
+
         int x = chunkX * 16 + 8 + random.nextInt(16);
-        int minY = DepthsUpdateConfig.amethystGeodes.geodeMinY;
-        int maxY = DepthsUpdateConfig.amethystGeodes.geodeMaxY;
-        int yRange = Math.max(1, maxY - minY + 1);
-        int y = minY + random.nextInt(yRange);
         int z = chunkZ * 16 + 8 + random.nextInt(16);
 
         BlockPos origin = new BlockPos(x, y, z);

@@ -25,6 +25,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import org.jspecify.annotations.NonNull;
 
 import sayys.depthsupdate.DepthsUpdateConfig;
+import sayys.depthsupdate.core.HeightManager;
 import sayys.depthsupdate.block.BlockCaveVines;
 import sayys.depthsupdate.compat.FluidloggedCompat;
 import sayys.depthsupdate.registry.PlantRegistry;
@@ -68,12 +69,15 @@ public class LushCavesGenerator implements IWorldGenerator {
         }
 
         if (random.nextInt(DepthsUpdateConfig.lushCaves.lushCavesRarity) == 0) {
-            int x = chunkX * 16 + 8 + random.nextInt(16);
-            int minY = DepthsUpdateConfig.lushCaves.lushCavesMinY;
-            int maxY = DepthsUpdateConfig.lushCaves.lushCavesMaxY;
-            int yRange = Math.max(1, maxY - minY + 1);
+            int y = CaveRegion.randomYInWindow(random, HeightManager.get(world),
+                    DepthsUpdateConfig.lushCaves.lushCavesMinY,
+                    DepthsUpdateConfig.lushCaves.lushCavesMaxY);
 
-            int y = minY + random.nextInt(yRange);
+            if (y == CaveRegion.NO_Y) {
+                return;
+            }
+
+            int x = chunkX * 16 + 8 + random.nextInt(16);
             int z = chunkZ * 16 + 8 + random.nextInt(16);
 
             generateLushCave(world, random, new BlockPos(x, y, z));

@@ -81,14 +81,17 @@ public class DepthsUpdateConfig {
 
         @Config.Name("Sea Level")
         @Config.Comment("The sea level Y coordinate.")
+        @Config.RangeInt(min = -256, max = 512)
         public int seaLevel = 63;
 
         @Config.Name("Lava Level")
         @Config.Comment("The Y level at which underground air is replaced with lava.")
+        @Config.RangeInt(min = -256, max = 512)
         public int lavaLevel = -54;
 
         @Config.Name("Void Damage Level")
         @Config.Comment("The Y level at which players start taking void damage.")
+        @Config.RangeInt(min = -512, max = 64)
         public int voidDamageLevel = -128;
 
         @Config.Name("Extend Custom World Types")
@@ -113,10 +116,12 @@ public class DepthsUpdateConfig {
     public static boolean generateCavePillars = true;
 
     @Config.Name("Deepslate Max Y")
+    @Config.RangeInt(min = -256, max = 512)
     public static int deepslateMaxY = 0;
 
     @Config.Name("Deepslate Transition Range")
     @Config.Comment("The number of blocks over which stone transitions into Deepslate.")
+    @Config.RangeInt(min = 0, max = 64)
     public static int deepslateTransitionRange = 8;
 
     @Config.Name("Deepslate Block")
@@ -190,9 +195,11 @@ public class DepthsUpdateConfig {
         public int lushCavesRarity = 12;
 
         @Config.Name("Minimum Height")
+        @Config.RangeInt(min = -256, max = 512)
         public int lushCavesMinY = -64;
 
         @Config.Name("Maximum Height")
+        @Config.RangeInt(min = -256, max = 512)
         public int lushCavesMaxY = 63;
 
         @Config.Name("Radius Base Size")
@@ -227,9 +234,11 @@ public class DepthsUpdateConfig {
         public int dripstoneCavesRarity = 15;
 
         @Config.Name("Minimum Height")
+        @Config.RangeInt(min = -256, max = 512)
         public int dripstoneCavesMinY = -64;
 
         @Config.Name("Maximum Height")
+        @Config.RangeInt(min = -256, max = 512)
         public int dripstoneCavesMaxY = 63;
 
         @Config.Name("Radius Base Size")
@@ -262,9 +271,11 @@ public class DepthsUpdateConfig {
         public int geodeRarity = 24;
 
         @Config.Name("Minimum Height")
+        @Config.RangeInt(min = -256, max = 512)
         public int geodeMinY = -58;
 
         @Config.Name("Maximum Height")
+        @Config.RangeInt(min = -256, max = 512)
         public int geodeMaxY = 30;
     }
 
@@ -273,6 +284,7 @@ public class DepthsUpdateConfig {
 
     public static class Aquifers {
         @Config.Name("Enable Aquifers")
+        @Config.RequiresMcRestart
         public boolean enableAquifers = true;
     }
 

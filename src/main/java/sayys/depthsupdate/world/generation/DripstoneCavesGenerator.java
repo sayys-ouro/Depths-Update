@@ -24,6 +24,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import org.jspecify.annotations.NonNull;
 
 import sayys.depthsupdate.DepthsUpdateConfig;
+import sayys.depthsupdate.core.HeightManager;
 import sayys.depthsupdate.block.BlockPointedDripstone;
 import sayys.depthsupdate.block.BlockPointedDripstone.DripstoneThickness;
 import sayys.depthsupdate.compat.FluidloggedCompat;
@@ -77,12 +78,15 @@ public class DripstoneCavesGenerator implements IWorldGenerator {
         }
 
         if (random.nextInt(DepthsUpdateConfig.dripstoneCaves.dripstoneCavesRarity) == 0) {
-            int x = chunkX * 16 + 8 + random.nextInt(16);
-            int minY = DepthsUpdateConfig.dripstoneCaves.dripstoneCavesMinY;
-            int maxY = DepthsUpdateConfig.dripstoneCaves.dripstoneCavesMaxY;
-            int yRange = Math.max(1, maxY - minY + 1);
+            int y = CaveRegion.randomYInWindow(random, HeightManager.get(world),
+                    DepthsUpdateConfig.dripstoneCaves.dripstoneCavesMinY,
+                    DepthsUpdateConfig.dripstoneCaves.dripstoneCavesMaxY);
 
-            int y = minY + random.nextInt(yRange);
+            if (y == CaveRegion.NO_Y) {
+                return;
+            }
+
+            int x = chunkX * 16 + 8 + random.nextInt(16);
             int z = chunkZ * 16 + 8 + random.nextInt(16);
 
             generateDripstoneCave(world, random, new BlockPos(x, y, z));
