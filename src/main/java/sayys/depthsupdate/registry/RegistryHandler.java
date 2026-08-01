@@ -6,7 +6,6 @@ import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.BlockStairs;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -35,14 +34,14 @@ public class RegistryHandler {
                 continue;
             }
 
-            IBlockState state = block.getDefaultState();
+            IMixinBlock access = (IMixinBlock) block;
 
             boolean useNeighborBrightness = block instanceof BlockStairs
                     || block instanceof BlockSlab
-                    || block.isTranslucent(state)
-                    || block.getLightOpacity(state) == 0;
+                    || access.depthsupdate$isTranslucent()
+                    || access.depthsupdate$getLightOpacity() == 0;
 
-            ((IMixinBlock) block).depthsupdate$setUseNeighborBrightness(useNeighborBrightness);
+            access.depthsupdate$setUseNeighborBrightness(useNeighborBrightness);
         }
     }
 

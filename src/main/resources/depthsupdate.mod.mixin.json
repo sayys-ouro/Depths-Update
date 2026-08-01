@@ -18,7 +18,9 @@
     "celeritas.MixinCeleritasWorldSlice",
     "celeritas.MixinClonedChunkSection"
   ],
-  "mixins": [],
+  "mixins": [
+    "rltweaker.MixinRLTweakerHookWorld"
+  ],
   "server": [],
   "setSourceFile": true,
   "minVersion": "0.8.7"

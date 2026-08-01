@@ -59,6 +59,10 @@ public class ModMixinConfigPlugin implements IMixinConfigPlugin {
             return isClassPresent("org.taumc.celeritas.CeleritasVintage");
         }
 
+        if (mixinClassName.contains(".mod.rltweaker.")) {
+            return isClassPresent("com.charles445.rltweaker.RLTweaker");
+        }
+
         return true;
     }
 

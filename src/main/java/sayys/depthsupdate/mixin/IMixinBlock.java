@@ -12,4 +12,10 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface IMixinBlock {
     @Accessor("useNeighborBrightness")
     void depthsupdate$setUseNeighborBrightness(boolean value);
+
+    @Accessor("translucent")
+    boolean depthsupdate$isTranslucent();
+
+    @Accessor("lightOpacity")
+    int depthsupdate$getLightOpacity();
 }
