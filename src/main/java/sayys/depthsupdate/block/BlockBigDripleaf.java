@@ -101,7 +101,7 @@ public class BlockBigDripleaf extends Block implements IGrowable {
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
         if (!this.canPlaceBlockAt(worldIn, pos)) {
             worldIn.destroyBlock(pos, true);
-        } else if (worldIn.isBlockPowered(pos)) {
+        } else if (!worldIn.isRemote && worldIn.isBlockPowered(pos)) {
             resetTilt(state, worldIn, pos);
         }
     }

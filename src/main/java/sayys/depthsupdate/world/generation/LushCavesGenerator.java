@@ -427,10 +427,6 @@ public class LushCavesGenerator implements IWorldGenerator {
 
             PropertyBool side = vineSide(facing);
 
-            if (side == null) {
-                continue;
-            }
-
             int length = 1 + random.nextInt(6);
             BlockPos pos = origin;
 

@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import sayys.depthsupdate.DepthsUpdateConfig;
+import sayys.depthsupdate.core.DeepFill;
 import sayys.depthsupdate.core.HeightContext;
 import sayys.depthsupdate.core.HeightManager;
 import sayys.depthsupdate.util.BlockUtils;
@@ -52,29 +53,17 @@ public abstract class MixinChunkGeneratorOverworld {
         IBlockState stone = Blocks.STONE.getDefaultState();
         IBlockState deepslate = BlockUtils.getDeepslateBlockState();
 
-        int maxY = DepthsUpdateConfig.deepslateMaxY;
-        int transitionRange = DepthsUpdateConfig.deepslateTransitionRange;
-        int fullDeepslateY = maxY - transitionRange;
+        IBlockState bedrock = Blocks.BEDROCK.getDefaultState();
+        int fillMaxY = Math.max(0, DepthsUpdateConfig.deepslateMaxY);
 
         for (int bx = 0; bx < 16; bx++) {
             for (int bz = 0; bz < 16; bz++) {
-                for (int by = minY; by <= Math.max(0, maxY); by++) {
-                    if (by <= minY + this.rand.nextInt(5)) {
-                        primer.setBlockState(bx, by, bz, Blocks.BEDROCK.getDefaultState());
-                    } else if (by <= fullDeepslateY) {
-                        primer.setBlockState(bx, by, bz, deepslate);
-                    } else if (by < maxY) {
-                        double chance = (double) (maxY - by) / (double) transitionRange;
+                for (int by = minY; by <= fillMaxY; by++) {
+                    IBlockState banded = DeepFill.bandAt(by, minY, this.rand, bedrock, deepslate, stone);
 
-                        if (this.rand.nextDouble() < chance) {
-                            primer.setBlockState(bx, by, bz, deepslate);
-                        } else if (by < 0) {
-                            primer.setBlockState(bx, by, bz, stone);
-                        }
-                    } else if (by < 0) {
-                        primer.setBlockState(bx, by, bz, stone);
+                    if (banded != null) {
+                        primer.setBlockState(bx, by, bz, banded);
                     }
-
                 }
             }
         }

@@ -14,7 +14,6 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
@@ -23,7 +22,6 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -31,7 +29,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import sayys.depthsupdate.DepthsUpdateMod;
 import sayys.depthsupdate.registry.PlantRegistry;
 
 public abstract class BlockCaveVinesBase extends Block implements IGrowable {
@@ -128,9 +125,12 @@ public abstract class BlockCaveVinesBase extends Block implements IGrowable {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (state.getValue(BERRIES)) {
-            worldIn.setBlockState(pos, state.withProperty(BERRIES, false), 2);
-            spawnAsEntity(worldIn, pos, new ItemStack(PlantRegistry.glow_berries, 1));
-            worldIn.playSound(null, pos, SoundEvents.BLOCK_GRASS_HIT, SoundCategory.BLOCKS, 1.0F, 0.8F + worldIn.rand.nextFloat() * 0.4F);
+            if (!worldIn.isRemote) {
+                worldIn.setBlockState(pos, state.withProperty(BERRIES, false), 2);
+                spawnAsEntity(worldIn, pos, new ItemStack(PlantRegistry.glow_berries, 1));
+                worldIn.playSound(playerIn, pos, SoundEvents.BLOCK_GRASS_HIT, SoundCategory.BLOCKS,
+                        1.0F, 0.8F + worldIn.rand.nextFloat() * 0.4F);
+            }
 
             return true;
         }

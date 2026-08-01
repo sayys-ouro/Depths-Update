@@ -5,6 +5,7 @@
 .gradle/
 .idea/
 bin/
+env/
 references/
 run/
 sources/

@@ -1,6 +1,7 @@
 package sayys.depthsupdate.block;
 
 import java.util.Random;
+
 import net.minecraft.block.BlockRotatedPillar;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.MapColor;
@@ -16,7 +17,6 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import sayys.depthsupdate.registry.DeepslateRegistry;
-import sayys.depthsupdate.registry.RegistryHandler;
 
 public class BlockDeepslate extends BlockRotatedPillar {
     public BlockDeepslate() {

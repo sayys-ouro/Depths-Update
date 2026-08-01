@@ -25,8 +25,7 @@ repositories {
 dependencies {
     compileOnly("com.cleanroommc:sponge-mixin:0.20.13+mixin.0.8.7")
 
-    implementation("org.spongepowered:noise:2.0.0-SNAPSHOT")
-    implementation("it.unimi.dsi:fastutil:8.5.18")
+    compileOnly("org.jspecify:jspecify:1.0.0")
 
     if (enable_lwjglx.toBoolean()) {
         compileOnly("com.cleanroommc:lwjglx:1.0.0")

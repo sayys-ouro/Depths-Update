@@ -49,6 +49,12 @@ public class BlockUtils {
         deepslateOreID = -1;
     }
 
+    public static boolean isRegistered(Block block) {
+        return block != null
+                && block.getRegistryName() != null
+                && Block.REGISTRY.containsKey(block.getRegistryName());
+    }
+
     public static IBlockState getDeepslateBlockState() {
         if (cachedDeepslateBlockState != null) return cachedDeepslateBlockState;
 

@@ -1,6 +1,7 @@
 package sayys.depthsupdate.mixin.mod.optifine;
 
 import java.lang.reflect.Method;
+
 import net.minecraft.client.renderer.chunk.RenderChunk;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
@@ -8,6 +9,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Unique;
 
+import sayys.depthsupdate.compat.optifine.OptiFineCompatLog;
 import sayys.depthsupdate.core.HeightManager;
 
 @Mixin(targets = "net.optifine.util.RenderChunkUtils", remap = false)

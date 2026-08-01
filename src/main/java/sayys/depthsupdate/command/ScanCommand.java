@@ -175,6 +175,7 @@ public class ScanCommand extends CommandBase {
         int baseX = chunkX << 4;
         int baseZ = chunkZ << 4;
         int bedrockCeiling = minY + 4;
+        int fluidCeiling = HeightManager.get(world).seaLevel() - 2;
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 
         for (int dx = 0; dx < 16; dx++) {
@@ -195,7 +196,9 @@ public class ScanCommand extends CommandBase {
                         continue;
                     }
 
-                    if (state.getBlock() instanceof BlockLiquid && state.getValue(BlockLiquid.LEVEL) == 0) {
+                    if (y <= fluidCeiling
+                            && state.getBlock() instanceof BlockLiquid
+                            && state.getValue(BlockLiquid.LEVEL) == 0) {
                         checkFluidSupport(world, pos, x, y, z, minY, report);
                     }
 

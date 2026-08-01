@@ -21,6 +21,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 import sayys.depthsupdate.DepthsUpdateConfig;
 import sayys.depthsupdate.core.BedrockFilter;
+import sayys.depthsupdate.core.DeepFill;
 import sayys.depthsupdate.core.HeightContext;
 import sayys.depthsupdate.core.HeightManager;
 import sayys.depthsupdate.util.BlockUtils;
@@ -100,10 +101,7 @@ public class MixinChunkProviderServer {
         IBlockState deepslate = BlockUtils.getDeepslateBlockState();
         IBlockState bedrock = Blocks.BEDROCK.getDefaultState();
 
-        int deepslateMaxY = DepthsUpdateConfig.deepslateMaxY;
-        int transitionRange = DepthsUpdateConfig.deepslateTransitionRange;
-        int fullDeepslateY = deepslateMaxY - transitionRange;
-        int fillMaxY = Math.max(4, deepslateMaxY);
+        int fillMaxY = Math.max(4, DepthsUpdateConfig.deepslateMaxY);
 
         ExtendedBlockStorage[] storageArrays = chunk.getBlockStorageArray();
         boolean hasSkyLight = this.world.provider.hasSkyLight();
@@ -127,24 +125,9 @@ public class MixinChunkProviderServer {
                         }
                     }
 
-                    IBlockState state;
+                    IBlockState state = DeepFill.bandAt(by, minY, this.depthsupdate$fillRandom, bedrock, deepslate, stone);
 
-                    if (by <= minY + this.depthsupdate$fillRandom.nextInt(5)) {
-                        state = bedrock;
-                    } else if (by <= fullDeepslateY) {
-                        state = deepslate;
-                    } else if (by < deepslateMaxY) {
-                        double chance = (double) (deepslateMaxY - by) / (double) transitionRange;
-                        if (this.depthsupdate$fillRandom.nextDouble() < chance) {
-                            state = deepslate;
-                        } else if (by < 0) {
-                            state = stone;
-                        } else {
-                            continue;
-                        }
-                    } else if (by < 0) {
-                        state = stone;
-                    } else {
+                    if (state == null) {
                         continue;
                     }
 

@@ -135,6 +135,10 @@ public class DeepslateRegistry {
             deepslate_emerald_ore.setHarvestLevel("pickaxe", 2);
             deepslate_copper_ore.setHarvestLevel("pickaxe", 1);
 
+            raw_iron_block.setHarvestLevel("pickaxe", 1);
+            raw_copper_block.setHarvestLevel("pickaxe", 1);
+            raw_gold_block.setHarvestLevel("pickaxe", 2);
+
             BlockUtils.initializeOreMap();
         });
 

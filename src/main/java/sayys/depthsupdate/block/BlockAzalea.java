@@ -24,6 +24,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import sayys.depthsupdate.registry.PlantRegistry;
+import sayys.depthsupdate.util.BlockUtils;
 
 @ParametersAreNonnullByDefault
 public class BlockAzalea extends Block implements IGrowable {
@@ -118,7 +119,7 @@ public class BlockAzalea extends Block implements IGrowable {
 
         Block soil = worldIn.getBlockState(pos.down()).getBlock();
 
-        if (soil == Blocks.DIRT || soil == Blocks.GRASS) {
+        if ((soil == Blocks.DIRT || soil == Blocks.GRASS) && BlockUtils.isRegistered(PlantRegistry.rooted_dirt)) {
             worldIn.setBlockState(pos.down(), PlantRegistry.rooted_dirt.getDefaultState(), 2);
         }
 

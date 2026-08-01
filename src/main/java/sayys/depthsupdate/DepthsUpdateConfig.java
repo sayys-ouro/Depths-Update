@@ -15,7 +15,9 @@ public class DepthsUpdateConfig {
     @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
     private static class EventHandler {
         @SubscribeEvent
-        public static void onConfigChanged(final ConfigChangedEvent.OnConfigChangedEvent event) {
+        public static void onConfigChanged(
+            final ConfigChangedEvent.OnConfigChangedEvent event
+        ) {
             if (event.getModID().equals(Reference.MOD_ID)) {
                 ConfigManager.sync(Reference.MOD_ID, Config.Type.INSTANCE);
 
@@ -52,11 +54,13 @@ public class DepthsUpdateConfig {
         @Config.Name("Global Minimum Y")
         @Config.Comment("The minimum Y coordinate.")
         @Config.RangeInt(min = -256, max = 0)
+        @Config.RequiresMcRestart
         public int globalMinY = -64;
 
         @Config.Name("Global Maximum Y")
         @Config.Comment("The maximum Y coordinate.")
         @Config.RangeInt(min = 256, max = 512)
+        @Config.RequiresMcRestart
         public int globalMaxY = 320;
 
         @Config.Name("Extended Dimensions")
@@ -269,7 +273,7 @@ public class DepthsUpdateConfig {
 
     public static class Aquifers {
         @Config.Name("Enable Aquifers")
-        public boolean enableAquifers = false;
+        public boolean enableAquifers = true;
     }
 
     static {

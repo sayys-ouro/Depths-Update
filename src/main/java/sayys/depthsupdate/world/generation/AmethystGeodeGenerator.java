@@ -39,7 +39,6 @@ public class AmethystGeodeGenerator implements IWorldGenerator {
 
     private static final double USE_POTENTIAL_PLACEMENTS_CHANCE = 0.35;
     private static final double USE_ALTERNATE_LAYER0_CHANCE = 0.083;
-    private static final boolean PLACEMENTS_REQUIRE_LAYER0_ALTERNATE = true;
     private static final int OUTER_WALL_DIST_MIN = 4;
     private static final int OUTER_WALL_DIST_MAX = 6;
     private static final int DISTRIBUTION_POINTS_MIN = 3;
@@ -209,8 +208,7 @@ public class AmethystGeodeGenerator implements IWorldGenerator {
                     world.setBlockState(pos, AmethystRegistry.amethyst_block.getDefaultState(), 2);
                 }
 
-                if ((!PLACEMENTS_REQUIRE_LAYER0_ALTERNATE || useAlternate)
-                        && random.nextFloat() < USE_POTENTIAL_PLACEMENTS_CHANCE) {
+                if (useAlternate && random.nextFloat() < USE_POTENTIAL_PLACEMENTS_CHANCE) {
                     potentialCrystalPlacements.add(pos.toImmutable());
                 }
             } else if (distSumShell >= thresholdMiddle) {
@@ -248,9 +246,6 @@ public class AmethystGeodeGenerator implements IWorldGenerator {
         }
     }
 
-    /**
-     * Fast inverse square root approximation, matching vanilla's Mth.invSqrt behavior.
-     */
     private static double fastInvSqrt(double value) {
         return 1.0 / Math.sqrt(value);
     }

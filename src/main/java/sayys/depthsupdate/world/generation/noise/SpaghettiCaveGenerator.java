@@ -9,6 +9,8 @@ import sayys.depthsupdate.world.generation.noise.sponge.module.source.Perlin;
 public class SpaghettiCaveGenerator implements ICaveGenerator {
     private static final double SCALE = 0.035;
     private static final double THICKNESS = 0.025;
+    /** Blocks below caveMaxY over which the noodles taper away. */
+    private static final int FADE_BAND = 10;
 
     private final IBlockState debugBlockBlockState;
 
@@ -59,14 +61,15 @@ public class SpaghettiCaveGenerator implements ICaveGenerator {
         double fade = 0.0;
 
         if (context.y > fadeTopStart) {
-            fade = ((double) (context.y - fadeTopStart) / fadeTopRange);
+            fade = Math.min(1.0, (double) (context.y - fadeTopStart) / fadeTopRange);
         }
 
-        double value = noodleThickness + (fade * 0.5);
+        double threshold = THICKNESS * (1.0 - fade);
+        double value = noodleThickness;
 
-        if (value < THICKNESS) {
+        if (value < threshold) {
             context.shouldCarve = true;
-            context.density = value - THICKNESS;
+            context.density = value - threshold;
         } else if (!context.shouldDebug && DepthsUpdateConfig.DEBUG.enableDebugVisualizers && value < THICKNESS + 0.03) {
             context.shouldDebug = true;
             context.debugBlock = debugBlockBlockState;
