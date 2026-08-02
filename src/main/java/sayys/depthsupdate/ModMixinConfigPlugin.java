@@ -5,6 +5,7 @@ import java.util.Set;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
+import net.minecraft.launchwrapper.Launch;
 
 public class ModMixinConfigPlugin implements IMixinConfigPlugin {
     private static final boolean OPTIFINE_LOADED = detectOptiFine();
@@ -12,30 +13,15 @@ public class ModMixinConfigPlugin implements IMixinConfigPlugin {
     private static final boolean CELERITAS_LOADED = detectCeleritas();
 
     private static boolean detectOptiFine() {
-        try {
-            Class.forName("optifine.OptiFineForgeTweaker");
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
+        return Launch.classLoader.isClassExist("optifine.OptiFineForgeTweaker");
     }
 
     private static boolean detectNothirium() {
-        try {
-            Class.forName("meldexun.nothirium.mc.Nothirium");
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
+        return Launch.classLoader.isClassExist("meldexun.nothirium.mc.Nothirium");
     }
 
     private static boolean detectCeleritas() {
-        try {
-            Class.forName("org.taumc.celeritas.CeleritasVintage");
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
+        return Launch.classLoader.isClassExist("org.taumc.celeritas.CeleritasVintage");
     }
 
     @Override
