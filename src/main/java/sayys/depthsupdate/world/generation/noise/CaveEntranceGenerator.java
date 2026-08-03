@@ -26,16 +26,17 @@ public class CaveEntranceGenerator implements ICaveGenerator {
     }
 
     @Override
+    public void prepare(int chunkX, int chunkZ, int highestY) {
+        this.field.prepare(chunkX, chunkZ, highestY);
+    }
+
+    @Override
     public void sample(@NonNull CaveSampleContext context) {
-        if (context.y > this.maxY) {
+        if (context.y > this.maxY || CaveEntranceNoise.closedAtDepth(context.depth)) {
             return;
         }
 
-        double density = this.field.get(context.localX, context.y, context.localZ);
-
-        if (density < 0.0) {
-            context.shouldCarve = true;
-            context.density = density;
-        }
+        context.offer(CaveType.ENTRANCE, this.field.get(context.localX, context.y, context.localZ)
+                + CaveEntranceNoise.surfaceSlide(context.depth));
     }
 }

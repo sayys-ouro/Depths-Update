@@ -8,6 +8,7 @@ import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.pathfinding.WalkNodeProcessor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -31,13 +32,29 @@ public abstract class MixinWalkNodeProcessor extends NodeProcessor {
 
     @Unique
     private int depthsupdate$minY() {
-        EntityLiving e = this.currentEntity != null ? this.currentEntity : this.entity;
-        return e != null ? HeightManager.getMinY(e.world) : 0;
+        EntityLiving pathing = this.currentEntity != null ? this.currentEntity : this.entity;
+
+        return pathing != null ? HeightManager.getMinY(pathing.world) : 0;
+    }
+
+    @Unique
+    private int depthsupdate$minY(IBlockAccess blockaccessIn) {
+        EntityLiving pathing = this.currentEntity != null ? this.currentEntity : this.entity;
+
+        if (pathing != null) {
+            return HeightManager.getMinY(pathing.world);
+        }
+
+        return blockaccessIn instanceof World world ? HeightManager.getMinY(world) : 0;
     }
 
     @Redirect(
         method = "getStart",
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/BlockPos;getY()I", ordinal = 0)
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/util/math/BlockPos;getY()I",
+            ordinal = 0
+        )
     )
     private int depthsupdate$startGroundY(BlockPos pos) {
         return pos.getY() - depthsupdate$minY();
@@ -45,13 +62,14 @@ public abstract class MixinWalkNodeProcessor extends NodeProcessor {
 
     @ModifyConstant(
         method = "getSafePoint",
-        constant = @Constant(intValue = 0, expandZeroConditions = Constant.Condition.GREATER_THAN_ZERO),
-        slice = @Slice(
-            from = @At(
-                value = "INVOKE",
-                target = "Lnet/minecraft/world/World;collidesWithAnyBlock(Lnet/minecraft/util/math/AxisAlignedBB;)Z"
-            )
-        )
+        constant = @Constant(
+            intValue = 0,
+            expandZeroConditions = Constant.Condition.GREATER_THAN_ZERO
+        ),
+        slice = @Slice(from = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/world/World;collidesWithAnyBlock(Lnet/minecraft/util/math/AxisAlignedBB;)Z"
+        ))
     )
     private int depthsupdate$safePointFloor(int original) {
         return depthsupdate$minY();
@@ -62,13 +80,20 @@ public abstract class MixinWalkNodeProcessor extends NodeProcessor {
         at = @At("HEAD"),
         cancellable = true
     )
-    private void depthsupdate$getPathNodeType(IBlockAccess blockaccessIn, int x, int y, int z, CallbackInfoReturnable<PathNodeType> cir) {
-        int minY = depthsupdate$minY();
+    private void depthsupdate$getPathNodeType(
+        IBlockAccess blockaccessIn,
+        int x,
+        int y,
+        int z,
+        CallbackInfoReturnable<PathNodeType> cir
+    ) {
+        int minY = depthsupdate$minY(blockaccessIn);
         PathNodeType pathnodetype = this.getPathNodeTypeRaw(blockaccessIn, x, y, z);
 
         if (pathnodetype == PathNodeType.OPEN && y > minY) {
             Block block = blockaccessIn.getBlockState(new BlockPos(x, y - 1, z)).getBlock();
             PathNodeType below = this.getPathNodeTypeRaw(blockaccessIn, x, y - 1, z);
+
             pathnodetype = below != PathNodeType.WALKABLE
                     && below != PathNodeType.OPEN
                     && below != PathNodeType.WATER

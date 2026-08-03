@@ -80,7 +80,9 @@ public class LushCavesGenerator implements IWorldGenerator {
             int x = chunkX * 16 + 8 + random.nextInt(16);
             int z = chunkZ * 16 + 8 + random.nextInt(16);
 
-            generateLushCave(world, random, new BlockPos(x, y, z));
+            BlockPos center = new BlockPos(x, y, z);
+            GenerationLog.featurePlaced("lush cave", center);
+            generateLushCave(world, random, center);
         }
     }
 

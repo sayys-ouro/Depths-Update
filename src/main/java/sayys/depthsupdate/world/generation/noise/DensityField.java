@@ -27,11 +27,27 @@ public final class DensityField {
     }
 
     public void prepare(int chunkX, int chunkZ) {
+        prepare(chunkX, chunkZ, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Fills only the rows needed to answer queries up to highestY. Fields that
+     * reach the surface span most of the world, while any one chunk only ever
+     * asks about its own terrain.
+     */
+    public void prepare(int chunkX, int chunkZ, int highestY) {
         int worldX = chunkX * 16;
         int worldZ = chunkZ * 16;
         int index = 0;
 
-        for (int gridY = 0; gridY < this.gridHeight; gridY++) {
+        int rows = this.gridHeight;
+
+        if (highestY != Integer.MAX_VALUE) {
+            // get() interpolates between gridY and gridY + 1.
+            rows = Math.min(rows, Math.max(2, (highestY - this.gridMinY) / CELL_HEIGHT + 2));
+        }
+
+        for (int gridY = 0; gridY < rows; gridY++) {
             int y = this.gridMinY + gridY * CELL_HEIGHT;
 
             for (int gridZ = 0; gridZ < GRID_WIDTH; gridZ++) {

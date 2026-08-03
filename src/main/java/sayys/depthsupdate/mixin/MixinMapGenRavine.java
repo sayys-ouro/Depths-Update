@@ -270,19 +270,14 @@ public abstract class MixinMapGenRavine extends MapGenBase {
 
         ci.cancel();
 
-        HeightContext rHeightCtx = HeightManager.get(p_180701_1_);
-        int rMinY = rHeightCtx.minY();
-        int rTotalHeight = rHeightCtx.totalHeight();
-
         if (this.rand.nextInt(50) == 0) {
             double d0 = (double) (p_180701_2_ * 16 + this.rand.nextInt(16));
 
-            // Vanilla starts ravines at nextInt(nextInt(40) + 8) + 20; the same
-            // shape is stretched here over the extended height.
-            int yRange = Math.max(8, (rTotalHeight * 112) / 256);
-            int yOffset = rMinY + (rTotalHeight * 20) / 256;
-            double vanillaLikeY = this.rand.nextInt(yRange) + 8;
-            double d1 = (double) (this.rand.nextInt((int) vanillaLikeY) + yOffset);
+            // Vanilla's own start band, kept absolute: modern canyons run at
+            // y 10..67 regardless of world depth. The deep band belongs to the
+            // noise caves; stretching ravines down there matches neither 1.12
+            // nor modern generation.
+            double d1 = (double) (this.rand.nextInt(this.rand.nextInt(40) + 8) + 20);
 
             double d2 = (double) (p_180701_3_ * 16 + this.rand.nextInt(16));
 

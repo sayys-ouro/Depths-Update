@@ -40,6 +40,17 @@ public class DepthsUpdateConfig {
 
         @Config.Name("River Debug Block")
         public String riverDebugBlock = "minecraft:diamond_block";
+
+        @Config.Name("Log Generation")
+        public boolean enableGenerationLog = false;
+
+        @Config.Name("Generation Log Interval")
+        @Config.RangeInt(min = 1, max = 4096)
+        public int generationLogInterval = 64;
+
+        @Config.Name("Log Feature Placements")
+        @Config.Comment("Log the coordinates of each lush cave, dripstone cave and amethyst geode as it is placed.")
+        public boolean logFeaturePlacements = false;
     }
 
     @Config.Name("Debug")
@@ -112,8 +123,10 @@ public class DepthsUpdateConfig {
     @Config.Name("Generate Spaghetti Caves")
     public static boolean generateSpaghettiCaves = true;
 
+    @Config.Name("Generate Noodle Caves")
+    public static boolean generateNoodleCaves = true;
+
     @Config.Name("Generate Cave Entrances")
-    @Config.Comment("Vertical shafts connecting the cave systems to the surface.")
     public static boolean generateCaveEntrances = true;
 
     @Config.Name("Generate Cave Pillars")
@@ -121,7 +134,7 @@ public class DepthsUpdateConfig {
 
     @Config.Name("Deepslate Max Y")
     @Config.RangeInt(min = -256, max = 512)
-    public static int deepslateMaxY = 0;
+    public static int deepslateMaxY = 8;
 
     @Config.Name("Deepslate Transition Range")
     @Config.Comment("The number of blocks over which stone transitions into Deepslate.")

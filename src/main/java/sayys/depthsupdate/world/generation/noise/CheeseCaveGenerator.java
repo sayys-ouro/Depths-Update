@@ -18,8 +18,7 @@ public class CheeseCaveGenerator implements ICaveGenerator {
         this.debugBlockBlockState = BlockUtils.getCheeseDebugBlockState();
         this.maxY = caveMaxY;
 
-
-        CheeseCaveNoise noise = new CheeseCaveNoise(seed, offsetX, offsetY, offsetZ, caveMaxY,
+        CheeseCaveNoise noise = new CheeseCaveNoise(seed, offsetX, offsetY, offsetZ,
                 DepthsUpdateConfig.cheeseCavesAbundance);
         this.field = new DensityField(noise::density, caveMinY, caveMaxY);
     }
@@ -35,18 +34,24 @@ public class CheeseCaveGenerator implements ICaveGenerator {
     }
 
     @Override
+    public void prepare(int chunkX, int chunkZ, int highestY) {
+        this.field.prepare(chunkX, chunkZ, highestY);
+    }
+
+    @Override
     public void sample(@NonNull CaveSampleContext context) {
         // Above its own ceiling the density grid has no data for this Y.
         if (context.y > this.maxY) {
             return;
         }
 
-        double density = this.field.get(context.localX, context.y, context.localZ);
+        double density = this.field.get(context.localX, context.y, context.localZ)
+                + CheeseCaveNoise.surfaceSlide(context.depth);
 
-        if (density < 0.0) {
-            context.shouldCarve = true;
-            context.density = density;
-        } else if (DepthsUpdateConfig.DEBUG.enableDebugVisualizers && density < DEBUG_BAND) {
+        context.offer(CaveType.CHEESE, density);
+
+        if (!context.shouldDebug && density >= 0.0
+                && DepthsUpdateConfig.DEBUG.enableDebugVisualizers && density < DEBUG_BAND) {
             context.shouldDebug = true;
             context.debugBlock = this.debugBlockBlockState;
         }

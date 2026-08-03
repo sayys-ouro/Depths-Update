@@ -5,6 +5,7 @@ import java.util.Random;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraft.world.gen.ChunkGeneratorOverworld;
 import org.spongepowered.asm.mixin.Final;
@@ -75,11 +76,23 @@ public abstract class MixinChunkGeneratorOverworld {
 
             this.depthsupdate$riverGenerator.generate(x, z, primer);
         }
+    }
+
+    @Inject(method = "replaceBiomeBlocks", at = @At("RETURN"))
+    private void depthsupdate$carveNoiseCaves(int x, int z, ChunkPrimer primer, Biome[] biomesIn, CallbackInfo ci) {
+        if (((Object) this).getClass() != ChunkGeneratorOverworld.class) {
+            return;
+        }
+
+        if (!HeightManager.isExtended(this.world) || HeightManager.get(this.world).minY() >= 0) {
+            return;
+        }
+
         if (this.depthsupdate$noiseCaveGenerator == null) {
             this.depthsupdate$noiseCaveGenerator = new CaveNoiseGenerator(this.world);
         }
 
-        this.depthsupdate$noiseCaveGenerator.generate(x, z, primer);
+        this.depthsupdate$noiseCaveGenerator.generate(x, z, primer, biomesIn);
     }
 
 }

@@ -11,11 +11,15 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import sayys.depthsupdate.DepthsUpdateConfig;
 import sayys.depthsupdate.registry.DeepslateRegistry;
 
 public class BlockUtils {
+    private static final Logger LOGGER = LogManager.getLogger("DepthsUpdate/BlockUtils");
+
     private static IBlockState cachedDeepslateBlockState;
     private static IBlockState cachedCheeseDebugBlockState;
     private static IBlockState cachedSpaghettiDebugBlockState;
@@ -45,7 +49,9 @@ public class BlockUtils {
         cachedCheeseDebugBlockState = null;
         cachedSpaghettiDebugBlockState = null;
         cachedRiverDebugBlockState = null;
+
         DEEPSLATE_LOOKUP_CACHE.clear();
+
         deepslateOreID = -1;
     }
 
@@ -55,20 +61,48 @@ public class BlockUtils {
                 && Block.REGISTRY.containsKey(block.getRegistryName());
     }
 
+    public static IBlockState parseBlockState(String spec) {
+        BlockSpec parsed = BlockSpec.parse(spec);
+        Block block = Block.getBlockFromName(parsed.name());
+
+        if (block == null || block == Blocks.AIR) {
+            return null;
+        }
+
+        if (!parsed.hasMeta()) {
+            return block.getDefaultState();
+        }
+
+        IBlockState state;
+
+        try {
+            state = block.getStateFromMeta(parsed.meta());
+        } catch (RuntimeException unsupported) {
+            LOGGER.warn("Block {} rejected metadata {}, using its default state", parsed.name(), parsed.meta());
+
+            return block.getDefaultState();
+        }
+
+        if (block.getMetaFromState(state) != parsed.meta()) {
+            LOGGER.warn("Block {} has no metadata {}, using its default state", parsed.name(), parsed.meta());
+
+            return block.getDefaultState();
+        }
+
+        return state;
+    }
+
     public static IBlockState getDeepslateBlockState() {
         if (cachedDeepslateBlockState != null) return cachedDeepslateBlockState;
 
-        String blockName = DepthsUpdateConfig.deepslateBlock;
-        Block block = Block.getBlockFromName(blockName);
+        IBlockState configured = parseBlockState(DepthsUpdateConfig.deepslateBlock);
 
-        if (block == null || block == Blocks.AIR) {
-            if (DepthsUpdateConfig.REGISTRY.enableDeepslateFamily) {
-                cachedDeepslateBlockState = DeepslateRegistry.deepslate.getDefaultState();
-            } else {
-                cachedDeepslateBlockState = Blocks.STONE.getDefaultState();
-            }
+        if (configured == null) {
+            cachedDeepslateBlockState = DepthsUpdateConfig.REGISTRY.enableDeepslateFamily
+                    ? DeepslateRegistry.deepslate.getDefaultState()
+                    : Blocks.STONE.getDefaultState();
         } else {
-            cachedDeepslateBlockState = block.getDefaultState();
+            cachedDeepslateBlockState = configured;
         }
 
         return cachedDeepslateBlockState;
@@ -77,9 +111,9 @@ public class BlockUtils {
     public static IBlockState getDebugBlockState(String blockName, Block fallback, IBlockState currentCache) {
         if (currentCache != null) return currentCache;
 
-        Block block = Block.getBlockFromName(blockName);
+        IBlockState state = parseBlockState(blockName);
 
-        return (block == null || block == Blocks.AIR) ? fallback.getDefaultState() : block.getDefaultState();
+        return state != null ? state : fallback.getDefaultState();
     }
 
     public static IBlockState getCheeseDebugBlockState() {
@@ -122,6 +156,12 @@ public class BlockUtils {
         if (state == null) return false;
 
         Block block = state.getBlock();
+        IBlockState configured = getDeepslateBlockState();
+        Block configuredBlock = configured.getBlock();
+
+        if (block == configuredBlock) {
+            return configured == configuredBlock.getDefaultState() || state == configured;
+        }
 
         Boolean cached = DEEPSLATE_LOOKUP_CACHE.get(block);
 
@@ -137,8 +177,6 @@ public class BlockUtils {
 
     private static boolean computeIsDeepslate(Block block) {
         if (block == DeepslateRegistry.deepslate) return true;
-
-        if (block.getRegistryName() != null && block.getRegistryName().toString().equals(DepthsUpdateConfig.deepslateBlock)) return true;
 
         if (deepslateOreID == -1) {
             deepslateOreID = OreDictionary.getOreID("stoneDeepslate");

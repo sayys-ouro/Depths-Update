@@ -90,6 +90,7 @@ public class AmethystGeodeGenerator implements IWorldGenerator {
         int z = chunkZ * 16 + 8 + random.nextInt(16);
 
         BlockPos origin = new BlockPos(x, y, z);
+        GenerationLog.featurePlaced("amethyst geode", origin);
         generateGeode(world, random, origin);
     }
 

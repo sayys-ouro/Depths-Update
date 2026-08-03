@@ -89,7 +89,9 @@ public class DripstoneCavesGenerator implements IWorldGenerator {
             int x = chunkX * 16 + 8 + random.nextInt(16);
             int z = chunkZ * 16 + 8 + random.nextInt(16);
 
-            generateDripstoneCave(world, random, new BlockPos(x, y, z));
+            BlockPos center = new BlockPos(x, y, z);
+            GenerationLog.featurePlaced("dripstone cave", center);
+            generateDripstoneCave(world, random, center);
         }
     }
 

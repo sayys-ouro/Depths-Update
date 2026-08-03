@@ -3,8 +3,10 @@ package sayys.depthsupdate.mixin;
 import java.util.Random;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkGeneratorDebug;
@@ -144,6 +146,12 @@ public class MixinChunkProviderServer {
                         storageArrays[storageIdx] = section;
                     }
 
+                    // Above zero this chunk holds finished terrain, caves
+                    // included; the transition may only recolor stone there.
+                    if (by >= 0 && section.get(bx, by & 15, bz).getBlock() != Blocks.STONE) {
+                        continue;
+                    }
+
                     section.set(bx, by & 15, bz, state);
                 }
             }
@@ -163,7 +171,16 @@ public class MixinChunkProviderServer {
             this.depthsupdate$noiseCaveGenerator = new CaveNoiseGenerator(this.world);
         }
 
-        this.depthsupdate$noiseCaveGenerator.generate(x, z, adapter);
+        // Chunk biome bytes use index z << 4 | x, which is the same flat
+        // layout the carve expects for column (x, z).
+        byte[] biomeIds = chunk.getBiomeArray();
+        Biome[] biomes = new Biome[biomeIds.length];
+
+        for (int i = 0; i < biomeIds.length; i++) {
+            biomes[i] = Biome.getBiome(biomeIds[i] & 255, Biomes.PLAINS);
+        }
+
+        this.depthsupdate$noiseCaveGenerator.generate(x, z, adapter, biomes);
 
         chunk.generateSkylightMap();
 

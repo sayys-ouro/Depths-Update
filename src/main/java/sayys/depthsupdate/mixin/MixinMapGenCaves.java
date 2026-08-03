@@ -292,12 +292,16 @@ public abstract class MixinMapGenCaves extends MapGenBase {
             i = 0;
         }
 
+        // Modern vanilla's cave carver runs from 8 above the bottom to y=180.
+        int carverMinY = minY + 8;
+        int carverMaxY = Math.min(180, minY + totalHeight - 8);
+        int yRange = Math.max(8, carverMaxY - carverMinY - 8);
+
         for (int j = 0; j < i; ++j) {
             double d0 = (double) (p_180701_2_ * 16 + this.rand.nextInt(16));
 
-            int yRange = Math.max(8, (totalHeight * 192) / 256);
             double vanillaLikeY = this.rand.nextInt(yRange) + 8;
-            double d1 = (double) (this.rand.nextInt((int) vanillaLikeY) + minY);
+            double d1 = (double) (this.rand.nextInt((int) vanillaLikeY) + carverMinY);
 
             double d2 = (double) (p_180701_3_ * 16 + this.rand.nextInt(16));
             int k = 1;
@@ -316,11 +320,12 @@ public abstract class MixinMapGenCaves extends MapGenBase {
                     f2 *= this.rand.nextFloat() * this.rand.nextFloat() * 3.0F + 1.0F;
                 }
 
-                int calculatedLength = (this.range * 16 - 16) * 3;
-                int tunnelDistance = calculatedLength - this.rand.nextInt(calculatedLength / 4);
-
+                // Length 0 lets addTunnel derive vanilla's range*16-16. Anything
+                // longer than that cannot generate fully: a tunnel is only
+                // carved by chunks whose origin scan reaches it, and that scan
+                // stops at MapGenBase.range chunks.
                 this.addTunnel(this.rand.nextLong(), p_180701_4_, p_180701_5_, p_180701_6_, d0, d1, d2, f2, f, f1, 0,
-                        tunnelDistance, 1.0D);
+                        0, 1.0D);
             }
         }
     }
