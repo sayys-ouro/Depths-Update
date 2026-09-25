@@ -19,7 +19,7 @@ public abstract class MixinDebugRendererChunkBorder {
 
     @WrapMethod(method="render")
     private void depthsupdate$renderChunkBorder(
-        float partialTicks,long finishTimeNano, Operation<Void> original
+        float partialTicks, long finishTimeNano, Operation<Void> original
     ) {
         if (HeightManager.isExtended(this.minecraft.world)) {
             DUDebugRendererChunkBorder.render(this.minecraft, partialTicks);

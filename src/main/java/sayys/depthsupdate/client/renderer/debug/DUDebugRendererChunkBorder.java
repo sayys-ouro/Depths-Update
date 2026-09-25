@@ -92,11 +92,11 @@ public class DUDebugRendererChunkBorder {
         bufferBuilder.begin(3, DefaultVertexFormats.POSITION_COLOR);
 
         for (int x = 0; x <= 16; x += 16) {
-            for (int l1 = 0; l1 <= 16; l1 += 16) {
-                bufferBuilder.pos(chunkStartX + x, bottomY, chunkStartZ + l1).color(0.25F, 0.25F, 1.0F, 0.0F).endVertex();
-                bufferBuilder.pos(chunkStartX + x, bottomY, chunkStartZ + l1).color(0.25F, 0.25F, 1.0F, 1.0F).endVertex();
-                bufferBuilder.pos(chunkStartX + x, topY, chunkStartZ + l1).color(0.25F, 0.25F, 1.0F, 1.0F).endVertex();
-                bufferBuilder.pos(chunkStartX + x, topY, chunkStartZ + l1).color(0.25F, 0.25F, 1.0F, 0.0F).endVertex();
+            for (int z = 0; z <= 16; z += 16) {
+                bufferBuilder.pos(chunkStartX + x, bottomY, chunkStartZ + z).color(0.25F, 0.25F, 1.0F, 0.0F).endVertex();
+                bufferBuilder.pos(chunkStartX + x, bottomY, chunkStartZ + z).color(0.25F, 0.25F, 1.0F, 1.0F).endVertex();
+                bufferBuilder.pos(chunkStartX + x, topY, chunkStartZ + z).color(0.25F, 0.25F, 1.0F, 1.0F).endVertex();
+                bufferBuilder.pos(chunkStartX + x, topY, chunkStartZ + z).color(0.25F, 0.25F, 1.0F, 0.0F).endVertex();
             }
         }
 
