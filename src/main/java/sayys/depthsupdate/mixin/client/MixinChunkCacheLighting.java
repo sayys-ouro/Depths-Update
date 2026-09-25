@@ -1,4 +1,4 @@
-package sayys.depthsupdate.mixin;
+package sayys.depthsupdate.mixin.client;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;

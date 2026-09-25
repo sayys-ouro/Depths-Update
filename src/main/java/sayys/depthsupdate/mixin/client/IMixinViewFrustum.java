@@ -1,4 +1,4 @@
-package sayys.depthsupdate.mixin;
+package sayys.depthsupdate.mixin.client;
 
 import net.minecraft.client.renderer.ViewFrustum;
 import net.minecraft.client.renderer.chunk.RenderChunk;
@@ -8,6 +8,6 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(ViewFrustum.class)
 public interface IMixinViewFrustum {
-    @Invoker("getRenderChunk")
+    @Invoker
     RenderChunk invokeGetRenderChunk(BlockPos pos);
 }

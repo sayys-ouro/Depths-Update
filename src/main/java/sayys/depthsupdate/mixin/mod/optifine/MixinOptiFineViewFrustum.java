@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import sayys.depthsupdate.compat.optifine.OptiFineCompatLog;
 import sayys.depthsupdate.core.HeightContext;
 import sayys.depthsupdate.core.HeightManager;
-import sayys.depthsupdate.mixin.IMixinViewFrustum;
+import sayys.depthsupdate.mixin.client.IMixinViewFrustum;
 
 @Mixin(ViewFrustum.class)
 public abstract class MixinOptiFineViewFrustum {

@@ -1,4 +1,4 @@
-package sayys.depthsupdate.mixin;
+package sayys.depthsupdate.mixin.client;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumSkyBlock;
