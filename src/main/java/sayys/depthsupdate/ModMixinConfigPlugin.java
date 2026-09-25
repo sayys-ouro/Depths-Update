@@ -3,25 +3,12 @@ package sayys.depthsupdate;
 import java.util.List;
 import java.util.Set;
 
+import net.minecraft.launchwrapper.Launch;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
 public class ModMixinConfigPlugin implements IMixinConfigPlugin {
-    private static boolean isClassPresent(String className) {
-        try {
-            Class.forName(
-                className,
-                false,
-                ModMixinConfigPlugin.class.getClassLoader()
-            );
-
-            return true;
-        } catch (ClassNotFoundException | LinkageError e) {
-            return false;
-        }
-    }
-
     @Override
     public void onLoad(String s) {}
 
@@ -44,23 +31,23 @@ public class ModMixinConfigPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         if (mixinClassName.endsWith(".MixinRenderGlobalChunkOffset")) {
-            return !isClassPresent("optifine.OptiFineForgeTweaker");
+            return !Launch.classLoader.isClassExist("optifine.OptiFineForgeTweaker");
         }
 
         if (mixinClassName.contains(".optifine.")) {
-            return isClassPresent("optifine.OptiFineForgeTweaker");
+            return Launch.classLoader.isClassExist("optifine.OptiFineForgeTweaker");
         }
 
         if (mixinClassName.contains(".mod.nothirium.")) {
-            return isClassPresent("meldexun.nothirium.mc.Nothirium");
+            return Launch.classLoader.isClassExist("meldexun.nothirium.mc.Nothirium");
         }
 
         if (mixinClassName.contains(".mod.celeritas.")) {
-            return isClassPresent("org.taumc.celeritas.CeleritasVintage");
+            return Launch.classLoader.isClassExist("org.taumc.celeritas.CeleritasVintage");
         }
 
         if (mixinClassName.contains(".mod.rltweaker.")) {
-            return isClassPresent("com.charles445.rltweaker.RLTweaker");
+            return Launch.classLoader.isClassExist("com.charles445.rltweaker.RLTweaker");
         }
 
         return true;
