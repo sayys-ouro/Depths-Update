@@ -4,7 +4,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -47,12 +46,6 @@ public class DepthsUpdateMod {
     @SideOnly(Side.CLIENT)
     public void construct(@NonNull FMLConstructionEvent event) {
         AssetHandler.setup();
-    }
-
-    @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
-        LOGGER.info("Hello From {}!", Reference.MOD_NAME);
-        LOGGER.info("Proxy is {}", proxy);
     }
 
     @Mod.EventHandler

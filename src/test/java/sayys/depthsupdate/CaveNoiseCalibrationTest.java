@@ -76,9 +76,12 @@ class CaveNoiseCalibrationTest {
         int total = SIZE * HEIGHT * SIZE;
 
         System.out.println("=== carved volume ===");
-        System.out.printf("cheese %.2f%% | pillars %.2f%% | pillars blocking cheese %.2f%% of cheese%n",
-                100.0 * cheeseHits / total, 100.0 * pillarHits / total,
-                cheeseHits == 0 ? 0.0 : 100.0 * blocked / cheeseHits);
+        System.out.printf(
+            "cheese %.2f%% | pillars %.2f%% | pillars blocking cheese %.2f%% of cheese%n",
+            100.0 * cheeseHits / total,
+            100.0 * pillarHits / total,
+            cheeseHits == 0 ? 0.0 : 100.0 * blocked / cheeseHits
+        );
 
         RunStats caveVertical = verticalRuns(carved);
         RunStats caveHorizontal = horizontalRuns(carved);
@@ -86,24 +89,38 @@ class CaveNoiseCalibrationTest {
         RunStats pillarHeightRuns = verticalRuns(pillars);
 
         System.out.println("=== cave proportions (run lengths in blocks) ===");
-        System.out.printf("vertical mean %.2f p95 %d | horizontal mean %.2f p95 %d | mean ratio %.2f%n",
-                caveVertical.mean(), caveVertical.p95(), caveHorizontal.mean(), caveHorizontal.p95(),
-                caveVertical.mean() / Math.max(0.01, caveHorizontal.mean()));
-        System.out.printf("chimney columns (air run of 48 or more) %.2f%%%n",
-                100.0 * caveVertical.tallColumnFraction());
+        System.out.printf(
+            "vertical mean %.2f p95 %d | horizontal mean %.2f p95 %d | mean ratio %.2f%n",
+            caveVertical.mean(),
+            caveVertical.p95(),
+            caveHorizontal.mean(),
+            caveHorizontal.p95(),
+            caveVertical.mean() / Math.max(0.01, caveHorizontal.mean())
+        );
+        System.out.printf(
+            "chimney columns (air run of 48 or more) %.2f%%%n",
+            100.0 * caveVertical.tallColumnFraction()
+        );
 
         System.out.println("=== pillar proportions (run lengths in blocks) ===");
-        System.out.printf("width mean %.2f p95 %d | height mean %.2f%n",
-                pillarWidthRuns.mean(), pillarWidthRuns.p95(), pillarHeightRuns.mean());
+        System.out.printf(
+            "width mean %.2f p95 %d | height mean %.2f%n",
+            pillarWidthRuns.mean(),
+            pillarWidthRuns.p95(),
+            pillarHeightRuns.mean()
+        );
 
         System.out.println("=== carve profile by height (percent of layer) ===");
+
         for (int y : new int[] {30, 27, 24, 20, 15, 10, 0, -20, -40, -59}) {
             long air = 0;
+
             for (int x = 0; x < SIZE; x++) {
                 for (int z = 0; z < SIZE; z++) {
                     if (carved[index(x, y, z)]) air++;
                 }
             }
+
             System.out.printf("y %4d: %5.2f%%%n", y, 100.0 * air / (SIZE * SIZE));
         }
 

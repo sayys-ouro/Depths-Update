@@ -5,7 +5,7 @@
   },
   "package": "sayys.depthsupdate.mixin",
   "plugin": "sayys.depthsupdate.ModMixinConfigPlugin",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_25",
   "target": "@env(DEFAULT)",
   "client": [
     "MixinViewFrustum",

@@ -1,18 +1,30 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-!**/src/**/build/
+**/.gradle/
+**/.idea/
+**/.mixin.out/
+**/.settings/
+**/.vscode/
+**/asm/
+**/bin/
 **/build/
-.gradle/
-.idea/
-bin/
-env/
+**/crash-reports/
+**/logs/
+**/out/
+**/run/
+
 references/
-run/
 sources/
 
-!gradle-wrapper.jar
-!gradle-wrapper.properties
+*.iml
+*.jar
+*.log
+.DS_Store
 .classpath
 .gradletasknamecache
 .project
 CLAUDE.local.md
+Thumbs.db
+
+!**/libs/*.jar
+!gradle-wrapper.jar
