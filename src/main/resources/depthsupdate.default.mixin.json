@@ -12,7 +12,7 @@
     "client.MixinRenderGlobal",
     "client.MixinRenderGlobalChunkOffset",
     "client.MixinNetHandlerPlayClient",
-    "client.MixinWorldClientImpl",
+    "client.MixinWorldClient",
     "client.MixinWorldLighting",
     "client.MixinChunkCacheLighting",
     "client.IMixinViewFrustum",
