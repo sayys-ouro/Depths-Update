@@ -1,0 +1,15 @@
+[{
+  "authorList": [{{ mod_authors }}],
+  "credits": "{{ mod_credits }}",
+  "description": "{{ mod_description }}",
+  "logoFile": "{{ mod_logo_path }}",
+  "mcversion": "1.12.2",
+  "modProperties": {
+    "issueTrackerUrl": ""
+  },
+  "modid": "{{ mod_id }}",
+  "name": "{{ mod_name }}",
+  "updateJSON": "{{ mod_update_json }}",
+  "url": "{{ mod_url }}",
+  "version": "{{ mod_version }}"
+}]

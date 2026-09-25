@@ -5,7 +5,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ChunkCache;
-import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import org.jspecify.annotations.NonNull;
@@ -34,6 +33,9 @@ public abstract class MixinChunkCache {
     @Shadow
     protected abstract boolean withinBounds(int x, int z);
 
+    @Shadow
+    public abstract IBlockState getBlockState(BlockPos pos);
+
     @Inject(method = "getBlockState", at = @At("HEAD"), cancellable = true)
     private void depthsupdate$getBlockState(@NonNull BlockPos pos, CallbackInfoReturnable<IBlockState> cir) {
         if (!HeightManager.isExtended(this.world)) {
@@ -61,54 +63,6 @@ public abstract class MixinChunkCache {
             cir.setReturnValue(Blocks.AIR.getDefaultState());
         } else {
             cir.setReturnValue(Blocks.AIR.getDefaultState());
-        }
-    }
-
-    @Inject(method = "getLightFor", at = @At("HEAD"), cancellable = true)
-    private void depthsupdate$getLightFor(EnumSkyBlock type, @NonNull BlockPos pos, CallbackInfoReturnable<Integer> cir) {
-        if (!HeightManager.isExtended(this.world)) {
-            return;
-        }
-
-        int y = pos.getY();
-        int minY = HeightManager.getMinY(this.world);
-        int maxY = HeightManager.getMaxY(this.world);
-
-        if (y < minY || y >= maxY) {
-            cir.setReturnValue(type.defaultLightValue);
-        } else if (y < 0 || y >= 256) {
-            int i = (pos.getX() >> 4) - this.chunkX;
-            int j = (pos.getZ() >> 4) - this.chunkZ;
-
-            if (!this.withinBounds(i, j)) {
-                cir.setReturnValue(type.defaultLightValue);
-            } else {
-                cir.setReturnValue(this.chunkArray[i][j].getLightFor(type, pos));
-            }
-        }
-    }
-
-    @Inject(method = "getLightForExt", at = @At("HEAD"), cancellable = true)
-    private void depthsupdate$getLightForExt(EnumSkyBlock type, @NonNull BlockPos pos, CallbackInfoReturnable<Integer> cir) {
-        if (!HeightManager.isExtended(this.world)) {
-            return;
-        }
-
-        int y = pos.getY();
-        int minY = HeightManager.getMinY(this.world);
-        int maxY = HeightManager.getMaxY(this.world);
-
-        if (y < minY || y >= maxY) {
-            cir.setReturnValue(type.defaultLightValue);
-        } else if (y < 0 || y >= 256) {
-            int i = (pos.getX() >> 4) - this.chunkX;
-            int j = (pos.getZ() >> 4) - this.chunkZ;
-
-            if (!this.withinBounds(i, j)) {
-                cir.setReturnValue(type.defaultLightValue);
-            } else {
-                cir.setReturnValue(this.chunkArray[i][j].getLightFor(type, pos));
-            }
         }
     }
 

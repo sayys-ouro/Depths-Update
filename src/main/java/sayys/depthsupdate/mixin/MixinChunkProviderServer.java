@@ -3,10 +3,14 @@ package sayys.depthsupdate.mixin;
 import java.util.Random;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
+import net.minecraft.world.gen.ChunkGeneratorDebug;
+import net.minecraft.world.gen.ChunkGeneratorFlat;
 import net.minecraft.world.gen.ChunkGeneratorOverworld;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraft.world.gen.IChunkGenerator;
@@ -18,10 +22,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 import sayys.depthsupdate.DepthsUpdateConfig;
+import sayys.depthsupdate.core.BedrockFilter;
+import sayys.depthsupdate.core.DeepFill;
 import sayys.depthsupdate.core.HeightContext;
 import sayys.depthsupdate.core.HeightManager;
 import sayys.depthsupdate.util.BlockUtils;
-import sayys.depthsupdate.world.generation.AquiferGenerator;
 import sayys.depthsupdate.world.generation.ChunkPrimerAdapter;
 import sayys.depthsupdate.world.generation.noise.CaveNoiseGenerator;
 import sayys.depthsupdate.world.generation.river.UndergroundRiverGenerator;
@@ -49,9 +54,6 @@ public class MixinChunkProviderServer {
     @Unique
     private CaveNoiseGenerator depthsupdate$noiseCaveGenerator;
 
-    @Unique
-    private AquiferGenerator depthsupdate$aquiferGenerator;
-
     @Redirect(
         method = "provideChunk(II)Lnet/minecraft/world/chunk/Chunk;",
         at = @At(
@@ -60,30 +62,36 @@ public class MixinChunkProviderServer {
         )
     )
     private Chunk depthsupdate$onGenerateChunk(IChunkGenerator generator, int x, int z) {
-        Chunk chunk = generator.generateChunk(x, z);
+        boolean vanillaOverworld = generator.getClass() == ChunkGeneratorOverworld.class;
+        boolean flatOrDebug = generator instanceof ChunkGeneratorFlat || generator instanceof ChunkGeneratorDebug;
+        boolean deepWorld = !flatOrDebug
+                && HeightManager.isExtended(this.world)
+                && HeightManager.get(this.world).minY() < 0;
+        boolean fillCustom = deepWorld && !vanillaOverworld
+                && DepthsUpdateConfig.heightExtension.extendCustomWorldTypes;
 
-        if (generator instanceof ChunkGeneratorOverworld) {
-            return chunk;
+        boolean filterBedrock = deepWorld && (vanillaOverworld || fillCustom);
+
+        Chunk chunk;
+
+        if (filterBedrock) {
+            BedrockFilter.begin();
         }
 
-        if (!DepthsUpdateConfig.heightExtension.extendCustomWorldTypes) {
-            return chunk;
+        try {
+            chunk = generator.generateChunk(x, z);
+        } finally {
+            if (filterBedrock) {
+                BedrockFilter.end();
+            }
         }
 
-        if (!HeightManager.isExtended(this.world)) {
-            return chunk;
-        }
-
-        if (chunk == null) {
+        if (!fillCustom || chunk == null) {
             return chunk;
         }
 
         HeightContext ctx = HeightManager.get(this.world);
         int minY = ctx.minY();
-
-        if (minY >= 0) {
-            return chunk;
-        }
 
         if (this.depthsupdate$fillRandom == null) {
             this.depthsupdate$fillRandom = new Random();
@@ -95,10 +103,7 @@ public class MixinChunkProviderServer {
         IBlockState deepslate = BlockUtils.getDeepslateBlockState();
         IBlockState bedrock = Blocks.BEDROCK.getDefaultState();
 
-        int deepslateMaxY = DepthsUpdateConfig.deepslateMaxY;
-        int transitionRange = DepthsUpdateConfig.deepslateTransitionRange;
-        int fullDeepslateY = deepslateMaxY - transitionRange;
-        int fillMaxY = Math.max(4, deepslateMaxY);
+        int fillMaxY = Math.max(4, DepthsUpdateConfig.deepslateMaxY);
 
         ExtendedBlockStorage[] storageArrays = chunk.getBlockStorageArray();
         boolean hasSkyLight = this.world.provider.hasSkyLight();
@@ -106,37 +111,25 @@ public class MixinChunkProviderServer {
         for (int bx = 0; bx < 16; bx++) {
             for (int bz = 0; bz < 16; bz++) {
                 for (int by = minY; by <= fillMaxY; by++) {
-                    IBlockState state;
+                    // Backstop for generators that write bedrock without going
+                    // through ChunkPrimer. Runs before the carve so caves cut
+                    // through the converted stone.
+                    if (by >= 0 && by <= 4) {
+                        int storageIdx = ctx.toStorageIndex(by);
 
-                    if (by <= minY + this.depthsupdate$fillRandom.nextInt(5)) {
-                        state = bedrock;
-                    } else if (by <= fullDeepslateY) {
-                        state = deepslate;
-                    } else if (by < deepslateMaxY) {
-                        double chance = (double) (deepslateMaxY - by) / (double) transitionRange;
-                        if (this.depthsupdate$fillRandom.nextDouble() < chance) {
-                            state = deepslate;
-                        } else if (by < 0) {
-                            state = stone;
-                        } else {
-                            continue;
-                        }
-                    } else if (by < 0) {
-                        state = stone;
-                    } else {
-                        // check for vanilla bedrock replacement
-                        if (by <= 4) {
-                            int storageIdx = ctx.toStorageIndex(by);
+                        if (storageIdx >= 0 && storageIdx < storageArrays.length) {
+                            ExtendedBlockStorage section = storageArrays[storageIdx];
 
-                            if (storageIdx >= 0 && storageIdx < storageArrays.length) {
-                                ExtendedBlockStorage section = storageArrays[storageIdx];
-                                if (section != Chunk.NULL_BLOCK_STORAGE
-                                        && section.get(bx, by & 15, bz).getBlock() == Blocks.BEDROCK) {
-                                    section.set(bx, by & 15, bz, stone);
-                                }
+                            if (section != Chunk.NULL_BLOCK_STORAGE
+                                    && section.get(bx, by & 15, bz).getBlock() == Blocks.BEDROCK) {
+                                section.set(bx, by & 15, bz, stone);
                             }
                         }
+                    }
 
+                    IBlockState state = DeepFill.bandAt(by, minY, this.depthsupdate$fillRandom, bedrock, deepslate, stone);
+
+                    if (state == null) {
                         continue;
                     }
 
@@ -151,6 +144,12 @@ public class MixinChunkProviderServer {
                     if (section == Chunk.NULL_BLOCK_STORAGE) {
                         section = new ExtendedBlockStorage(by >> 4 << 4, hasSkyLight);
                         storageArrays[storageIdx] = section;
+                    }
+
+                    // Above zero this chunk holds finished terrain, caves
+                    // included; the transition may only recolor stone there.
+                    if (by >= 0 && section.get(bx, by & 15, bz).getBlock() != Blocks.STONE) {
+                        continue;
                     }
 
                     section.set(bx, by & 15, bz, state);
@@ -172,15 +171,16 @@ public class MixinChunkProviderServer {
             this.depthsupdate$noiseCaveGenerator = new CaveNoiseGenerator(this.world);
         }
 
-        this.depthsupdate$noiseCaveGenerator.generate(x, z, adapter);
+        // Chunk biome bytes use index z << 4 | x, which is the same flat
+        // layout the carve expects for column (x, z).
+        byte[] biomeIds = chunk.getBiomeArray();
+        Biome[] biomes = new Biome[biomeIds.length];
 
-        if (DepthsUpdateConfig.aquifers.enableAquifers) {
-            if (this.depthsupdate$aquiferGenerator == null) {
-                this.depthsupdate$aquiferGenerator = new AquiferGenerator(this.world);
-            }
-
-            this.depthsupdate$aquiferGenerator.generate(x, z, adapter);
+        for (int i = 0; i < biomeIds.length; i++) {
+            biomes[i] = Biome.getBiome(biomeIds[i] & 255, Biomes.PLAINS);
         }
+
+        this.depthsupdate$noiseCaveGenerator.generate(x, z, adapter, biomes);
 
         chunk.generateSkylightMap();
 

@@ -29,24 +29,6 @@ public class MixinSPacketChunkData {
         return ctx.isExtended() ? ctx.fullChunkSectionMask() : original;
     }
 
-    @ModifyConstant(method = "<init>(Lnet/minecraft/world/chunk/Chunk;I)V", constant = @Constant(intValue = 16))
-    private static int depthsupdate$modifyLoopLimit(int original) {
-        HeightContext ctx = depthsupdate$ctx.get();
-        return ctx.isExtended() ? ctx.totalStorageSections() : original;
-    }
-
-    @ModifyConstant(method = "calculateDataSize", constant = @Constant(intValue = 16), remap = true)
-    private int depthsupdate$modifyCalculateDataSizeLoop(int original) {
-        HeightContext ctx = depthsupdate$ctx.get();
-        return ctx.isExtended() ? ctx.totalStorageSections() : original;
-    }
-
-    @ModifyConstant(method = "extractChunkData", constant = @Constant(intValue = 16), remap = true)
-    private int depthsupdate$modifyExtractChunkDataLoop(int original) {
-        HeightContext ctx = depthsupdate$ctx.get();
-        return ctx.isExtended() ? ctx.totalStorageSections() : original;
-    }
-
     @Inject(method = "<init>(Lnet/minecraft/world/chunk/Chunk;I)V", at = @At("RETURN"))
     private void depthsupdate$cleanup(Chunk chunkIn, int changedSectionFilter, CallbackInfo ci) {
         depthsupdate$ctx.remove();

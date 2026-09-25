@@ -28,22 +28,26 @@ public abstract class MixinAnvilChunkLoader {
     @Unique
     private static final ThreadLocal<Integer> depthsupdate$nestingLevel = ThreadLocal.withInitial(() -> 0);
 
+    /**
+     * The context is refreshed on every entry rather than only at depth zero:
+     * a throw inside the body skips the RETURN handler, and a counter left above
+     * zero would otherwise pin a stale context for every later read on this thread.
+     */
     @Inject(method = "readChunkFromNBT", at = @At("HEAD"))
     private void depthsupdate$startRead(World worldIn, NBTTagCompound compound, CallbackInfoReturnable<Chunk> cir) {
-        if (depthsupdate$nestingLevel.get() == 0) {
-            depthsupdate$ctx.set(HeightManager.get(worldIn));
-        }
-
-        depthsupdate$nestingLevel.set(depthsupdate$nestingLevel.get() + 1);
+        depthsupdate$ctx.set(HeightManager.get(worldIn));
+        depthsupdate$nestingLevel.set(Math.max(0, depthsupdate$nestingLevel.get()) + 1);
     }
 
     @Inject(method = "readChunkFromNBT", at = @At("RETURN"))
     private void depthsupdate$endRead(World worldIn, NBTTagCompound compound, CallbackInfoReturnable<Chunk> cir) {
-        depthsupdate$nestingLevel.set(depthsupdate$nestingLevel.get() - 1);
+        int depth = depthsupdate$nestingLevel.get() - 1;
 
-        if (depthsupdate$nestingLevel.get() <= 0) {
+        if (depth <= 0) {
             depthsupdate$ctx.remove();
             depthsupdate$nestingLevel.remove();
+        } else {
+            depthsupdate$nestingLevel.set(depth);
         }
     }
 

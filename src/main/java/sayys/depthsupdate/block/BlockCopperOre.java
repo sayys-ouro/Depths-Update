@@ -1,6 +1,7 @@
 package sayys.depthsupdate.block;
 
 import java.util.Random;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -9,7 +10,6 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 
 import sayys.depthsupdate.registry.DeepslateRegistry;
-import sayys.depthsupdate.registry.RegistryHandler;
 
 public class BlockCopperOre extends Block {
     public BlockCopperOre() {
@@ -31,5 +31,12 @@ public class BlockCopperOre extends Block {
     @Override
     public int quantityDropped(Random random) {
         return 2 + random.nextInt(4);
+    }
+
+    @Override
+    public int quantityDroppedWithBonus(int fortune, Random random) {
+        return fortune > 0
+                ? BlockDeepslateOre.oreBonus(quantityDropped(random), fortune, random)
+                : quantityDropped(random);
     }
 }

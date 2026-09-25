@@ -11,11 +11,15 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.gen.ChunkGeneratorDebug;
+import net.minecraft.world.gen.ChunkGeneratorFlat;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.fml.common.IWorldGenerator;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import sayys.depthsupdate.DepthsUpdateConfig;
+import sayys.depthsupdate.core.HeightManager;
+import sayys.depthsupdate.block.BlockAmethystCluster;
 import sayys.depthsupdate.registry.AmethystRegistry;
 import sayys.depthsupdate.registry.DeepslateRegistry;
 
@@ -34,18 +38,16 @@ public class AmethystGeodeGenerator implements IWorldGenerator {
     private static final double BASE_CRACK_SIZE = 2.0;
     private static final int CRACK_POINT_OFFSET = 2;
 
-    // Generation parameters
     private static final double USE_POTENTIAL_PLACEMENTS_CHANCE = 0.35;
     private static final double USE_ALTERNATE_LAYER0_CHANCE = 0.083;
-    private static final boolean PLACEMENTS_REQUIRE_LAYER0_ALTERNATE = true;
-    private static final int OUTER_WALL_DIST_MIN = 3;
-    private static final int OUTER_WALL_DIST_MAX = 5;
+    private static final int OUTER_WALL_DIST_MIN = 4;
+    private static final int OUTER_WALL_DIST_MAX = 6;
     private static final int DISTRIBUTION_POINTS_MIN = 3;
     private static final int DISTRIBUTION_POINTS_MAX = 4;
     private static final int POINT_OFFSET_MIN = 1;
     private static final int POINT_OFFSET_MAX = 2;
-    private static final int MIN_GEN_OFFSET = -13;
-    private static final int MAX_GEN_OFFSET = 13;
+    private static final int MIN_GEN_OFFSET = -16;
+    private static final int MAX_GEN_OFFSET = 16;
     private static final double NOISE_MULTIPLIER = 0.05;
     private static final int INVALID_BLOCKS_THRESHOLD = 1;
 
@@ -66,20 +68,29 @@ public class AmethystGeodeGenerator implements IWorldGenerator {
             return;
         }
 
+        if (chunkGenerator instanceof ChunkGeneratorFlat || chunkGenerator instanceof ChunkGeneratorDebug) {
+            return;
+        }
+
         int rarity = DepthsUpdateConfig.amethystGeodes.geodeRarity;
 
         if (random.nextInt(rarity) != 0) {
             return;
         }
 
-        int x = chunkX * 16 + random.nextInt(16);
-        int minY = DepthsUpdateConfig.amethystGeodes.geodeMinY;
-        int maxY = DepthsUpdateConfig.amethystGeodes.geodeMaxY;
-        int yRange = Math.max(1, maxY - minY + 1);
-        int y = minY + random.nextInt(yRange);
-        int z = chunkZ * 16 + random.nextInt(16);
+        int y = CaveRegion.randomYInWindow(random, HeightManager.get(world),
+                DepthsUpdateConfig.amethystGeodes.geodeMinY,
+                DepthsUpdateConfig.amethystGeodes.geodeMaxY);
+
+        if (y == CaveRegion.NO_Y) {
+            return;
+        }
+
+        int x = chunkX * 16 + 8 + random.nextInt(16);
+        int z = chunkZ * 16 + 8 + random.nextInt(16);
 
         BlockPos origin = new BlockPos(x, y, z);
+        GenerationLog.featurePlaced("amethyst geode", origin);
         generateGeode(world, random, origin);
     }
 
@@ -203,8 +214,7 @@ public class AmethystGeodeGenerator implements IWorldGenerator {
                     world.setBlockState(pos, AmethystRegistry.amethyst_block.getDefaultState(), 2);
                 }
 
-                if ((!PLACEMENTS_REQUIRE_LAYER0_ALTERNATE || useAlternate)
-                        && random.nextFloat() < USE_POTENTIAL_PLACEMENTS_CHANCE) {
+                if (useAlternate && random.nextFloat() < USE_POTENTIAL_PLACEMENTS_CHANCE) {
                     potentialCrystalPlacements.add(pos.toImmutable());
                 }
             } else if (distSumShell >= thresholdMiddle) {
@@ -233,7 +243,7 @@ public class AmethystGeodeGenerator implements IWorldGenerator {
 
                 if (placeState.getBlock().isAir(placeState, world, placePos)) {
                     IBlockState orientedCrystal = chosenCrystal.withProperty(
-                        sayys.depthsupdate.block.BlockAmethystCluster.FACING, facing
+                        BlockAmethystCluster.FACING, facing
                     );
                     world.setBlockState(placePos, orientedCrystal, 2);
                     break; // Only place one crystal per budding position
@@ -242,9 +252,6 @@ public class AmethystGeodeGenerator implements IWorldGenerator {
         }
     }
 
-    /**
-     * Fast inverse square root approximation, matching vanilla's Mth.invSqrt behavior.
-     */
     private static double fastInvSqrt(double value) {
         return 1.0 / Math.sqrt(value);
     }
@@ -320,13 +327,13 @@ public class AmethystGeodeGenerator implements IWorldGenerator {
         return min + random.nextInt(max - min + 1);
     }
 
-    /**
-     * Determines whether a block is an "invalid" block for geode placement
-     */
     private static boolean isInvalidBlock(IBlockState state) {
         Block block = state.getBlock();
 
-        return block == Blocks.BEDROCK;
+        return block == Blocks.BEDROCK
+            || block == Blocks.ICE
+            || block == Blocks.PACKED_ICE
+            || state.getMaterial().isLiquid();
     }
 
     /**

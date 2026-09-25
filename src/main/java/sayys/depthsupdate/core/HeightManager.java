@@ -32,8 +32,8 @@ public final class HeightManager {
         synchronized (INIT_LOCK) {
             DepthsUpdateConfig.HeightExtension cfg = DepthsUpdateConfig.heightExtension;
 
-            int globalMinY = roundToMultipleOf16(cfg.globalMinY, "globalMinY");
-            int globalMaxY = roundToMultipleOf16(cfg.globalMaxY, "globalMaxY");
+            int globalMinY = roundToMultipleOf16(cfg.globalMinY, "globalMinY", false);
+            int globalMaxY = roundToMultipleOf16(cfg.globalMaxY, "globalMaxY", true);
 
             if (globalMinY >= globalMaxY) {
                 LOGGER.error("globalMinY ({}) must be less than globalMaxY ({}), using defaults", globalMinY, globalMaxY);
@@ -45,7 +45,14 @@ public final class HeightManager {
             int lavaLevel = cfg.lavaLevel;
             int voidDamageLevel = cfg.voidDamageLevel;
 
-            HeightContext globalContext = new HeightContext(globalMinY, globalMaxY, lavaLevel, voidDamageLevel, seaLevel);
+            HeightContext globalContext;
+
+            try {
+                globalContext = new HeightContext(globalMinY, globalMaxY, lavaLevel, voidDamageLevel, seaLevel);
+            } catch (IllegalArgumentException e) {
+                LOGGER.error("Invalid height configuration ({}), falling back to -64..320", e.getMessage());
+                globalContext = new HeightContext(-64, 320, lavaLevel, voidDamageLevel, seaLevel);
+            }
 
             Map<Integer, HeightContext> newContexts = new HashMap<>();
             HeightContext largest = globalContext;
@@ -67,7 +74,6 @@ public final class HeightManager {
                 }
             }
 
-            // Publish atomically
             contexts = Map.copyOf(newContexts);
             maxContext = largest;
             initialized = true;
@@ -120,32 +126,12 @@ public final class HeightManager {
         return maxContext;
     }
 
-    public static int toStorageIndex(World world, int y) {
-        return get(world).toStorageIndex(y);
-    }
-
-    public static int fromStorageIndex(World world, int index) {
-        return get(world).fromStorageIndex(index);
-    }
-
     public static int getMinY(World world) {
         return get(world).minY();
     }
 
     public static int getMaxY(World world) {
         return get(world).maxY();
-    }
-
-    public static int getTotalHeight(World world) {
-        return get(world).totalHeight();
-    }
-
-    public static int getStorageSections(World world) {
-        return get(world).totalStorageSections();
-    }
-
-    public static int getSeaLevel(World world) {
-        return get(world).seaLevel();
     }
 
     public static int getLavaLevel(World world) {
@@ -156,8 +142,12 @@ public final class HeightManager {
         return get(world).voidDamageLevel();
     }
 
-    private static int roundToMultipleOf16(int value, String name) {
-        int rounded = (value >> 4) << 4;
+    /**
+     * Floors are rounded down and ceilings up, so rounding never makes the world
+     * shallower than configured.
+     */
+    private static int roundToMultipleOf16(int value, String name, boolean roundUp) {
+        int rounded = roundUp ? -((-value) >> 4 << 4) : (value >> 4) << 4;
 
         if (rounded != value) {
             LOGGER.warn("{} ({}) is not a multiple of 16, rounding to {}", name, value, rounded);
@@ -176,8 +166,8 @@ public final class HeightManager {
 
         try {
             int dimId = Integer.parseInt(parts[0].trim());
-            int minY = roundToMultipleOf16(Integer.parseInt(parts[1].trim()), "override minY for dim " + dimId);
-            int maxY = roundToMultipleOf16(Integer.parseInt(parts[2].trim()), "override maxY for dim " + dimId);
+            int minY = roundToMultipleOf16(Integer.parseInt(parts[1].trim()), "override minY for dim " + dimId, false);
+            int maxY = roundToMultipleOf16(Integer.parseInt(parts[2].trim()), "override maxY for dim " + dimId, true);
             int lava = parts.length >= 5 ? Integer.parseInt(parts[3].trim()) : defaultLavaLevel;
             int voidDmg = parts.length >= 5 ? Integer.parseInt(parts[4].trim()) : defaultVoidDamageLevel;
 

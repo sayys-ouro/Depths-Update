@@ -1,7 +1,10 @@
 package sayys.depthsupdate.block;
 
 import java.util.Random;
+
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
+import net.minecraft.block.IGrowable;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -11,7 +14,7 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -19,7 +22,6 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -27,19 +29,43 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import sayys.depthsupdate.DepthsUpdateMod;
 import sayys.depthsupdate.registry.PlantRegistry;
 
-public abstract class BlockCaveVinesBase extends Block {
+public abstract class BlockCaveVinesBase extends Block implements IGrowable {
     public static final PropertyBool BERRIES = PropertyBool.create("berries");
-    protected static final AxisAlignedBB SHAPE = new AxisAlignedBB(0.0625D, 0.0D, 0.0625D, 0.9375D, 1.0D, 0.9375D);
+
+    protected static final AxisAlignedBB SHAPE = new AxisAlignedBB(
+        0.0625D,
+        0.0D,
+        0.0625D,
+        0.9375D,
+        1.0D,
+        0.9375D
+    );
 
     public BlockCaveVinesBase() {
         super(Material.PLANTS, MapColor.FOLIAGE);
 
-        this.setDefaultState(this.blockState.getBaseState().withProperty(BERRIES, false));
+        this.setDefaultState(
+            this.blockState.getBaseState().withProperty(BERRIES, false)
+        );
         this.setHardness(0.0F);
         this.setSoundType(SoundType.PLANT);
+    }
+
+    @Override
+    public boolean canGrow(World worldIn, BlockPos pos, IBlockState state, boolean isClient) {
+        return !state.getValue(BERRIES);
+    }
+
+    @Override
+    public boolean canUseBonemeal(World worldIn, Random rand, BlockPos pos, IBlockState state) {
+        return true;
+    }
+
+    @Override
+    public void grow(World worldIn, Random rand, BlockPos pos, IBlockState state) {
+        worldIn.setBlockState(pos, state.withProperty(BERRIES, true), 2);
     }
 
     @Override
@@ -47,7 +73,7 @@ public abstract class BlockCaveVinesBase extends Block {
         return SHAPE;
     }
 
-    @javax.annotation.Nullable
+    @Nullable
     @Override
     public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
         return NULL_AABB;
@@ -82,7 +108,11 @@ public abstract class BlockCaveVinesBase extends Block {
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
         IBlockState upState = worldIn.getBlockState(pos.up());
         Block upBlock = upState.getBlock();
-        return upState.isSideSolid(worldIn, pos.up(), EnumFacing.DOWN) || upBlock instanceof BlockCaveVinesBase;
+
+        return upState.isSideSolid(
+            worldIn,
+            pos.up(), EnumFacing.DOWN
+        ) || upBlock instanceof BlockCaveVinesBase;
     }
 
     @Override
@@ -95,9 +125,13 @@ public abstract class BlockCaveVinesBase extends Block {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (state.getValue(BERRIES)) {
-            worldIn.setBlockState(pos, state.withProperty(BERRIES, false), 2);
-            spawnAsEntity(worldIn, pos, new ItemStack(PlantRegistry.glow_berries, 1));
-            worldIn.playSound(null, pos, SoundEvents.BLOCK_GRASS_HIT, SoundCategory.BLOCKS, 1.0F, 0.8F + worldIn.rand.nextFloat() * 0.4F);
+            if (!worldIn.isRemote) {
+                worldIn.setBlockState(pos, state.withProperty(BERRIES, false), 2);
+                spawnAsEntity(worldIn, pos, new ItemStack(PlantRegistry.glow_berries, 1));
+                worldIn.playSound(playerIn, pos, SoundEvents.BLOCK_GRASS_HIT, SoundCategory.BLOCKS,
+                        1.0F, 0.8F + worldIn.rand.nextFloat() * 0.4F);
+            }
+
             return true;
         }
 
@@ -106,7 +140,7 @@ public abstract class BlockCaveVinesBase extends Block {
 
     @Override
     public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-        return state.getValue(BERRIES) ? PlantRegistry.glow_berries : net.minecraft.init.Items.AIR;
+        return state.getValue(BERRIES) ? PlantRegistry.glow_berries : Items.AIR;
     }
 
     @Override

@@ -1,3 +1,5 @@
+itemGroup.depthsupdate=Depths Update
+
 tile.deepslate.name=Deepslate
 tile.cobbled_deepslate.name=Cobbled Deepslate
 tile.infested_deepslate.name=Infested Deepslate
@@ -40,6 +42,8 @@ tile.small_dripleaf.name=Small Dripleaf
 tile.big_dripleaf.name=Big Dripleaf
 tile.spore_blossom.name=Spore Blossom
 tile.big_dripleaf_stem.name=Big Dripleaf Stem
+tile.cave_vines.name=Cave Vines
+tile.cave_vines_plant.name=Cave Vines Plant
 item.glow_berries.name=Glow Berries
 tile.pointed_dripstone.name=Pointed Dripstone
 item.amethyst_shard.name=Amethyst Shard

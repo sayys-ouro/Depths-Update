@@ -7,21 +7,53 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraft.world.gen.MapGenBase;
 import net.minecraft.world.gen.MapGenCaves;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import sayys.depthsupdate.DepthsUpdateConfig;
 import sayys.depthsupdate.core.HeightContext;
 import sayys.depthsupdate.core.HeightManager;
 import sayys.depthsupdate.util.BlockUtils;
+import sayys.depthsupdate.world.generation.river.UndergroundRiverGenerator;
 
 @Mixin(MapGenCaves.class)
 public abstract class MixinMapGenCaves extends MapGenBase {
+    @Unique
+    private UndergroundRiverGenerator depthsupdate$river;
+
+    /**
+     * The primer scan above only sees this chunk, and only the dig box
+     * itself. The river is pure noise, so it can be asked about the one-block
+     * margin and about columns across the chunk border.
+     */
+    @Unique
+    private boolean depthsupdate$riverTouches(int chunkX, int chunkZ, int xMin, int xMax, int zMin, int zMax, int yLow, int yHigh) {
+        if (!DepthsUpdateConfig.generateUndergroundRivers) {
+            return false;
+        }
+
+        if (this.depthsupdate$river == null) {
+            this.depthsupdate$river = new UndergroundRiverGenerator(this.world);
+        }
+
+        for (int bx = xMin - 1; bx <= xMax; ++bx) {
+            for (int bz = zMin - 1; bz <= zMax; ++bz) {
+                if (this.depthsupdate$river.waterWithin(chunkX * 16 + bx, chunkZ * 16 + bz, yLow, yHigh)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
     @Shadow
     protected abstract boolean isOceanBlock(ChunkPrimer data, int x, int y, int z, int chunkX, int chunkZ);
 
@@ -35,13 +67,15 @@ public abstract class MixinMapGenCaves extends MapGenBase {
     protected abstract void addRoom(long p_180703_1_, int p_180703_3_, int p_180703_4_, ChunkPrimer p_180703_5_,
             double p_180703_6_, double p_180703_8_, double p_180703_10_);
 
-    /**
-     * Replaces digBlock to expand negative Y depth lava level.
-     */
     @Inject(method = "digBlock", at = @At("HEAD"), cancellable = true)
     protected void depthsupdate$digBlock(ChunkPrimer data, int x, int y, int z, int chunkX, int chunkZ, boolean foundTop, IBlockState state, IBlockState up, CallbackInfo ci) {
+        if (!HeightManager.isExtended(this.world)) {
+            return;
+        }
+
         ci.cancel();
-        net.minecraft.world.biome.Biome biome = world.getBiome(new BlockPos(x + chunkX * 16, 0, z + chunkZ * 16));
+
+        Biome biome = world.getBiome(new BlockPos(x + chunkX * 16, 0, z + chunkZ * 16));
         IBlockState top = biome.topBlock;
         IBlockState filler = biome.fillerBlock;
 
@@ -50,7 +84,7 @@ public abstract class MixinMapGenCaves extends MapGenBase {
         if (this.canReplaceBlock(state, up) || state.getBlock() == top.getBlock()
                 || state.getBlock() == filler.getBlock()
                 || state == deepslate || state.getBlock() == deepslate.getBlock()) {
-            if (y - 1 < HeightManager.getLavaLevel(world)) {
+            if (y < HeightManager.getLavaLevel(world)) {
                 data.setBlockState(x, y, z, Blocks.LAVA.getDefaultState());
             } else {
                 data.setBlockState(x, y, z, Blocks.AIR.getDefaultState());
@@ -62,12 +96,14 @@ public abstract class MixinMapGenCaves extends MapGenBase {
         }
     }
 
-    /**
-     * Replaces addTunnel to expand cave generation bounds.
-     */
     @Inject(method = "addTunnel", at = @At("HEAD"), cancellable = true)
     protected void depthsupdate$addTunnel(long p_180702_1_, int p_180702_3_, int p_180702_4_, ChunkPrimer p_180702_5_, double p_180702_6_, double p_180702_8_, double p_180702_10_, float p_180702_12_, float p_180702_13_, float p_180702_14_, int p_180702_15_, int p_180702_16_, double p_180702_17_, CallbackInfo ci) {
+        if (!HeightManager.isExtended(this.world)) {
+            return;
+        }
+
         ci.cancel();
+
         double d0 = (double) (p_180702_3_ * 16 + 8);
         double d1 = (double) (p_180702_4_ * 16 + 8);
         float f = 0.0F;
@@ -169,22 +205,27 @@ public abstract class MixinMapGenCaves extends MapGenBase {
                         i1 = 16;
                     }
 
+                    // Vanilla scans only the shell of this box: interior columns
+                    // skip from the top straight to the bottom. That is enough
+                    // when water only sits at the surface, but underground
+                    // rivers are a mid-depth slab the skip jumps clean over, so
+                    // the tunnel cuts an open face into the water. Scan in full.
                     boolean flag3 = false;
 
                     for (int j1 = k2; !flag3 && j1 < k; ++j1) {
                         for (int k1 = i3; !flag3 && k1 < i1; ++k1) {
                             for (int l1 = l + 1; !flag3 && l1 >= l2 - 1; --l1) {
-                                if (l1 >= worldMinY && l1 < worldMaxY) {
-                                    if (isOceanBlock(p_180702_5_, j1, l1, k1, p_180702_3_, p_180702_4_)) {
-                                        flag3 = true;
-                                    }
-
-                                    if (l1 != l2 - 1 && j1 != k2 && j1 != k - 1 && k1 != i3 && k1 != i1 - 1) {
-                                        l1 = l2;
-                                    }
+                                if (l1 >= worldMinY && l1 < worldMaxY
+                                        && isOceanBlock(p_180702_5_, j1, l1, k1, p_180702_3_, p_180702_4_)) {
+                                    flag3 = true;
                                 }
                             }
                         }
+                    }
+
+                    if (!flag3) {
+                        flag3 = depthsupdate$riverTouches(p_180702_3_, p_180702_4_, k2, k, i3, i1,
+                                Math.max(l2 - 1, worldMinY), Math.min(l + 1, worldMaxY - 1));
                     }
 
                     if (!flag3) {
@@ -234,11 +275,12 @@ public abstract class MixinMapGenCaves extends MapGenBase {
     @Shadow
     protected abstract void digBlock(ChunkPrimer data, int x, int y, int z, int chunkX, int chunkZ, boolean foundTop, IBlockState state, IBlockState up);
 
-    /**
-     * Replaces recursiveGenerate to extend tunnel length and Y range.
-     */
     @Inject(method = "recursiveGenerate", at = @At("HEAD"), cancellable = true)
     protected void depthsupdate$recursiveGenerate(World p_180701_1_, int p_180701_2_, int p_180701_3_, int p_180701_4_, int p_180701_5_, ChunkPrimer p_180701_6_, CallbackInfo ci) {
+        if (!HeightManager.isExtended(p_180701_1_)) {
+            return;
+        }
+
         ci.cancel();
         HeightContext heightCtx = HeightManager.get(p_180701_1_);
         int minY = heightCtx.minY();
@@ -250,13 +292,16 @@ public abstract class MixinMapGenCaves extends MapGenBase {
             i = 0;
         }
 
+        // Modern vanilla's cave carver runs from 8 above the bottom to y=180.
+        int carverMinY = minY + 8;
+        int carverMaxY = Math.min(180, minY + totalHeight - 8);
+        int yRange = Math.max(8, carverMaxY - carverMinY - 8);
+
         for (int j = 0; j < i; ++j) {
             double d0 = (double) (p_180701_2_ * 16 + this.rand.nextInt(16));
 
-            // Scale Y range proportionally: vanilla uses rand(192)+8 over 256 height
-            int yRange = Math.max(8, (totalHeight * 192) / 256);
             double vanillaLikeY = this.rand.nextInt(yRange) + 8;
-            double d1 = (double) (this.rand.nextInt((int) vanillaLikeY) + minY);
+            double d1 = (double) (this.rand.nextInt((int) vanillaLikeY) + carverMinY);
 
             double d2 = (double) (p_180701_3_ * 16 + this.rand.nextInt(16));
             int k = 1;
@@ -275,11 +320,12 @@ public abstract class MixinMapGenCaves extends MapGenBase {
                     f2 *= this.rand.nextFloat() * this.rand.nextFloat() * 3.0F + 1.0F;
                 }
 
-                int calculatedLength = (this.range * 16 - 16) * 3;
-                int tunnelDistance = calculatedLength - this.rand.nextInt(calculatedLength / 4);
-
+                // Length 0 lets addTunnel derive vanilla's range*16-16. Anything
+                // longer than that cannot generate fully: a tunnel is only
+                // carved by chunks whose origin scan reaches it, and that scan
+                // stops at MapGenBase.range chunks.
                 this.addTunnel(this.rand.nextLong(), p_180701_4_, p_180701_5_, p_180701_6_, d0, d1, d2, f2, f, f1, 0,
-                        tunnelDistance, 1.0D);
+                        0, 1.0D);
             }
         }
     }

@@ -2,28 +2,13 @@ package sayys.depthsupdate;
 
 import java.util.List;
 import java.util.Set;
+
+import net.minecraft.launchwrapper.Launch;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
-import net.minecraft.launchwrapper.Launch;
 
 public class ModMixinConfigPlugin implements IMixinConfigPlugin {
-    private static final boolean OPTIFINE_LOADED = detectOptiFine();
-    private static final boolean NOTHIRIUM_LOADED = detectNothirium();
-    private static final boolean CELERITAS_LOADED = detectCeleritas();
-
-    private static boolean detectOptiFine() {
-        return Launch.classLoader.isClassExist("optifine.OptiFineForgeTweaker");
-    }
-
-    private static boolean detectNothirium() {
-        return Launch.classLoader.isClassExist("meldexun.nothirium.mc.Nothirium");
-    }
-
-    private static boolean detectCeleritas() {
-        return Launch.classLoader.isClassExist("org.taumc.celeritas.CeleritasVintage");
-    }
-
     @Override
     public void onLoad(String s) {}
 
@@ -33,7 +18,6 @@ public class ModMixinConfigPlugin implements IMixinConfigPlugin {
     }
 
     /**
-     * An example of mod mixin
      * The {@link org.spongepowered.asm.mixin.MixinEnvironment.Phase#MOD} allow the
      * mixins being processed after modlist building
      * Which allow calling {@link Loader#isModLoaded(String)}
@@ -46,16 +30,24 @@ public class ModMixinConfigPlugin implements IMixinConfigPlugin {
      */
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+        if (mixinClassName.endsWith(".MixinRenderGlobalChunkOffset")) {
+            return !Launch.classLoader.isClassExist("optifine.OptiFineForgeTweaker");
+        }
+
         if (mixinClassName.contains(".optifine.")) {
-            return OPTIFINE_LOADED;
+            return Launch.classLoader.isClassExist("optifine.OptiFineForgeTweaker");
         }
 
         if (mixinClassName.contains(".mod.nothirium.")) {
-            return NOTHIRIUM_LOADED;
+            return Launch.classLoader.isClassExist("meldexun.nothirium.mc.Nothirium");
         }
 
         if (mixinClassName.contains(".mod.celeritas.")) {
-            return CELERITAS_LOADED;
+            return Launch.classLoader.isClassExist("org.taumc.celeritas.CeleritasVintage");
+        }
+
+        if (mixinClassName.contains(".mod.rltweaker.")) {
+            return Launch.classLoader.isClassExist("com.charles445.rltweaker.RLTweaker");
         }
 
         return true;

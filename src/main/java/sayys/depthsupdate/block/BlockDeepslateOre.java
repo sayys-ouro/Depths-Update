@@ -1,6 +1,7 @@
 package sayys.depthsupdate.block;
 
 import java.util.Random;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -47,15 +48,15 @@ public class BlockDeepslateOre extends Block implements IHasModel {
 
     @Override
     public int quantityDroppedWithBonus(int fortune, Random random) {
-        if (fortune > 0 && Item.getItemFromBlock(this) != this.getItemDropped(this.getDefaultState(), random, fortune)) {
-            int i = random.nextInt(fortune + 2) - 1;
-
-            if (i < 0) i = 0;
-
-            return this.quantityDropped(random) * (i + 1);
-        } else {
+        if (fortune <= 0 || Item.getItemFromBlock(this) == this.getItemDropped(this.getDefaultState(), random, fortune)) {
             return this.quantityDropped(random);
         }
+
+        if (this == DeepslateRegistry.deepslate_redstone_ore) {
+            return uniformBonus(this.quantityDropped(random), fortune, random);
+        }
+
+        return oreBonus(this.quantityDropped(random), fortune, random);
     }
 
     @Override
@@ -69,9 +70,17 @@ public class BlockDeepslateOre extends Block implements IHasModel {
         }
 
         if (this == DeepslateRegistry.deepslate_lapis_ore) {
-            return 4 + random.nextInt(5);
+            return 4 + random.nextInt(6);
         }
 
         return 1;
+    }
+
+    static int oreBonus(int count, int fortune, Random random) {
+        return count * Math.max(1, random.nextInt(fortune + 2));
+    }
+
+    static int uniformBonus(int count, int fortune, Random random) {
+        return count + random.nextInt(fortune + 1);
     }
 }

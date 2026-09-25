@@ -1,12 +1,15 @@
 package sayys.depthsupdate.mixin.mod.optifine;
 
 import java.lang.reflect.Field;
+
 import net.minecraft.client.renderer.chunk.RenderChunk;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import sayys.depthsupdate.compat.optifine.OptiFineCompatLog;
 
 @Mixin(RenderChunk.class)
 public class MixinOptiFineRenderChunk {
@@ -36,6 +39,7 @@ public class MixinOptiFineRenderChunk {
             offset16UpdatedField.setAccessible(true);
         } catch (NoSuchFieldException e) {
             reflectionFailed = true;
+            OptiFineCompatLog.once("RenderChunk neighbour fields", e);
         }
     }
 
@@ -50,6 +54,8 @@ public class MixinOptiFineRenderChunk {
         try {
             neighboursUpdatedField.setBoolean(this, false);
             offset16UpdatedField.setBoolean(this, false);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            OptiFineCompatLog.once("RenderChunk neighbour reset", e);
+        }
     }
 }

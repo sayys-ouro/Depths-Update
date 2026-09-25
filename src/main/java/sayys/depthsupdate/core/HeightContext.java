@@ -3,18 +3,14 @@ package sayys.depthsupdate.core;
 import sayys.depthsupdate.api.HeightInfo;
 
 /**
- * Immutable height bounds for a dimension. Precomputes all derived values
- * (section counts, storage indices, primer sizing) at construction time.
- *
  * Storage Index Layout
- *   Indices 0-15:                          vanilla Y [0, 255]
- *   Indices 16 to 16+upperSections-1:      upper Y [256, maxY)
- *   Indices 16+upperSections to total-1:   negative Y [minY, 0) (closest-to-surface first)
- *
- * This layout ensures unpatched mods that only access indices 0-15 see correct vanilla data.
+ *   Indices 0-15: vanilla Y [0, 255]
+ *   Indices 16 to 16 + upperSections - 1: upper Y [256, maxY)
+ *   Indices 16 + upperSections to total - 1: negative Y [minY, 0) (closest-to-surface first)
  */
 public final class HeightContext implements HeightInfo {
-    /** Standard vanilla 1.12.2 context: Y [0, 256), 16 sections. */
+    public static final int MAX_STORAGE_SECTIONS = 32;
+
     public static final HeightContext VANILLA = new HeightContext(0, 256, -54, -64, 63);
 
     private final int minY;
@@ -22,7 +18,6 @@ public final class HeightContext implements HeightInfo {
     private final int totalHeight;
     private final int minSection;
     private final int maxSection;
-    private final int sectionCount;
     private final int negativeSections;
     private final int upperSections;
     private final int totalStorageSections;
@@ -34,7 +29,6 @@ public final class HeightContext implements HeightInfo {
     private final int yBitShift;
     private final int primerArraySize;
 
-    /** Convenience constructor that defaults seaLevel to 63. */
     public HeightContext(int minY, int maxY, int lavaLevel, int voidDamageLevel) {
         this(minY, maxY, lavaLevel, voidDamageLevel, 63);
     }
@@ -56,12 +50,17 @@ public final class HeightContext implements HeightInfo {
             throw new IllegalArgumentException("Total height (" + (maxY - minY) + ") exceeds maximum of 4096");
         }
 
+        int sections = 16 + Math.max(0, ((maxY - 1) >> 4) - 15) + Math.max(0, -(minY >> 4));
+
+        if (sections > MAX_STORAGE_SECTIONS) {
+            throw new IllegalArgumentException("Height " + minY + ".." + maxY + " needs " + sections + " chunk sections, which exceeds the " + MAX_STORAGE_SECTIONS + " a section bitmask can hold");
+        }
+
         this.minY = minY;
         this.maxY = maxY;
         this.totalHeight = maxY - minY;
         this.minSection = minY >> 4;
         this.maxSection = (maxY - 1) >> 4;
-        this.sectionCount = totalHeight >> 4;
         this.negativeSections = Math.max(0, -(minY >> 4));
         this.upperSections = Math.max(0, ((maxY - 1) >> 4) - 15);
         this.totalStorageSections = 16 + upperSections + negativeSections;
@@ -69,7 +68,6 @@ public final class HeightContext implements HeightInfo {
         this.lavaLevel = lavaLevel;
         this.voidDamageLevel = voidDamageLevel;
 
-        // Compute yBitShift: smallest power of 2 >= totalHeight
         int bits = 0;
         int h = totalHeight - 1;
 
@@ -85,10 +83,6 @@ public final class HeightContext implements HeightInfo {
     /**
      * Converts a world Y coordinate to a storage array index.
      * Returns -1 if out of bounds.
-     *
-     *   sectionY 0..15:              index = sectionY (vanilla)
-     *   sectionY 16..maxSection:     index = sectionY (upper extension)
-     *   sectionY minSection..-1:     index = 16 + upperSections + (-1 - sectionY) (negative, reversed)
      */
     public int toStorageIndex(int y) {
         int sectionY = y >> 4;
@@ -159,7 +153,6 @@ public final class HeightContext implements HeightInfo {
     @Override public int totalHeight() { return totalHeight; }
     public int minSection() { return minSection; }
     public int maxSection() { return maxSection; }
-    public int sectionCount() { return sectionCount; }
     public int negativeSections() { return negativeSections; }
     public int upperSections() { return upperSections; }
     public int totalStorageSections() { return totalStorageSections; }
@@ -174,8 +167,8 @@ public final class HeightContext implements HeightInfo {
      * Each bit represents one storage section.
      */
     public int fullChunkSectionMask() {
-        if (totalStorageSections >= 32) {
-            return -1; // all bits set
+        if (totalStorageSections >= MAX_STORAGE_SECTIONS) {
+            return -1; // all 32 bits set;
         }
 
         return (1 << totalStorageSections) - 1;

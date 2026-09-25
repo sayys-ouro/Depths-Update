@@ -4,8 +4,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import sayys.depthsupdate.DepthsUpdateConfig;
 import sayys.depthsupdate.Reference;

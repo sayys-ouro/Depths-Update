@@ -1,6 +1,7 @@
 package sayys.depthsupdate.mixin.mod.optifine;
 
 import java.lang.reflect.Field;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ViewFrustum;
 import net.minecraft.client.renderer.chunk.RenderChunk;
@@ -13,9 +14,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import sayys.depthsupdate.compat.optifine.OptiFineCompatLog;
 import sayys.depthsupdate.core.HeightContext;
 import sayys.depthsupdate.core.HeightManager;
-import sayys.depthsupdate.mixin.IMixinViewFrustum;
+import sayys.depthsupdate.mixin.client.IMixinViewFrustum;
 
 @Mixin(ViewFrustum.class)
 public abstract class MixinOptiFineViewFrustum {
@@ -62,6 +64,7 @@ public abstract class MixinOptiFineViewFrustum {
 
         } catch (NoSuchFieldException e) {
             reflectionFailed = true;
+            OptiFineCompatLog.once("ViewFrustum neighbour fields", e);
         }
     }
 
@@ -101,7 +104,9 @@ public abstract class MixinOptiFineViewFrustum {
 
                 neighboursUpdatedField.setBoolean(renderChunk, true);
                 offset16UpdatedField.setBoolean(renderChunk, true);
-            } catch (Exception e) {}
+            } catch (Exception e) {
+                OptiFineCompatLog.once("ViewFrustum neighbour linking", e);
+            }
         }
     }
 }

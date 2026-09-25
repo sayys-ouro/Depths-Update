@@ -1,5 +1,9 @@
 package sayys.depthsupdate.util;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -7,11 +11,15 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import sayys.depthsupdate.DepthsUpdateConfig;
 import sayys.depthsupdate.registry.DeepslateRegistry;
 
 public class BlockUtils {
+    private static final Logger LOGGER = LogManager.getLogger("DepthsUpdate/BlockUtils");
+
     private static IBlockState cachedDeepslateBlockState;
     private static IBlockState cachedCheeseDebugBlockState;
     private static IBlockState cachedSpaghettiDebugBlockState;
@@ -19,9 +27,7 @@ public class BlockUtils {
 
     private BlockUtils() {}
 
-    private static final java.util.Map<Block, Block> DEEPSLATE_ORE_MAP = new java.util.HashMap<>();
-
-    static {}
+    private static final Map<Block, Block> DEEPSLATE_ORE_MAP = new HashMap<>();
 
     public static void initializeOreMap() {
         DEEPSLATE_ORE_MAP.clear();
@@ -36,23 +42,67 @@ public class BlockUtils {
         DEEPSLATE_ORE_MAP.put(DeepslateRegistry.copper_ore, DeepslateRegistry.deepslate_copper_ore);
     }
 
+    private static final Map<Block, Boolean> DEEPSLATE_LOOKUP_CACHE = new ConcurrentHashMap<>();
+
     public static void clearCaches() {
         cachedDeepslateBlockState = null;
         cachedCheeseDebugBlockState = null;
         cachedSpaghettiDebugBlockState = null;
         cachedRiverDebugBlockState = null;
+
+        DEEPSLATE_LOOKUP_CACHE.clear();
+
+        deepslateOreID = -1;
+    }
+
+    public static boolean isRegistered(Block block) {
+        return block != null
+                && block.getRegistryName() != null
+                && Block.REGISTRY.containsKey(block.getRegistryName());
+    }
+
+    public static IBlockState parseBlockState(String spec) {
+        BlockSpec parsed = BlockSpec.parse(spec);
+        Block block = Block.getBlockFromName(parsed.name());
+
+        if (block == null || block == Blocks.AIR) {
+            return null;
+        }
+
+        if (!parsed.hasMeta()) {
+            return block.getDefaultState();
+        }
+
+        IBlockState state;
+
+        try {
+            state = block.getStateFromMeta(parsed.meta());
+        } catch (RuntimeException unsupported) {
+            LOGGER.warn("Block {} rejected metadata {}, using its default state", parsed.name(), parsed.meta());
+
+            return block.getDefaultState();
+        }
+
+        if (block.getMetaFromState(state) != parsed.meta()) {
+            LOGGER.warn("Block {} has no metadata {}, using its default state", parsed.name(), parsed.meta());
+
+            return block.getDefaultState();
+        }
+
+        return state;
     }
 
     public static IBlockState getDeepslateBlockState() {
         if (cachedDeepslateBlockState != null) return cachedDeepslateBlockState;
 
-        String blockName = DepthsUpdateConfig.deepslateBlock;
-        Block block = Block.getBlockFromName(blockName);
+        IBlockState configured = parseBlockState(DepthsUpdateConfig.deepslateBlock);
 
-        if (block == null || block == Blocks.AIR) {
-            cachedDeepslateBlockState = DeepslateRegistry.deepslate.getDefaultState();
+        if (configured == null) {
+            cachedDeepslateBlockState = DepthsUpdateConfig.REGISTRY.enableDeepslateFamily
+                    ? DeepslateRegistry.deepslate.getDefaultState()
+                    : Blocks.STONE.getDefaultState();
         } else {
-            cachedDeepslateBlockState = block.getDefaultState();
+            cachedDeepslateBlockState = configured;
         }
 
         return cachedDeepslateBlockState;
@@ -61,9 +111,9 @@ public class BlockUtils {
     public static IBlockState getDebugBlockState(String blockName, Block fallback, IBlockState currentCache) {
         if (currentCache != null) return currentCache;
 
-        Block block = Block.getBlockFromName(blockName);
+        IBlockState state = parseBlockState(blockName);
 
-        return (block == null || block == Blocks.AIR) ? fallback.getDefaultState() : block.getDefaultState();
+        return state != null ? state : fallback.getDefaultState();
     }
 
     public static IBlockState getCheeseDebugBlockState() {
@@ -93,14 +143,40 @@ public class BlockUtils {
 
     private static int deepslateOreID = -1;
 
-    public static boolean isDeepslate(IBlockState state) {
+    /** Equivalent of Vanilla's base_stone_overworld tag, which worldgen features replace into. */
+    public static boolean isBaseStone(IBlockState state) {
         if (state == null) return false;
 
         Block block = state.getBlock();
 
-        if (block == DeepslateRegistry.deepslate) return true;
+        return block == Blocks.STONE || block == DeepslateRegistry.tuff || isDeepslate(state);
+    }
 
-        if (block.getRegistryName() != null && block.getRegistryName().toString().equals(DepthsUpdateConfig.deepslateBlock)) return true;
+    public static boolean isDeepslate(IBlockState state) {
+        if (state == null) return false;
+
+        Block block = state.getBlock();
+        IBlockState configured = getDeepslateBlockState();
+        Block configuredBlock = configured.getBlock();
+
+        if (block == configuredBlock) {
+            return configured == configuredBlock.getDefaultState() || state == configured;
+        }
+
+        Boolean cached = DEEPSLATE_LOOKUP_CACHE.get(block);
+
+        if (cached != null) {
+            return cached;
+        }
+
+        boolean result = computeIsDeepslate(block);
+        DEEPSLATE_LOOKUP_CACHE.put(block, result);
+
+        return result;
+    }
+
+    private static boolean computeIsDeepslate(Block block) {
+        if (block == DeepslateRegistry.deepslate) return true;
 
         if (deepslateOreID == -1) {
             deepslateOreID = OreDictionary.getOreID("stoneDeepslate");
