@@ -35,21 +35,4 @@ public class MixinWorldClient {
     private int depthsupdate$modifyPreChunkMaxY(int y2) {
         return HeightManager.getMaxY((World) (Object) this);
     }
-
-    @ModifyVariable(
-        method="playMoodSoundAndCheckLight",
-        at=@At(value="NEW", target="net/minecraft/util/math/BlockPos"),
-        ordinal=3
-    )
-    private int depthsupdate$scaleMoodSoundY(int originalY) {
-        World self = (World) (Object) this;
-
-        if (!HeightManager.isExtended(self)) {
-            return originalY;
-        }
-
-        HeightContext heightContext = HeightManager.get(self);
-
-        return heightContext.minY() + (int) ((long) originalY * heightContext.totalHeight() / 256);
-    }
 }

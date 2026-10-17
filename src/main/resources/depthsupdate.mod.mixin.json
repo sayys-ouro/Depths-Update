@@ -16,7 +16,8 @@
     "celeritas.MixinCeleritasWorldRenderer",
     "celeritas.MixinVintageRenderSectionManager",
     "celeritas.MixinCeleritasWorldSlice",
-    "celeritas.MixinClonedChunkSection"
+    "celeritas.MixinClonedChunkSection",
+    "fbp.MixinLightUtil"
   ],
   "mixins": [
     "rltweaker.MixinRLTweakerHookWorld"

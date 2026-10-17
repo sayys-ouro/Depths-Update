@@ -144,6 +144,10 @@ dependencies {
 
     "modCompileOnly"(libs.mod.fluidlogged.api);
     "modCompileOnly"(libs.mod.nothirium);
+    "modCompileOnly"(libs.mod.galacticraft.legacy);
+    "modCompileOnly"(libs.mod.asmodeuscore);
+    "modCompileOnly"(libs.mod.starmaker);
+    "modCompileOnly"(libs.mod.fanciest.block.particles);
     "modRuntimeOnly"(libs.mod.fugue);
     "modRuntimeOnly"(libs.mod.scalar);
 

@@ -50,6 +50,10 @@ public class ModMixinConfigPlugin implements IMixinConfigPlugin {
             return Launch.classLoader.isClassExist("com.charles445.rltweaker.RLTweaker");
         }
 
+        if (mixinClassName.contains(".mod.fbp.")) {
+            return Launch.classLoader.isClassExist("com.fbp.FBP");
+        }
+
         return true;
     }
 

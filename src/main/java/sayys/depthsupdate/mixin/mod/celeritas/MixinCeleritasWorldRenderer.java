@@ -17,4 +17,11 @@ public class MixinCeleritasWorldRenderer {
             cir.setReturnValue(HeightManager.getMinY(Minecraft.getMinecraft().world));
         }
     }
+
+    @Inject(method = "getMaximumBuildHeight", at = @At("HEAD"), cancellable = true)
+    private void depthsupdate$fixMaxBuildHeight(CallbackInfoReturnable<Integer> cir) {
+        if (HeightManager.isExtended(Minecraft.getMinecraft().world)) {
+            cir.setReturnValue(HeightManager.getMaxY(Minecraft.getMinecraft().world));
+        }
+    }
 }

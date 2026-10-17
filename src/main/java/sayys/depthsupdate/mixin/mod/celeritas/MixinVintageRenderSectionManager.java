@@ -29,7 +29,8 @@ public class MixinVintageRenderSectionManager {
     public static VintageRenderSectionManager create(ChunkVertexType vertexType, WorldClient world, int renderDistance, CommandList commandList) {
         HeightContext ctx = HeightManager.get(world);
         int minSection = ctx.isExtended() ? ctx.minSection() : 0;
-        return new VintageRenderSectionManager(VintageRenderPassConfigurationBuilder.build(vertexType), world, renderDistance, commandList, minSection, 16);
+        int maxSection = ctx.isExtended() ? ctx.maxSection() + 1 : 16;
+        return new VintageRenderSectionManager(VintageRenderPassConfigurationBuilder.build(vertexType), world, renderDistance, commandList, minSection, maxSection);
     }
 
     @Inject(method = "isSectionVisuallyEmpty", at = @At("HEAD"), cancellable = true)
